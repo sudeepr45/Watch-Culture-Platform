@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react'
 import Container from '../common/Container'
+import { Link } from '../../router'
+import { useRouter } from '../../router/useRouter'
 
-const NAV_LINKS = [
-  { label: 'HOME', href: '#home', current: true },
-  { label: 'STORIES', href: '#stories', current: false },
-  { label: 'WATCHES', href: '#watches', current: false },
-  { label: 'BATTLES', href: '#battles', current: false },
-  { label: 'EXPLORE', href: '#explore', current: false },
+const NAV_ITEMS = [
+  { label: 'HOME', to: '/' },
+  { label: 'STORIES', to: '/stories' },
+  { label: 'EXPLORE', to: '/explore' },
+  { label: 'PROFILE', to: '/profile' },
 ]
 
 export default function Navbar() {
+  const { pathname, navigate } = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -42,8 +44,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Left: Brand Placeholder */}
           <div className="flex items-center">
-            <a
-              href="#home"
+            <Link
+              to="/"
               className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
             >
               <span className="font-sans text-sm sm:text-base font-extrabold tracking-[0.25em] text-ink uppercase group-hover:text-neutral-700 transition-colors">
@@ -52,7 +54,7 @@ export default function Navbar() {
               <span className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase">
                 Culture &bull; Stories &bull; Index
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Center: Desktop Navigation */}
@@ -60,37 +62,42 @@ export default function Navbar() {
             aria-label="Main Navigation"
             className="hidden md:flex items-center gap-7 lg:gap-10"
           >
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className={`relative text-xs tracking-[0.18em] font-medium transition-colors py-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
-                  link.current
-                    ? 'text-ink font-semibold'
-                    : 'text-ink-secondary hover:text-ink'
-                }`}
-              >
-                {link.label}
-                {link.current && (
-                  <span
-                    className="absolute bottom-0 left-0 w-full h-[2px] bg-ink"
-                    aria-hidden="true"
-                  />
-                )}
-                {!link.current && (
-                  <span
-                    className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gold transition-all duration-300 group-hover:w-full"
-                    aria-hidden="true"
-                  />
-                )}
-              </a>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.to
+              return (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`relative text-xs tracking-[0.18em] font-medium transition-colors py-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                    isActive
+                      ? 'text-ink font-semibold'
+                      : 'text-ink-secondary hover:text-ink'
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span
+                      className="absolute bottom-0 left-0 w-full h-[2px] bg-ink"
+                      aria-hidden="true"
+                    />
+                  )}
+                  {!isActive && (
+                    <span
+                      className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gold transition-all duration-300 group-hover:w-full"
+                      aria-hidden="true"
+                    />
+                  )}
+                </Link>
+              )
+            })}
           </nav>
 
           {/* Right: Actions (Search, Profile) */}
           <div className="hidden md:flex items-center gap-5 lg:gap-6">
             <button
               type="button"
+              onClick={() => navigate('/explore')}
               aria-label="Search"
               className="flex items-center gap-2 text-xs font-medium tracking-[0.15em] text-ink-secondary hover:text-ink transition-colors p-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
             >
@@ -113,10 +120,14 @@ export default function Navbar() {
 
             <span className="w-px h-4 bg-hairline" aria-hidden="true" />
 
-            <button
-              type="button"
+            <Link
+              to="/profile"
               aria-label="User Profile"
-              className="flex items-center gap-2 text-xs font-medium tracking-[0.15em] text-ink-secondary hover:text-ink transition-colors p-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+              className={`flex items-center gap-2 text-xs font-medium tracking-[0.15em] transition-colors p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                pathname === '/profile'
+                  ? 'text-ink font-semibold'
+                  : 'text-ink-secondary hover:text-ink'
+              }`}
             >
               <svg
                 className="w-4 h-4"
@@ -133,7 +144,7 @@ export default function Navbar() {
                 />
               </svg>
               <span>PROFILE</span>
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -187,24 +198,30 @@ export default function Navbar() {
             className="md:hidden border-t border-hairline py-6 px-2 animate-in fade-in slide-in-from-top-2 duration-200"
           >
             <div className="flex flex-col gap-4">
-              {NAV_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`text-sm tracking-[0.2em] font-semibold py-2 px-2 transition-colors ${
-                    link.current
-                      ? 'text-ink bg-warm-surface'
-                      : 'text-ink-secondary hover:text-ink'
-                  }`}
-                >
-                  {link.label}
-                </a>
-              ))}
+              {NAV_ITEMS.map((item) => {
+                const isActive = pathname === item.to
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`text-sm tracking-[0.2em] font-semibold py-2 px-2 transition-colors ${
+                      isActive
+                        ? 'text-ink bg-warm-surface'
+                        : 'text-ink-secondary hover:text-ink'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
               <div className="pt-4 mt-2 border-t border-hairline flex flex-col gap-3">
                 <button
                   type="button"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    navigate('/explore')
+                  }}
                   className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2 cursor-pointer"
                 >
                   <svg
@@ -223,10 +240,10 @@ export default function Navbar() {
                   </svg>
                   <span>SEARCH</span>
                 </button>
-                <button
-                  type="button"
+                <Link
+                  to="/profile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2 cursor-pointer"
+                  className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2"
                 >
                   <svg
                     className="w-4 h-4"
@@ -243,7 +260,7 @@ export default function Navbar() {
                     />
                   </svg>
                   <span>PROFILE</span>
-                </button>
+                </Link>
               </div>
             </div>
           </nav>

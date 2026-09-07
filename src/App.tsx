@@ -1,22 +1,36 @@
+import { RouterProvider } from './router'
+import { useRouter } from './router/useRouter'
 import Navbar from './components/layout/Navbar'
-import Hero from './components/hero/Hero'
-import PhilosophyStrip from './components/home/PhilosophyStrip'
 import Container from './components/common/Container'
+import HomePage from './pages/HomePage'
+import StoriesPage from './pages/StoriesPage'
+import ExplorePage from './pages/ExplorePage'
+import ProfilePage from './pages/ProfilePage'
 
-export default function App() {
+function AppContent() {
+  const { pathname } = useRouter()
+
+  const renderPage = () => {
+    switch (pathname) {
+      case '/stories':
+        return <StoriesPage />
+      case '/explore':
+        return <ExplorePage />
+      case '/profile':
+        return <ProfilePage />
+      case '/':
+      default:
+        return <HomePage />
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-warm-white text-ink selection:bg-gold/20 selection:text-ink">
       {/* Sticky Editorial Navigation */}
       <Navbar />
 
-      {/* Main Content Area */}
-      <main className="flex-grow">
-        {/* Full-screen Editorial Hero */}
-        <Hero />
-
-        {/* Philosophy & Transition Strip */}
-        <PhilosophyStrip />
-      </main>
+      {/* Dynamic Page Content */}
+      <main className="flex-grow">{renderPage()}</main>
 
       {/* Understated Editorial Colophon */}
       <footer className="border-t border-hairline bg-warm-white py-10">
@@ -25,7 +39,7 @@ export default function App() {
             <div className="flex items-center gap-2">
               <span className="font-semibold text-ink">PROJECT WATCH</span>
               <span>&bull;</span>
-              <span>STAGE 01 // VISUAL FOUNDATION</span>
+              <span>STAGE 02 // ARCHITECTURE & ROUTING</span>
             </div>
             <div>
               &copy; {new Date().getFullYear()} WATCH CULTURE PLATFORM. ALL RIGHTS RESERVED.
@@ -34,5 +48,13 @@ export default function App() {
         </Container>
       </footer>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <RouterProvider>
+      <AppContent />
+    </RouterProvider>
   )
 }
