@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@theme {
+  --color-warm-white: #FAF9F5;
+  --color-warm-surface: #F3F1EA;
+  --color-ink: #121212;
+  --color-ink-secondary: #57534E;
+  --color-ink-muted: #8C877E;
+  --color-gold: #C5A059;
+  --color-gold-hover: #AF8B45;
+  --color-hairline: #E7E5DF;
+  --color-hairline-dark: #2B2A27;
+
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    background-color: var(--color-warm-white);
+    color: var(--color-ink);
+  }
+}

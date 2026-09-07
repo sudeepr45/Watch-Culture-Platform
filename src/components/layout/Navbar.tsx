@@ -1,0 +1,254 @@
+import { useState, useEffect } from 'react'
+import Container from '../common/Container'
+
+const NAV_LINKS = [
+  { label: 'HOME', href: '#home', current: true },
+  { label: 'STORIES', href: '#stories', current: false },
+  { label: 'WATCHES', href: '#watches', current: false },
+  { label: 'BATTLES', href: '#battles', current: false },
+  { label: 'EXPLORE', href: '#explore', current: false },
+]
+
+export default function Navbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close mobile menu on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  return (
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? 'bg-warm-white/95 backdrop-blur-md border-b border-hairline shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]'
+          : 'bg-warm-white border-b border-hairline'
+      }`}
+    >
+      <Container>
+        <div className="flex items-center justify-between h-20">
+          {/* Left: Brand Placeholder */}
+          <div className="flex items-center">
+            <a
+              href="#home"
+              className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+            >
+              <span className="font-sans text-sm sm:text-base font-extrabold tracking-[0.25em] text-ink uppercase group-hover:text-neutral-700 transition-colors">
+                PROJECT WATCH
+              </span>
+              <span className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+                Culture &bull; Stories &bull; Index
+              </span>
+            </a>
+          </div>
+
+          {/* Center: Desktop Navigation */}
+          <nav
+            aria-label="Main Navigation"
+            className="hidden md:flex items-center gap-7 lg:gap-10"
+          >
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className={`relative text-xs tracking-[0.18em] font-medium transition-colors py-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                  link.current
+                    ? 'text-ink font-semibold'
+                    : 'text-ink-secondary hover:text-ink'
+                }`}
+              >
+                {link.label}
+                {link.current && (
+                  <span
+                    className="absolute bottom-0 left-0 w-full h-[2px] bg-ink"
+                    aria-hidden="true"
+                  />
+                )}
+                {!link.current && (
+                  <span
+                    className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gold transition-all duration-300 group-hover:w-full"
+                    aria-hidden="true"
+                  />
+                )}
+              </a>
+            ))}
+          </nav>
+
+          {/* Right: Actions (Search, Profile) */}
+          <div className="hidden md:flex items-center gap-5 lg:gap-6">
+            <button
+              type="button"
+              aria-label="Search"
+              className="flex items-center gap-2 text-xs font-medium tracking-[0.15em] text-ink-secondary hover:text-ink transition-colors p-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+              <span>SEARCH</span>
+            </button>
+
+            <span className="w-px h-4 bg-hairline" aria-hidden="true" />
+
+            <button
+              type="button"
+              aria-label="User Profile"
+              className="flex items-center gap-2 text-xs font-medium tracking-[0.15em] text-ink-secondary hover:text-ink transition-colors p-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+              <span>PROFILE</span>
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center md:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              className="p-2 text-ink hover:text-neutral-700 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+            >
+              {mobileMenuOpen ? (
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <nav
+            aria-label="Mobile Navigation"
+            className="md:hidden border-t border-hairline py-6 px-2 animate-in fade-in slide-in-from-top-2 duration-200"
+          >
+            <div className="flex flex-col gap-4">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-sm tracking-[0.2em] font-semibold py-2 px-2 transition-colors ${
+                    link.current
+                      ? 'text-ink bg-warm-surface'
+                      : 'text-ink-secondary hover:text-ink'
+                  }`}
+                >
+                  {link.label}
+                </a>
+              ))}
+              <div className="pt-4 mt-2 border-t border-hairline flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2 cursor-pointer"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                    />
+                  </svg>
+                  <span>SEARCH</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2 cursor-pointer"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                    />
+                  </svg>
+                  <span>PROFILE</span>
+                </button>
+              </div>
+            </div>
+          </nav>
+        )}
+      </Container>
+    </header>
+  )
+}
