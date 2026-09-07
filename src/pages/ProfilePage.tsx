@@ -1,7 +1,10 @@
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import { useRouter } from '../router/useRouter'
 
 export default function ProfilePage() {
+  const { navigate } = useRouter()
+
   return (
     <div className="py-12 sm:py-16 lg:py-20">
       <Container>
@@ -50,9 +53,7 @@ export default function ProfilePage() {
             <Button
               variant="primary"
               size="lg"
-              onClick={() => {
-                alert('Authentication will be enabled when Supabase is connected in the next phase.')
-              }}
+              onClick={() => navigate('/login')}
             >
               SIGN IN
             </Button>

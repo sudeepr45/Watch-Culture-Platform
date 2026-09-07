@@ -1,10 +1,12 @@
 import Container from '../components/common/Container'
+import { Link } from '../router'
 
 interface FeatureModule {
   tag: string
   title: string
   description: string
   status: string
+  to?: string
 }
 
 const FUTURE_MODULES: FeatureModule[] = [
@@ -14,6 +16,7 @@ const FUTURE_MODULES: FeatureModule[] = [
     description:
       'Curated technical specifications, reference history, calibre architecture, and case dimensions.',
     status: 'DATABASE CONNECTING SOON',
+    to: '/watches',
   },
   {
     tag: 'INTERACTIVE // SHOWDOWN',
@@ -21,6 +24,7 @@ const FUTURE_MODULES: FeatureModule[] = [
     description:
       'Head-to-head community match-ups, collector voting, and side-by-side spec comparisons.',
     status: 'INTERACTIVE ENGINE',
+    to: '/battles',
   },
   {
     tag: 'DECONSTRUCTION // VALUE',
@@ -35,6 +39,7 @@ const FUTURE_MODULES: FeatureModule[] = [
     description:
       'The mechanics of mechanical time: escapements, balance springs, complications, and finishing.',
     status: 'EDUCATIONAL SERIES',
+    to: '/watch-101',
   },
   {
     tag: 'DISCOVERY // DISPATCH',
@@ -70,36 +75,52 @@ export default function ExplorePage() {
           </p>
         </div>
 
-        {/* Feature Modules Grid (Visual Placeholders without Fake Data) */}
+        {/* Feature Modules Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {FUTURE_MODULES.map((mod, index) => (
-            <div
-              key={mod.title}
-              className="relative group border border-hairline bg-warm-surface/30 p-7 sm:p-8 flex flex-col justify-between transition-colors duration-300 hover:border-ink hover:bg-warm-surface/60"
-            >
-              <div>
-                <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-4">
-                  <span>{mod.tag}</span>
-                  <span>MOD 0{index + 1}</span>
+          {FUTURE_MODULES.map((mod, index) => {
+            const cardContent = (
+              <>
+                <div>
+                  <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-4">
+                    <span>{mod.tag}</span>
+                    <span>MOD 0{index + 1}</span>
+                  </div>
+
+                  <h2 className="font-display text-xl sm:text-2xl font-normal tracking-tight text-ink uppercase group-hover:text-neutral-800 transition-colors">
+                    {mod.title}
+                  </h2>
+
+                  <p className="mt-3 text-xs sm:text-sm text-ink-secondary font-light leading-relaxed">
+                    {mod.description}
+                  </p>
                 </div>
 
-                <h2 className="font-display text-xl sm:text-2xl font-normal tracking-tight text-ink uppercase group-hover:text-neutral-800 transition-colors">
-                  {mod.title}
-                </h2>
+                <div className="mt-8 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase">
+                  <span className="text-ink-muted">{mod.status}</span>
+                  <span className="text-gold font-semibold group-hover:translate-x-1 transition-transform">
+                    &rarr;
+                  </span>
+                </div>
+              </>
+            )
 
-                <p className="mt-3 text-xs sm:text-sm text-ink-secondary font-light leading-relaxed">
-                  {mod.description}
-                </p>
-              </div>
+            const className =
+              'relative group border border-hairline bg-warm-surface/30 p-7 sm:p-8 flex flex-col justify-between transition-colors duration-300 hover:border-ink hover:bg-warm-surface/60 cursor-pointer block'
 
-              <div className="mt-8 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase">
-                <span className="text-ink-muted">{mod.status}</span>
-                <span className="text-gold font-semibold group-hover:translate-x-1 transition-transform">
-                  &rarr;
-                </span>
+            if (mod.to) {
+              return (
+                <Link key={mod.title} to={mod.to} className={className}>
+                  {cardContent}
+                </Link>
+              )
+            }
+
+            return (
+              <div key={mod.title} className={className}>
+                {cardContent}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </Container>
     </div>

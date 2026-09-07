@@ -6,8 +6,9 @@ import { useRouter } from '../../router/useRouter'
 const NAV_ITEMS = [
   { label: 'HOME', to: '/' },
   { label: 'STORIES', to: '/stories' },
+  { label: 'WATCHES', to: '/watches' },
+  { label: 'BATTLES', to: '/battles' },
   { label: 'EXPLORE', to: '/explore' },
-  { label: 'PROFILE', to: '/profile' },
 ]
 
 export default function Navbar() {
@@ -60,7 +61,7 @@ export default function Navbar() {
           {/* Center: Desktop Navigation */}
           <nav
             aria-label="Main Navigation"
-            className="hidden md:flex items-center gap-7 lg:gap-10"
+            className="hidden md:flex items-center gap-6 lg:gap-8 xl:gap-10"
           >
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.to
@@ -97,9 +98,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-5 lg:gap-6">
             <button
               type="button"
-              onClick={() => navigate('/explore')}
+              onClick={() => navigate('/search')}
               aria-label="Search"
-              className="flex items-center gap-2 text-xs font-medium tracking-[0.15em] text-ink-secondary hover:text-ink transition-colors p-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+              className={`flex items-center gap-2 text-xs font-medium tracking-[0.15em] transition-colors p-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                pathname === '/search'
+                  ? 'text-ink font-semibold'
+                  : 'text-ink-secondary hover:text-ink'
+              }`}
             >
               <svg
                 className="w-4 h-4"
@@ -124,7 +129,7 @@ export default function Navbar() {
               to="/profile"
               aria-label="User Profile"
               className={`flex items-center gap-2 text-xs font-medium tracking-[0.15em] transition-colors p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
-                pathname === '/profile'
+                pathname === '/profile' || pathname === '/login'
                   ? 'text-ink font-semibold'
                   : 'text-ink-secondary hover:text-ink'
               }`}
@@ -220,7 +225,7 @@ export default function Navbar() {
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false)
-                    navigate('/explore')
+                    navigate('/search')
                   }}
                   className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2 cursor-pointer"
                 >
