@@ -5,6 +5,7 @@ import Container from './components/common/Container'
 import HomePage from './pages/HomePage'
 import StoriesPage from './pages/StoriesPage'
 import WatchesPage from './pages/WatchesPage'
+import WatchDetailPage from './pages/WatchDetailPage'
 import BattlesPage from './pages/BattlesPage'
 import Watch101Page from './pages/Watch101Page'
 import ExplorePage from './pages/ExplorePage'
@@ -16,6 +17,12 @@ function AppContent() {
   const { pathname } = useRouter()
 
   const renderPage = () => {
+    // Dynamic Watch Detail route: /watches/:slug
+    if (pathname.startsWith('/watches/') && pathname !== '/watches') {
+      const slug = pathname.replace('/watches/', '')
+      return <WatchDetailPage slug={slug} />
+    }
+
     switch (pathname) {
       case '/stories':
         return <StoriesPage />
@@ -54,7 +61,7 @@ function AppContent() {
             <div className="flex items-center gap-2">
               <span className="font-semibold text-ink">PROJECT WATCH</span>
               <span>&bull;</span>
-              <span>PHASE 2A // FEATURE ROUTING</span>
+              <span>PHASE 2B // WATCH DATABASE</span>
             </div>
             <div>
               &copy; {new Date().getFullYear()} WATCH CULTURE PLATFORM. ALL RIGHTS RESERVED.

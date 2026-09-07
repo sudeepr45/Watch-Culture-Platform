@@ -22,56 +22,53 @@ export default function BattlesPage() {
           </p>
         </div>
 
-        {/* Intentional Empty State */}
-        <div className="relative border border-hairline bg-warm-surface/40 p-8 sm:p-14 lg:p-20 text-center max-w-3xl mx-auto">
-          <div className="absolute top-3 left-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-            ARENA // 02
-          </div>
-          <div className="absolute top-3 right-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-            ENGINE: PENDING DATA
-          </div>
-
-          <div className="max-w-md mx-auto py-6">
-            <div className="w-12 h-12 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white text-ink">
-              <svg
-                className="w-5 h-5 text-ink-secondary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
-                />
-              </svg>
+        {/* Dual Contender Selectors (Architecture ready for dynamic selection from Watch Database) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+          {/* Contender 1 Slot */}
+          <div className="border border-dashed border-hairline bg-warm-surface/20 p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[260px]">
+            <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-3">
+              CONTENDER 01
             </div>
-
-            <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase">
-              Battle Engine Initializing
+            <h2 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
+              Select First Watch
             </h2>
-
-            <p className="mt-3 text-sm sm:text-base text-ink-secondary font-light leading-relaxed">
-              Choose two watches from the Watch Index once the database is connected.
+            <p className="mt-2 text-xs font-mono text-ink-secondary">
+              PULLS DIRECTLY FROM WATCH INDEX
             </p>
-
-            <div className="mt-8 flex justify-center">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => navigate('/watches')}
-              >
-                VIEW WATCH INDEX &rarr;
+            <div className="mt-6">
+              <Button variant="secondary" size="sm" onClick={() => navigate('/watches')}>
+                CHOOSE WATCH 1 &rarr;
               </Button>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-            <span>COMMUNITY VOTING: PREPARING</span>
-            <span className="text-gold">HEAD-TO-HEAD COMPARISON</span>
+          {/* Contender 2 Slot */}
+          <div className="border border-dashed border-hairline bg-warm-surface/20 p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[260px]">
+            <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-3">
+              CONTENDER 02
+            </div>
+            <h2 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
+              Select Second Watch
+            </h2>
+            <p className="mt-2 text-xs font-mono text-ink-secondary">
+              PULLS DIRECTLY FROM WATCH INDEX
+            </p>
+            <div className="mt-6">
+              <Button variant="secondary" size="sm" onClick={() => navigate('/watches')}>
+                CHOOSE WATCH 2 &rarr;
+              </Button>
+            </div>
           </div>
+        </div>
+
+        {/* Engine Status Callout */}
+        <div className="border border-hairline bg-warm-surface/40 p-8 text-center max-w-4xl mx-auto">
+          <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-2">
+            DATABASE ARCHITECTURE // BATTLE ENGINE
+          </div>
+          <p className="text-xs sm:text-sm font-mono text-ink-secondary leading-relaxed">
+            The Battle Engine allows any two timepieces from the Supabase database to be paired for community voting, spec deconstruction, and value comparisons.
+          </p>
         </div>
       </Container>
     </div>
