@@ -1,7 +1,109 @@
+import { useState, type FormEvent } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import { useRouter } from '../router/useRouter'
+import { useAuth } from '../context/useAuth'
 
-export default function LoginPage() {
+interface LoginPageProps {
+  initialMode?: 'login' | 'signup'
+}
+
+export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
+  const { signIn, signUp, isAuthenticated } = useAuth()
+  const { navigate } = useRouter()
+
+  const [mode, setMode] = useState<'login' | 'signup'>(initialMode)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [username, setUsername] = useState('')
+  const [displayName, setDisplayName] = useState('')
+
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [confirmationNotice, setConfirmationNotice] = useState<string | null>(null)
+
+  // If already logged in, redirect to /profile
+  if (isAuthenticated) {
+    navigate('/profile')
+    return null
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setErrorMessage(null)
+    setConfirmationNotice(null)
+
+    if (!email.trim() || !password) {
+      setErrorMessage('Please provide both email and password.')
+      return
+    }
+
+    setLoading(true)
+
+    if (mode === 'signup') {
+      if (!username.trim()) {
+        setErrorMessage('A unique username is required.')
+        setLoading(false)
+        return
+      }
+
+      if (password !== confirmPassword) {
+        setErrorMessage('Passwords do not match.')
+        setLoading(false)
+        return
+      }
+
+      if (password.length < 6) {
+        setErrorMessage('Password must be at least 6 characters long.')
+        setLoading(false)
+        return
+      }
+
+      const result = await signUp({
+        email: email.trim(),
+        password,
+        username: username.trim(),
+        displayName: displayName.trim() || undefined,
+      })
+
+      setLoading(false)
+
+      if (!result.success) {
+        setErrorMessage(result.error || 'Failed to create your account.')
+        return
+      }
+
+      if (result.requiresConfirmation) {
+        setConfirmationNotice(
+          'A confirmation link has been sent to your email. Check your email to confirm your account before logging in.'
+        )
+      } else {
+        navigate('/profile')
+      }
+    } else {
+      // Login mode
+      const result = await signIn({
+        email: email.trim(),
+        password,
+      })
+
+      setLoading(false)
+
+      if (!result.success) {
+        setErrorMessage(result.error || 'Invalid credentials or user does not exist.')
+      } else {
+        navigate('/profile')
+      }
+    }
+  }
+
+  const toggleMode = (newMode: 'login' | 'signup') => {
+    setMode(newMode)
+    setErrorMessage(null)
+    setConfirmationNotice(null)
+  }
+
   return (
     <div className="py-12 sm:py-16 lg:py-20">
       <Container>
@@ -9,90 +111,209 @@ export default function LoginPage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
             <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
-            <span>COLLECTOR GATEWAY &bull; ACCESS</span>
+            <span>COLLECTOR GATEWAY &bull; SUPABASE AUTH</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            Enter the Watch World
+            {mode === 'signup' ? 'Create Profile' : 'Welcome Back'}
           </h1>
-          <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl">
-            Access your personal watch vault, community investigations, and collection telemetry.
+          <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-light">
+            {mode === 'signup'
+              ? 'Join the watch culture network. Curate your digital vault and participate in community showdowns.'
+              : 'Sign in to access your collector dossier, profile specifications, and saved bookmarks.'}
           </p>
         </div>
 
-        {/* Authentication Form Card */}
-        <div className="relative border border-hairline bg-warm-surface/40 p-8 sm:p-12 lg:p-16 max-w-xl mx-auto">
-          {/* Status Indicator */}
-          <div className="mb-8 p-3.5 border border-hairline bg-warm-white flex items-center justify-between text-[11px] font-mono tracking-[0.16em] uppercase">
-            <span className="text-ink font-medium flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" aria-hidden="true" />
-              SUPABASE AUTH — NEXT PHASE
-            </span>
-            <span className="text-ink-muted">SECURITY READY</span>
+        {/* Form Container Card */}
+        <div className="relative border border-hairline bg-warm-surface/40 p-8 sm:p-12 max-w-xl mx-auto">
+          {/* Mode Switch Tabs */}
+          <div className="grid grid-cols-2 border border-hairline bg-warm-white mb-8 p-1 text-xs font-mono">
+            <button
+              type="button"
+              onClick={() => toggleMode('login')}
+              className={`py-2.5 uppercase tracking-wider transition-colors cursor-pointer ${
+                mode === 'login'
+                  ? 'bg-ink text-warm-white font-semibold'
+                  : 'text-ink-secondary hover:text-ink'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleMode('signup')}
+              className={`py-2.5 uppercase tracking-wider transition-colors cursor-pointer ${
+                mode === 'signup'
+                  ? 'bg-ink text-warm-white font-semibold'
+                  : 'text-ink-secondary hover:text-ink'
+              }`}
+            >
+              Create Account
+            </button>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+          {/* Success / Email Confirmation Banner */}
+          {confirmationNotice && (
+            <div className="mb-6 p-4 border border-gold/40 bg-gold/10 text-xs font-mono text-ink leading-relaxed">
+              <div className="text-[10px] uppercase tracking-widest text-gold font-bold mb-1">
+                CONFIRMATION DISPATCHED
+              </div>
+              {confirmationNotice}
+            </div>
+          )}
+
+          {/* Error Message Banner */}
+          {errorMessage && (
+            <div className="mb-6 p-4 border border-rose-300 bg-rose-50 text-xs font-mono text-rose-900 leading-relaxed">
+              <div className="text-[10px] uppercase tracking-widest text-rose-800 font-bold mb-1">
+                AUTHENTICATION NOTICE
+              </div>
+              {errorMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Extra Fields for Sign Up */}
+            {mode === 'signup' && (
+              <>
+                <div>
+                  <label
+                    htmlFor="displayName"
+                    className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
+                  >
+                    Display Name
+                  </label>
+                  <input
+                    id="displayName"
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="e.g. Hans Wilsdorf"
+                    className="w-full px-4 py-3 bg-warm-white border border-hairline text-ink text-xs font-mono focus:outline-none focus:border-ink placeholder:text-ink-muted/50"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="username"
+                    className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
+                  >
+                    Username <span className="text-gold">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-mono text-ink-muted pointer-events-none">
+                      @
+                    </span>
+                    <input
+                      id="username"
+                      type="text"
+                      required
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="collector_name"
+                      className="w-full px-4 py-3 pl-8 bg-warm-white border border-hairline text-ink text-xs font-mono focus:outline-none focus:border-ink placeholder:text-ink-muted/50"
+                    />
+                  </div>
+                  <p className="mt-1 text-[10px] font-mono text-ink-muted">
+                    3–20 characters. Letters, numbers, and underscores only.
+                  </p>
+                </div>
+              </>
+            )}
+
+            {/* Email Address */}
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-2"
+                className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
               >
-                Email Address
+                Email Address <span className="text-gold">*</span>
               </label>
               <input
                 id="email"
                 type="email"
-                disabled
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="collector@watchculture.com"
-                className="w-full px-4 py-3 bg-warm-white border border-hairline text-ink text-sm font-sans focus:outline-none focus:border-ink placeholder:text-ink-muted/50 cursor-not-allowed opacity-75"
+                className="w-full px-4 py-3 bg-warm-white border border-hairline text-ink text-xs font-mono focus:outline-none focus:border-ink placeholder:text-ink-muted/50"
               />
             </div>
 
+            {/* Password */}
             <div>
               <label
                 htmlFor="password"
-                className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-2"
+                className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
               >
-                Password
+                Password <span className="text-gold">*</span>
               </label>
               <input
                 id="password"
                 type="password"
-                disabled
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full px-4 py-3 bg-warm-white border border-hairline text-ink text-sm font-sans focus:outline-none focus:border-ink placeholder:text-ink-muted/50 cursor-not-allowed opacity-75"
+                className="w-full px-4 py-3 bg-warm-white border border-hairline text-ink text-xs font-mono focus:outline-none focus:border-ink placeholder:text-ink-muted/50"
               />
             </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row gap-4">
+            {/* Confirm Password (Sign Up only) */}
+            {mode === 'signup' && (
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
+                >
+                  Confirm Password <span className="text-gold">*</span>
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full px-4 py-3 bg-warm-white border border-hairline text-ink text-xs font-mono focus:outline-none focus:border-ink placeholder:text-ink-muted/50"
+                />
+              </div>
+            )}
+
+            {/* Submit Action */}
+            <div className="pt-3">
               <Button
-                type="button"
+                type="submit"
                 variant="primary"
                 size="md"
-                className="flex-1"
-                onClick={() => {
-                  alert('Supabase Auth integration is scheduled for the next phase. Authentication is currently disabled.')
-                }}
+                className="w-full"
+                disabled={loading}
               >
-                SIGN IN
-              </Button>
-
-              <Button
-                type="button"
-                variant="secondary"
-                size="md"
-                className="flex-1"
-                onClick={() => {
-                  alert('Account registration will open when the Supabase database is connected.')
-                }}
-              >
-                CREATE ACCOUNT
+                {loading
+                  ? 'TRANSMITTING CREDENTIALS...'
+                  : mode === 'signup'
+                  ? 'CREATE ACCOUNT \u2192'
+                  : 'SIGN IN \u2192'}
               </Button>
             </div>
           </form>
 
-          <p className="mt-8 pt-6 border-t border-hairline text-center text-xs text-ink-muted font-light leading-relaxed">
-            Real collector authentication will connect to Supabase Auth. No credentials are saved or processed locally.
-          </p>
+          {/* Switch helper footer */}
+          <div className="mt-8 pt-6 border-t border-hairline flex items-center justify-between text-xs font-mono text-ink-secondary">
+            <span>
+              {mode === 'signup' ? 'Already registered?' : 'New to Project Watch?'}
+            </span>
+            <button
+              type="button"
+              onClick={() => toggleMode(mode === 'signup' ? 'login' : 'signup')}
+              className="text-ink font-semibold hover:text-gold uppercase tracking-wider underline cursor-pointer"
+            >
+              {mode === 'signup' ? 'Sign in instead' : 'Create profile'}
+            </button>
+          </div>
+
+          <div className="mt-6 text-center text-[10px] font-mono text-ink-muted uppercase tracking-widest">
+            AUTHENTICATED VIA SUPABASE INFRASTRUCTURE
+          </div>
         </div>
       </Container>
     </div>

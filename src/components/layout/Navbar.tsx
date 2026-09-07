@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Container from '../common/Container'
 import { Link } from '../../router'
 import { useRouter } from '../../router/useRouter'
+import { useAuth } from '../../context/useAuth'
 
 const NAV_ITEMS = [
   { label: 'HOME', to: '/' },
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
 
 export default function Navbar() {
   const { pathname, navigate } = useRouter()
+  const { isAuthenticated, profile } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -125,31 +127,56 @@ export default function Navbar() {
 
             <span className="w-px h-4 bg-hairline" aria-hidden="true" />
 
-            <Link
-              to="/profile"
-              aria-label="User Profile"
-              className={`flex items-center gap-2 text-xs font-medium tracking-[0.15em] transition-colors p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
-                pathname === '/profile' || pathname === '/login'
-                  ? 'text-ink font-semibold'
-                  : 'text-ink-secondary hover:text-ink'
-              }`}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.8}
-                aria-hidden="true"
+            {isAuthenticated ? (
+              <Link
+                to="/profile"
+                aria-label="Collector Profile"
+                className={`flex items-center gap-2 text-xs font-medium tracking-[0.15em] transition-colors p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                  pathname === '/profile'
+                    ? 'text-ink font-semibold'
+                    : 'text-ink-secondary hover:text-ink'
+                }`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                />
-              </svg>
-              <span>PROFILE</span>
-            </Link>
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt=""
+                    className="w-4 h-4 rounded-full object-cover border border-hairline"
+                  />
+                ) : (
+                  <span className="w-4 h-4 border border-ink bg-ink text-warm-white flex items-center justify-center text-[9px] font-mono">
+                    {profile?.username ? profile.username.charAt(0).toUpperCase() : 'C'}
+                  </span>
+                )}
+                <span>@{profile?.username || 'PROFILE'}</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                aria-label="Sign In"
+                className={`flex items-center gap-2 text-xs font-medium tracking-[0.15em] transition-colors p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                  pathname === '/login' || pathname === '/signup'
+                    ? 'text-ink font-semibold'
+                    : 'text-ink-secondary hover:text-ink'
+                }`}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                  />
+                </svg>
+                <span>SIGN IN</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -245,27 +272,48 @@ export default function Navbar() {
                   </svg>
                   <span>SEARCH</span>
                 </button>
-                <Link
-                  to="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={1.8}
-                    aria-hidden="true"
+                {isAuthenticated ? (
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                    />
-                  </svg>
-                  <span>PROFILE</span>
-                </Link>
+                    {profile?.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt=""
+                        className="w-4 h-4 rounded-full object-cover border border-hairline"
+                      />
+                    ) : (
+                      <span className="w-4 h-4 border border-ink bg-ink text-warm-white flex items-center justify-center text-[9px] font-mono">
+                        {profile?.username ? profile.username.charAt(0).toUpperCase() : 'C'}
+                      </span>
+                    )}
+                    <span>@{profile?.username || 'PROFILE'}</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                      />
+                    </svg>
+                    <span>SIGN IN</span>
+                  </Link>
+                )}
               </div>
             </div>
           </nav>

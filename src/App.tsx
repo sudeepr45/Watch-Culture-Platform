@@ -1,5 +1,6 @@
 import { RouterProvider } from './router'
 import { useRouter } from './router/useRouter'
+import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/layout/Navbar'
 import Container from './components/common/Container'
 import HomePage from './pages/HomePage'
@@ -44,7 +45,9 @@ function AppContent() {
       case '/profile':
         return <ProfilePage />
       case '/login':
-        return <LoginPage />
+        return <LoginPage initialMode="login" />
+      case '/signup':
+        return <LoginPage initialMode="signup" />
       case '/search':
         return <SearchPage />
       case '/':
@@ -68,7 +71,7 @@ function AppContent() {
             <div className="flex items-center gap-2">
               <span className="font-semibold text-ink">PROJECT WATCH</span>
               <span>&bull;</span>
-              <span>PHASE 2D // WATCH 101 ACADEMY</span>
+              <span>PHASE 2E // AUTHENTICATION &amp; PROFILES</span>
             </div>
             <div>
               &copy; {new Date().getFullYear()} WATCH CULTURE PLATFORM. ALL RIGHTS RESERVED.
@@ -83,7 +86,9 @@ function AppContent() {
 export default function App() {
   return (
     <RouterProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </RouterProvider>
   )
 }
