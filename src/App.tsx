@@ -61,7 +61,7 @@ function AppContent() {
             <div className="flex items-center gap-2">
               <span className="font-semibold text-ink">PROJECT WATCH</span>
               <span>&bull;</span>
-              <span>PHASE 2B // WATCH DATABASE</span>
+              <span>PHASE 2C // WATCH BATTLES</span>
             </div>
             <div>
               &copy; {new Date().getFullYear()} WATCH CULTURE PLATFORM. ALL RIGHTS RESERVED.

@@ -303,7 +303,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate('/battles')}
+                  onClick={() => navigate(`/battles?w1=${watch.slug}`)}
                   className="w-full"
                 >
                   COMPARE IN WATCH BATTLE &rarr;

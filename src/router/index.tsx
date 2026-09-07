@@ -26,9 +26,10 @@ export function RouterProvider({ children }: { children: ReactNode }) {
 
   const navigate = (to: string) => {
     if (typeof window !== 'undefined') {
-      if (window.location.pathname !== to) {
+      const currentFull = window.location.pathname + window.location.search
+      if (currentFull !== to) {
         window.history.pushState(null, '', to)
-        setPathname(to)
+        setPathname(to.split('?')[0] || '/')
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
