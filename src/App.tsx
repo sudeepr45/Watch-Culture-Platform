@@ -8,6 +8,7 @@ import WatchesPage from './pages/WatchesPage'
 import WatchDetailPage from './pages/WatchDetailPage'
 import BattlesPage from './pages/BattlesPage'
 import Watch101Page from './pages/Watch101Page'
+import Watch101TopicPage from './pages/Watch101TopicPage'
 import ExplorePage from './pages/ExplorePage'
 import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
@@ -21,6 +22,12 @@ function AppContent() {
     if (pathname.startsWith('/watches/') && pathname !== '/watches') {
       const slug = pathname.replace('/watches/', '')
       return <WatchDetailPage slug={slug} />
+    }
+
+    // Dynamic Watch 101 Topic route: /watch-101/:slug
+    if (pathname.startsWith('/watch-101/') && pathname !== '/watch-101') {
+      const slug = pathname.replace('/watch-101/', '')
+      return <Watch101TopicPage slug={slug} />
     }
 
     switch (pathname) {
@@ -61,7 +68,7 @@ function AppContent() {
             <div className="flex items-center gap-2">
               <span className="font-semibold text-ink">PROJECT WATCH</span>
               <span>&bull;</span>
-              <span>PHASE 2C // WATCH BATTLES</span>
+              <span>PHASE 2D // WATCH 101 ACADEMY</span>
             </div>
             <div>
               &copy; {new Date().getFullYear()} WATCH CULTURE PLATFORM. ALL RIGHTS RESERVED.
