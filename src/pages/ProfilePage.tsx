@@ -1,8 +1,14 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { useAuth } from '../context/useAuth'
+import {
+  fetchUserCollection,
+  removeWatchFromCollection,
+} from '../services/collectionService'
+import type { UserWatchWithWatch } from '../types/collection'
 
 export default function ProfilePage() {
   const { user, profile, loading, isAuthenticated, signOut, updateProfile } = useAuth()
@@ -17,6 +23,11 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  // My Wrist / Collection State
+  const [collection, setCollection] = useState<UserWatchWithWatch[] | null>(null)
+  const [collectionLoading, setCollectionLoading] = useState(() => Boolean(user?.id))
+  const [collectionError, setCollectionError] = useState<string | null>(null)
 
   // Start editing mode with current profile values
   const startEditing = () => {
@@ -60,6 +71,52 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     await signOut()
     navigate('/login')
+  }
+
+  // Manual retry handler for wrist collection query
+  const retryCollection = async () => {
+    if (!user?.id) return
+    setCollectionLoading(true)
+    setCollectionError(null)
+    const result = await fetchUserCollection(user.id)
+    if (result.error) {
+      setCollectionError(result.error.message)
+    } else {
+      setCollection(result.data || [])
+    }
+    setCollectionLoading(false)
+  }
+
+  // Load collector's wrist collection without synchronous setState in effect
+  useEffect(() => {
+    let isMounted = true
+    const userId = user?.id
+
+    if (!userId) {
+      return
+    }
+
+    fetchUserCollection(userId).then((result) => {
+      if (!isMounted) return
+      if (result.error) {
+        setCollectionError(result.error.message)
+      } else {
+        setCollection(result.data || [])
+      }
+      setCollectionLoading(false)
+    })
+
+    return () => {
+      isMounted = false
+    }
+  }, [user?.id])
+
+  const handleRemoveFromCollection = async (watchId: string) => {
+    if (!user) return
+    const result = await removeWatchFromCollection(user.id, watchId)
+    if (result.success) {
+      setCollection((prev) => (prev ? prev.filter((item) => item.watch_id !== watchId) : []))
+    }
   }
 
   // Format member since date
@@ -428,28 +485,179 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Future Capabilities Architecture (Zero fake data) */}
+        {/* ============================================================ */}
+        {/* MY WRIST: REAL DIGITAL VAULT COLLECTION                      */}
+        {/* ============================================================ */}
+        <div className="border-t border-hairline pt-12 mb-16">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
+                MY WRIST // DIGITAL VAULT
+              </div>
+              <h3 className="font-display text-2xl sm:text-3xl font-normal uppercase text-ink">
+                Personal Collection
+              </h3>
+            </div>
+            {collection && collection.length > 0 && (
+              <div className="text-xs font-mono tracking-wider text-ink-secondary">
+                {collection.length} {collection.length === 1 ? 'TIMEPIECE' : 'TIMEPIECES'} CATALOGED
+              </div>
+            )}
+          </div>
+
+          {/* 1. Loading state */}
+          {collectionLoading && (
+            <div className="border border-hairline bg-warm-surface/20 p-12 sm:p-16 text-center">
+              <div className="w-8 h-8 mx-auto mb-4 flex items-center justify-center border border-hairline bg-warm-white">
+                <svg
+                  className="w-4 h-4 text-gold animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="12" />
+                </svg>
+              </div>
+              <p className="text-xs font-mono uppercase tracking-widest text-ink-muted">
+                QUERYING WRIST CATALOG...
+              </p>
+            </div>
+          )}
+
+          {/* 2. Error state */}
+          {!collectionLoading && collectionError && (
+            <div className="border border-hairline bg-warm-surface/30 p-8 text-center max-w-xl mx-auto">
+              <p className="text-xs font-mono text-rose-800 mb-4">{collectionError}</p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={retryCollection}
+              >
+                RETRY QUERY &rarr;
+              </Button>
+            </div>
+          )}
+
+          {/* 3. Empty state */}
+          {!collectionLoading && !collectionError && (!collection || collection.length === 0) && (
+            <div className="border border-hairline bg-warm-surface/20 p-8 sm:p-14 text-center max-w-2xl mx-auto">
+              <div className="w-12 h-12 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white text-ink">
+                <svg
+                  className="w-5 h-5 text-ink-secondary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <h4 className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase">
+                Your Wrist Is Waiting.
+              </h4>
+              <p className="mt-3 text-xs sm:text-sm font-light text-ink-secondary leading-relaxed max-w-md mx-auto">
+                Explore the Watch Index and add the pieces you want to keep close.
+              </p>
+              <div className="mt-6">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => navigate('/watches')}
+                >
+                  EXPLORE WATCH INDEX &rarr;
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* 4. Populated Collection Grid */}
+          {!collectionLoading && !collectionError && collection && collection.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {collection.map(({ id: entryId, watch }) => (
+                <div
+                  key={entryId}
+                  className="group relative border border-hairline bg-warm-surface/20 flex flex-col justify-between transition-all duration-300 hover:border-ink hover:bg-warm-surface/40 overflow-hidden"
+                >
+                  {/* Watch Photography */}
+                  <Link
+                    to={`/watches/${watch.slug}`}
+                    className="relative aspect-[4/3] w-full bg-warm-surface border-b border-hairline overflow-hidden block"
+                  >
+                    {watch.image_url ? (
+                      <img
+                        src={watch.image_url}
+                        alt={`${watch.brand} ${watch.model}`}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-[10px] font-mono text-ink-muted uppercase tracking-widest">
+                        PHOTOGRAPHY PENDING
+                      </div>
+                    )}
+                    {watch.category && (
+                      <div className="absolute top-3 left-3 px-2 py-0.5 bg-warm-white/90 backdrop-blur-sm border border-hairline text-[8px] font-mono tracking-[0.2em] uppercase text-ink font-medium">
+                        {watch.category}
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Editorial Content */}
+                  <div className="p-5 flex flex-col justify-between flex-grow">
+                    <div>
+                      <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink-secondary">
+                        {watch.brand}
+                      </div>
+                      <Link
+                        to={`/watches/${watch.slug}`}
+                        className="mt-1 block font-display text-lg sm:text-xl font-normal tracking-tight text-ink uppercase group-hover:text-neutral-700 transition-colors"
+                      >
+                        {watch.model}
+                      </Link>
+                      <div className="mt-1 text-xs font-mono text-ink-muted tracking-wider">
+                        REF. {watch.reference_number}
+                      </div>
+                    </div>
+
+                    {/* Footer Action Strip */}
+                    <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[11px] font-mono">
+                      <Link
+                        to={`/watches/${watch.slug}`}
+                        className="text-ink font-semibold hover:text-gold transition-colors flex items-center gap-1"
+                      >
+                        VIEW DOSSIER &rarr;
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFromCollection(watch.id)}
+                        className="text-[10px] text-ink-muted hover:text-rose-800 transition-colors uppercase tracking-wider cursor-pointer"
+                      >
+                        REMOVE
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Future Capabilities Architecture */}
         <div className="border-t border-hairline pt-12">
           <div className="mb-8">
             <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
               COLLECTOR TELEMETRY // COMING IN PHASE 3
             </div>
             <h3 className="font-display text-2xl font-normal uppercase text-ink">
-              Vault &amp; Activity Infrastructure
+              Activity &amp; Community Archive
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="border border-hairline p-6 bg-warm-surface/20">
-              <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase pb-3 border-b border-hairline">
-                <span>DIGITAL VAULT</span>
-                <span>0 WATCHES</span>
-              </div>
-              <p className="mt-4 text-xs font-mono text-ink-secondary leading-relaxed">
-                Log and curate your personal wrist collection. Track acquisition dates, references, and estimated market valuation.
-              </p>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="border border-hairline p-6 bg-warm-surface/20">
               <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase pb-3 border-b border-hairline">
                 <span>SAVED STORIES</span>

@@ -3,7 +3,13 @@ import Container from '../components/common/Container'
 import Button from '../components/common/Button'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
+import { useAuth } from '../context/useAuth'
 import { fetchWatchBySlug } from '../services/watchService'
+import {
+  isWatchInCollection,
+  addWatchToCollection,
+  removeWatchFromCollection,
+} from '../services/collectionService'
 import type { Watch } from '../types/watch'
 
 interface WatchDetailPageProps {
@@ -14,6 +20,11 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
   const [watch, setWatch] = useState<Watch | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [inCollection, setInCollection] = useState(false)
+  const [checkingCollection, setCheckingCollection] = useState(false)
+  const [actionLoading, setActionLoading] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const { user, isAuthenticated } = useAuth()
   const { navigate } = useRouter()
 
   useEffect(() => {
@@ -41,6 +52,60 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
       isMounted = false
     }
   }, [slug])
+
+  // Check if current watch is in the collector's wrist collection
+  useEffect(() => {
+    let isMounted = true
+
+    if (watch?.id && user?.id) {
+      isWatchInCollection(user.id, watch.id).then((result) => {
+        if (!isMounted) return
+        setInCollection(result.inCollection)
+        setCheckingCollection(false)
+      })
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [watch?.id, user?.id])
+
+  const handleAddToCollection = async () => {
+    if (!isAuthenticated || !user) {
+      navigate('/login')
+      return
+    }
+
+    if (!watch || inCollection || actionLoading) return
+
+    setActionLoading(true)
+    setActionError(null)
+
+    const result = await addWatchToCollection(user.id, watch.id)
+    setActionLoading(false)
+
+    if (result.success) {
+      setInCollection(true)
+    } else {
+      setActionError(result.error || 'Failed to add watch to your wrist.')
+    }
+  }
+
+  const handleRemoveFromCollection = async () => {
+    if (!user || !watch || actionLoading) return
+
+    setActionLoading(true)
+    setActionError(null)
+
+    const result = await removeWatchFromCollection(user.id, watch.id)
+    setActionLoading(false)
+
+    if (result.success) {
+      setInCollection(false)
+    } else {
+      setActionError(result.error || 'Failed to remove watch from your wrist.')
+    }
+  }
 
   if (loading) {
     return (
@@ -298,8 +363,55 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 </div>
               </dl>
 
-              {/* Action Trigger for future Battle / Collection */}
+              {/* Action Triggers: My Wrist Collection & Watch Battle */}
               <div className="mt-8 pt-6 border-t border-hairline flex flex-col gap-3">
+                {/* Collection Action */}
+                {!isAuthenticated ? (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => navigate('/login')}
+                    className="w-full"
+                  >
+                    ADD TO MY WRIST &rarr;
+                  </Button>
+                ) : inCollection ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="w-full py-2.5 px-4 bg-warm-surface border border-hairline flex items-center justify-between text-xs font-mono text-ink">
+                      <span className="flex items-center gap-2 text-ink font-semibold">
+                        <span className="text-gold font-bold">&#10003;</span> IN MY WRIST
+                      </span>
+                      <span className="text-[10px] text-ink-muted uppercase tracking-widest">
+                        CATALOGED
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={actionLoading}
+                      onClick={handleRemoveFromCollection}
+                      className="text-[11px] font-mono uppercase tracking-wider text-ink-muted hover:text-rose-800 transition-colors py-1 text-center cursor-pointer disabled:opacity-50"
+                    >
+                      {actionLoading ? 'UPDATING WRIST...' : 'REMOVE FROM MY WRIST'}
+                    </button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    disabled={actionLoading || checkingCollection}
+                    onClick={handleAddToCollection}
+                    className="w-full"
+                  >
+                    {actionLoading ? 'ADDING TO WRIST...' : 'ADD TO MY WRIST'}
+                  </Button>
+                )}
+
+                {actionError && (
+                  <div className="text-[11px] font-mono text-rose-800 bg-rose-50 border border-rose-200 p-2 text-center">
+                    {actionError}
+                  </div>
+                )}
+
                 <Button
                   variant="secondary"
                   size="sm"
