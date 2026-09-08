@@ -4,6 +4,9 @@ import Button from '../components/common/Button'
 import WatchPickerModal from '../components/battles/WatchPickerModal'
 import { fetchWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
+import { EVALUATION_PILLARS } from '../types/evaluation'
+import { evaluateMatchup } from '../services/evaluationEngine'
+import type { DeterministicEvaluation } from '../types/evaluation'
 
 type CategoryKey = 'design' | 'movement' | 'value' | 'heritage' | 'flex'
 
@@ -171,6 +174,12 @@ export default function BattlesPage() {
     [votes]
   )
   const undecidedCount = CATEGORIES.length - totalVotesCast
+
+  // Deterministic 5-Pillar Engine Evaluation
+  const deterministicEvaluation: DeterministicEvaluation | null = useMemo(() => {
+    if (!watch1 || !watch2) return null
+    return evaluateMatchup(watch1, watch2)
+  }, [watch1, watch2])
 
   // 17-Spec Technical Dossier Matrix
   const specList = useMemo(() => {
@@ -542,6 +551,254 @@ export default function BattlesPage() {
             {/* 5. Head-to-Head Comparison & Interactive Voting Arena */}
             {isBattleEngaged && watch1 && watch2 && (
               <div ref={arenaRef} id="battle-arena" className="pt-8 scroll-mt-24">
+                {/* -------------------------------------------------------- */}
+                {/* SECTION 1: DETERMINISTIC ENGINE BENCHMARK                */}
+                {/* -------------------------------------------------------- */}
+                {deterministicEvaluation && (
+                  <div className="mb-20">
+                    <div className="border-b border-hairline pb-6 mb-10">
+                      <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                        <span>DETERMINISTIC BENCHMARK // 5-PILLAR EVALUATION ENGINE</span>
+                      </div>
+                      <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
+                        Engine Benchmark
+                      </h2>
+                      <p className="mt-2 text-xs sm:text-sm font-mono text-ink-secondary max-w-2xl">
+                        Algorithmic 0–100 composite evaluation derived from verified database specifications across 5 core pillars.
+                      </p>
+                    </div>
+
+                    {/* Benchmark Composite Score Card */}
+                    <div className="border border-hairline bg-ink text-warm-white p-8 sm:p-10 mb-10 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-80 h-80 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
+
+                      {/* Top Bar: Verdict Meta */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-warm-white/15 pb-6 mb-8">
+                        <div>
+                          <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gold mb-1">
+                            OBJECTIVE HOROLOGICAL SCORING &bull; ZERO FABRICATED DATA
+                          </div>
+                          <div className="text-xs font-mono text-warm-white/70">
+                            WEIGHTED COMPOSITE // 25% ENG &bull; 20% MAT &bull; 20% WEAR &bull; 20% VAL &bull; 15% HER
+                          </div>
+                        </div>
+
+                        {/* Verdict Badge */}
+                        <div className="flex items-center gap-2">
+                          {deterministicEvaluation.verdictType === 'DEAD HEAT' && (
+                            <span className="border border-warm-white/30 bg-warm-white/10 text-warm-white px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-semibold">
+                              DEAD HEAT (&plusmn;{deterministicEvaluation.margin.toFixed(1)} PTS)
+                            </span>
+                          )}
+                          {deterministicEvaluation.verdictType === 'SLIGHT EDGE' && (
+                            <span className="border border-gold/50 bg-gold/15 text-gold px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-semibold">
+                              SLIGHT EDGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
+                            </span>
+                          )}
+                          {deterministicEvaluation.verdictType === 'CLEAR ADVANTAGE' && (
+                            <span className="border border-gold bg-gold text-ink px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-bold">
+                              CLEAR ADVANTAGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Dual Contender Composite Scores */}
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b border-warm-white/15 pb-8 mb-8">
+                        {/* Contender 1 Composite */}
+                        <div className="md:col-span-5 flex flex-col">
+                          <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-warm-white/60 mb-1">
+                            CONTENDER 01 &bull; {watch1.brand}
+                          </div>
+                          <div className="font-display text-xl sm:text-2xl uppercase tracking-tight text-warm-white truncate">
+                            {watch1.model}
+                          </div>
+                          <div className="flex items-baseline gap-3 mt-3">
+                            <span className="font-display text-4xl sm:text-5xl font-normal text-warm-white">
+                              {deterministicEvaluation.contender1.overallScore.toFixed(1)}
+                            </span>
+                            <span className="font-mono text-xs text-warm-white/50 uppercase">/ 100 PTS</span>
+                          </div>
+                          {/* Progress Bar */}
+                          <div className="w-full bg-warm-white/10 h-1.5 mt-3 overflow-hidden">
+                            <div
+                              className={`h-full transition-all duration-500 ${
+                                deterministicEvaluation.winnerSlot === 1
+                                  ? 'bg-gold'
+                                  : 'bg-warm-white/60'
+                              }`}
+                              style={{ width: `${deterministicEvaluation.contender1.overallScore}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Center Versus Divider */}
+                        <div className="md:col-span-2 flex flex-col items-center justify-center text-center py-2">
+                          <span className="font-mono text-xs tracking-widest text-warm-white/30 uppercase font-light">VS</span>
+                          <span className="font-mono text-[10px] text-gold tracking-widest uppercase mt-1">
+                            &Delta; {deterministicEvaluation.margin.toFixed(1)}
+                          </span>
+                        </div>
+
+                        {/* Contender 2 Composite */}
+                        <div className="md:col-span-5 flex flex-col md:text-right">
+                          <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-warm-white/60 mb-1">
+                            CONTENDER 02 &bull; {watch2.brand}
+                          </div>
+                          <div className="font-display text-xl sm:text-2xl uppercase tracking-tight text-warm-white truncate">
+                            {watch2.model}
+                          </div>
+                          <div className="flex items-baseline md:justify-end gap-3 mt-3">
+                            <span className="font-display text-4xl sm:text-5xl font-normal text-warm-white">
+                              {deterministicEvaluation.contender2.overallScore.toFixed(1)}
+                            </span>
+                            <span className="font-mono text-xs text-warm-white/50 uppercase">/ 100 PTS</span>
+                          </div>
+                          {/* Progress Bar */}
+                          <div className="w-full bg-warm-white/10 h-1.5 mt-3 overflow-hidden">
+                            <div
+                              className={`h-full transition-all duration-500 ml-auto ${
+                                deterministicEvaluation.winnerSlot === 2
+                                  ? 'bg-gold'
+                                  : 'bg-warm-white/60'
+                              }`}
+                              style={{ width: `${deterministicEvaluation.contender2.overallScore}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Editorial Benchmark Verdict Callout */}
+                      <div>
+                        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gold mb-2">
+                          {deterministicEvaluation.headline}
+                        </div>
+                        <p className="text-xs sm:text-sm text-warm-white/90 font-mono leading-relaxed max-w-4xl">
+                          {deterministicEvaluation.summaryRationale}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 5-Pillar Detailed Algorithmic Breakdown */}
+                    <div className="space-y-6">
+                      {EVALUATION_PILLARS.map((pillar, idx) => {
+                        const pAdvantage = deterministicEvaluation.pillarAdvantages[pillar.key]
+                        const s1 = deterministicEvaluation.contender1.scores[pillar.key]
+                        const s2 = deterministicEvaluation.contender2.scores[pillar.key]
+                        const b1 = deterministicEvaluation.contender1.breakdowns[pillar.key]
+                        const b2 = deterministicEvaluation.contender2.breakdowns[pillar.key]
+
+                        return (
+                          <div
+                            key={pillar.key}
+                            className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 transition-colors hover:bg-warm-surface/30"
+                          >
+                            {/* Pillar Header */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-hairline pb-4 mb-6">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+                                    PILLAR 0{idx + 1}
+                                  </span>
+                                  <span className="text-[10px] font-mono tracking-widest text-gold uppercase font-semibold">
+                                    [{pillar.weightLabel} WEIGHT]
+                                  </span>
+                                </div>
+                                <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase mt-1">
+                                  {pillar.name}
+                                </h3>
+                              </div>
+
+                              {/* Advantage Indicator */}
+                              <div className="text-[10px] font-mono tracking-wider uppercase">
+                                {pAdvantage.winnerSlot === 'tie' ? (
+                                  <span className="text-ink-muted border border-hairline px-2.5 py-1 bg-warm-white">
+                                    PARITY // EVENLY MATCHED
+                                  </span>
+                                ) : pAdvantage.winnerSlot === 1 ? (
+                                  <span className="text-gold font-semibold border border-gold/40 px-2.5 py-1 bg-warm-white">
+                                    {watch1.brand} ADVANTAGE (+{pAdvantage.delta.toFixed(1)} PTS)
+                                  </span>
+                                ) : (
+                                  <span className="text-gold font-semibold border border-gold/40 px-2.5 py-1 bg-warm-white">
+                                    {watch2.brand} ADVANTAGE (+{pAdvantage.delta.toFixed(1)} PTS)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Side-by-Side Pillar Comparison */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Contender 1 Pillar Box */}
+                              <div className={`p-4 border ${pAdvantage.winnerSlot === 1 ? 'border-gold/40 bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
+                                <div className="flex items-center justify-between text-xs font-mono mb-2">
+                                  <span className="text-ink-muted tracking-wider uppercase">{watch1.brand}</span>
+                                  <span className="font-display text-xl font-normal text-ink">{s1.toFixed(1)} <span className="text-[10px] font-mono text-ink-muted">/ 100</span></span>
+                                </div>
+                                {/* Visual score bar */}
+                                <div className="w-full bg-warm-surface/80 h-1 mb-3 overflow-hidden">
+                                  <div
+                                    className={`h-full ${pAdvantage.winnerSlot === 1 ? 'bg-gold' : 'bg-ink/40'}`}
+                                    style={{ width: `${s1}%` }}
+                                  />
+                                </div>
+                                {/* Subscore breakdowns */}
+                                <div className="space-y-1.5 pt-2 border-t border-hairline/60">
+                                  {b1.subScores.map((sub) => (
+                                    <div key={sub.label} className="text-[11px] font-mono text-ink-secondary">
+                                      <span className="font-medium text-ink">{sub.label} ({sub.score}/{sub.max}):</span> {sub.rationale}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Contender 2 Pillar Box */}
+                              <div className={`p-4 border ${pAdvantage.winnerSlot === 2 ? 'border-gold/40 bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
+                                <div className="flex items-center justify-between text-xs font-mono mb-2">
+                                  <span className="text-ink-muted tracking-wider uppercase">{watch2.brand}</span>
+                                  <span className="font-display text-xl font-normal text-ink">{s2.toFixed(1)} <span className="text-[10px] font-mono text-ink-muted">/ 100</span></span>
+                                </div>
+                                {/* Visual score bar */}
+                                <div className="w-full bg-warm-surface/80 h-1 mb-3 overflow-hidden">
+                                  <div
+                                    className={`h-full ${pAdvantage.winnerSlot === 2 ? 'bg-gold' : 'bg-ink/40'}`}
+                                    style={{ width: `${s2}%` }}
+                                  />
+                                </div>
+                                {/* Subscore breakdowns */}
+                                <div className="space-y-1.5 pt-2 border-t border-hairline/60">
+                                  {b2.subScores.map((sub) => (
+                                    <div key={sub.label} className="text-[11px] font-mono text-ink-secondary">
+                                      <span className="font-medium text-ink">{sub.label} ({sub.score}/{sub.max}):</span> {sub.rationale}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* -------------------------------------------------------- */}
+                {/* SECTION 2: COLLECTOR'S VERDICT (YOUR VERDICT)            */}
+                {/* -------------------------------------------------------- */}
+                <div className="border-b border-hairline pb-6 mb-10">
+                  <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                    <span>COLLECTOR'S VERDICT // INTERACTIVE SHOWDOWN</span>
+                  </div>
+                  <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
+                    Your Verdict
+                  </h2>
+                  <p className="mt-2 text-xs sm:text-sm font-mono text-ink-secondary">
+                    SESSION VOTING &bull; CAST YOUR PERSONAL JUDGMENT ACROSS 5 CATEGORIES TO CHALLENGE THE BENCHMARK.
+                  </p>
+                </div>
+
                 {/* Scorecard Summary Top Banner */}
                 <div className="border border-hairline bg-ink text-warm-white p-8 sm:p-10 mb-16 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
@@ -549,7 +806,7 @@ export default function BattlesPage() {
                   <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-warm-white/15 pb-8 mb-8">
                     <div>
                       <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gold mb-1">
-                        HEAD-TO-HEAD SCORECARD // SESSION JUDGMENT
+                        COLLECTOR'S VERDICT // SESSION SCORECARD
                       </div>
                       <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight uppercase">
                         Round Score
