@@ -5,6 +5,7 @@ import Navbar from './components/layout/Navbar'
 import Container from './components/common/Container'
 import HomePage from './pages/HomePage'
 import StoriesPage from './pages/StoriesPage'
+import StoryDetailPage from './pages/StoryDetailPage'
 import WatchesPage from './pages/WatchesPage'
 import WatchDetailPage from './pages/WatchDetailPage'
 import BattlesPage from './pages/BattlesPage'
@@ -19,6 +20,12 @@ function AppContent() {
   const { pathname } = useRouter()
 
   const renderPage = () => {
+    // Dynamic Story Detail route: /stories/:slug
+    if (pathname.startsWith('/stories/') && pathname !== '/stories') {
+      const slug = pathname.replace('/stories/', '')
+      return <StoryDetailPage slug={slug} />
+    }
+
     // Dynamic Watch Detail route: /watches/:slug
     if (pathname.startsWith('/watches/') && pathname !== '/watches') {
       const slug = pathname.replace('/watches/', '')

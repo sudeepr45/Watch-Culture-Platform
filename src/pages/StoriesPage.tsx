@@ -1,9 +1,49 @@
+import { useEffect, useState } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
+import { fetchPublishedStories } from '../services/storyService'
+import type { StoryWithAuthorAndWatch } from '../types/story'
 
 export default function StoriesPage() {
+  const [stories, setStories] = useState<StoryWithAuthorAndWatch[] | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isConfigured, setIsConfigured] = useState(true)
   const { navigate } = useRouter()
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetchPublishedStories().then((result) => {
+      if (!isMounted) return
+      setIsConfigured(result.isConfigured)
+      if (result.error) {
+        setError(result.error.message)
+      } else {
+        setStories(result.data)
+      }
+      setLoading(false)
+    })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const handleRetry = async () => {
+    setLoading(true)
+    setError(null)
+    const result = await fetchPublishedStories()
+    setIsConfigured(result.isConfigured)
+    if (result.error) {
+      setError(result.error.message)
+    } else {
+      setStories(result.data)
+    }
+    setLoading(false)
+  }
 
   return (
     <div className="py-12 sm:py-16 lg:py-20">
@@ -12,69 +52,233 @@ export default function StoriesPage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
             <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
-            <span>DISPATCHES &bull; ARCHIVE</span>
+            <span>COMMUNITY DISPATCHES &bull; WRIST STORIES</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
             Stories
           </h1>
           <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl">
-            Independent editorial journalism, deep-dive investigations, and collector perspectives from the horological world.
+            Real collectors, real watches, and the personal journeys behind the timepieces.
           </p>
         </div>
 
-        {/* Intentional Editorial Empty State */}
-        <div className="relative border border-hairline bg-warm-surface/40 p-8 sm:p-14 lg:p-20 text-center max-w-3xl mx-auto">
-          {/* Subtle Corner Accents */}
-          <div className="absolute top-3 left-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-            SECTION // 02
-          </div>
-          <div className="absolute top-3 right-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-            FEED: INACTIVE
-          </div>
-
-          <div className="max-w-md mx-auto py-6">
-            <div className="w-12 h-12 mx-auto mb-6 flex items-center justify-center border border-hairline rounded-none bg-warm-white text-ink">
+        {/* 1. Loading State */}
+        {loading && (
+          <div className="relative border border-hairline bg-warm-surface/30 p-12 sm:p-20 text-center max-w-3xl mx-auto">
+            <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-ink-secondary"
-                fill="none"
+                className="w-5 h-5 text-gold animate-spin"
                 viewBox="0 0 24 24"
+                fill="none"
                 stroke="currentColor"
                 strokeWidth={1.5}
                 aria-hidden="true"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-                />
+                <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="12" />
               </svg>
             </div>
-
             <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase">
-              No Stories Yet
+              Loading Community Stories
             </h2>
-
-            <p className="mt-3 text-sm sm:text-base text-ink-secondary font-light leading-relaxed">
-              Stories from the watch community will appear here.
+            <p className="mt-3 text-xs sm:text-sm font-mono tracking-widest text-ink-muted uppercase">
+              QUERYING SUPABASE REPOSITORY...
             </p>
+          </div>
+        )}
 
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => navigate('/explore')}
-              >
-                EXPLORE PLATFORM &rarr;
-              </Button>
+        {/* 2. Error / Disconnected State */}
+        {!loading && error && (
+          <div className="relative border border-hairline bg-warm-surface/40 p-8 sm:p-14 lg:p-20 text-center max-w-3xl mx-auto">
+            <div className="absolute top-3 left-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              STORIES // 01
+            </div>
+            <div className="absolute top-3 right-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              STATUS: {isConfigured ? 'QUERY ERROR' : 'DISCONNECTED'}
+            </div>
+
+            <div className="max-w-md mx-auto py-6">
+              <div className="w-12 h-12 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white text-ink">
+                <svg
+                  className="w-5 h-5 text-ink-secondary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              </div>
+
+              <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase">
+                Unable to Load Stories
+              </h2>
+
+              <p className="mt-3 text-sm sm:text-base text-ink-secondary font-light leading-relaxed">
+                {isConfigured
+                  ? `Database connection error: ${error}`
+                  : 'Supabase credentials are not configured in your environment variables. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.'}
+              </p>
+
+              <div className="mt-8 flex justify-center">
+                <Button variant="secondary" size="sm" onClick={handleRetry}>
+                  RETRY QUERY &rarr;
+                </Button>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              <span>COMMUNITY REPOSITORY</span>
+              <span className="text-gold">SUPABASE STORIES ENGINE</span>
             </div>
           </div>
+        )}
 
-          {/* Bottom Terminal Plate */}
-          <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-            <span>DATABASE: PENDING CONNECTION</span>
-            <span className="text-gold">COMMUNITY PUBLISHING ENGINE</span>
+        {/* 3. Empty State (Zero published stories) */}
+        {!loading && !error && (!stories || stories.length === 0) && (
+          <div className="relative border border-hairline bg-warm-surface/40 p-8 sm:p-14 lg:p-20 text-center max-w-3xl mx-auto">
+            <div className="absolute top-3 left-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              COMMUNITY // FEED
+            </div>
+            <div className="absolute top-3 right-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              STORIES: 0
+            </div>
+
+            <div className="max-w-md mx-auto py-6">
+              <div className="w-12 h-12 mx-auto mb-6 flex items-center justify-center border border-hairline rounded-none bg-warm-white text-ink">
+                <svg
+                  className="w-5 h-5 text-ink-secondary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+                  />
+                </svg>
+              </div>
+
+              <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase">
+                No Community Stories Yet
+              </h2>
+
+              <p className="mt-3 text-sm sm:text-base text-ink-secondary font-light leading-relaxed">
+                Be the first collector to share the story behind your watch.
+              </p>
+
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => navigate('/explore')}
+                >
+                  EXPLORE PLATFORM &rarr;
+                </Button>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              <span>AUTHENTICATED ARCHIVE</span>
+              <span className="text-gold">COMMUNITY PUBLISHING ENGINE</span>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* 4. Real Data-Driven Community Stories Grid */}
+        {!loading && !error && stories && stories.length > 0 && (
+          <div>
+            <div className="mb-6 flex items-center justify-between text-[11px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              <span>COMMUNITY DISPATCHES // {stories.length} {stories.length === 1 ? 'STORY' : 'STORIES'}</span>
+              <span>ORDER: NEWEST FIRST</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {stories.map((story) => (
+                <Link
+                  key={story.id}
+                  to={`/stories/${story.slug}`}
+                  className="group relative border border-hairline bg-warm-surface/20 flex flex-col justify-between transition-all duration-300 hover:border-ink hover:bg-warm-surface/60 overflow-hidden"
+                >
+                  {/* Story Watch Photography */}
+                  <div className="relative aspect-[4/3] w-full bg-warm-surface border-b border-hairline overflow-hidden">
+                    {story.photo_url ? (
+                      <img
+                        src={story.photo_url}
+                        alt={story.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest">
+                        SPECIMEN PHOTO PENDING
+                      </div>
+                    )}
+
+                    {/* Associated Watch Pill Badge */}
+                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white/90 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium max-w-[85%] truncate">
+                      {story.watch.brand} &bull; {story.watch.model}
+                    </div>
+                  </div>
+
+                  {/* Editorial Content */}
+                  <div className="p-6 sm:p-7 flex flex-col justify-between flex-grow">
+                    <div>
+                      {/* Author / Community Identity Header */}
+                      <div className="flex items-center gap-2 mb-3">
+                        {story.author.avatar_url ? (
+                          <img
+                            src={story.author.avatar_url}
+                            alt={story.author.display_name || story.author.username}
+                            className="w-5 h-5 rounded-full object-cover border border-hairline"
+                          />
+                        ) : (
+                          <div className="w-5 h-5 rounded-full bg-warm-surface border border-hairline flex items-center justify-center text-[9px] font-mono font-bold text-ink">
+                            {(story.author.display_name || story.author.username).charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="text-[11px] font-mono tracking-[0.16em] uppercase text-ink-secondary truncate">
+                          {story.author.display_name || `@${story.author.username}`}
+                        </span>
+                      </div>
+
+                      {/* Story Title */}
+                      <h2 className="font-display text-xl sm:text-2xl font-normal tracking-tight text-ink uppercase group-hover:text-neutral-800 transition-colors line-clamp-2">
+                        {story.title}
+                      </h2>
+
+                      {/* Story Excerpt */}
+                      <p className="mt-3 text-xs sm:text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
+                        {story.story_text}
+                      </p>
+                    </div>
+
+                    {/* Card Footer */}
+                    <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase">
+                      <span className="text-ink-muted">
+                        {story.published_at
+                          ? new Date(story.published_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
+                          : 'RECENT DISPATCH'}
+                      </span>
+                      <span className="text-ink font-semibold group-hover:text-gold transition-colors flex items-center gap-1">
+                        READ STORY <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </Container>
     </div>
   )
