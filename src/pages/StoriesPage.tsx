@@ -66,14 +66,23 @@ export default function StoriesPage() {
               </p>
             </div>
 
-            {/* Editorial Manifesto Badge */}
-            <div className="hidden sm:flex flex-col items-start lg:items-end text-left lg:text-right border-t lg:border-t-0 pt-4 lg:pt-0 border-hairline">
-              <span className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-                AUTHENTICATED VOICES
-              </span>
-              <span className="text-xs font-mono text-ink tracking-wider uppercase mt-1">
-                COLLECTOR PHOTOGRAPHY &bull; UNFILTERED NARRATIVE
-              </span>
+            {/* Editorial Manifesto Badge & Share Action */}
+            <div className="flex flex-col items-start lg:items-end text-left lg:text-right border-t lg:border-t-0 pt-4 lg:pt-0 border-hairline gap-3">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => navigate('/stories/new')}
+              >
+                SHARE YOUR STORY &rarr;
+              </Button>
+              <div className="hidden sm:flex flex-col items-start lg:items-end">
+                <span className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                  AUTHENTICATED VOICES
+                </span>
+                <span className="text-xs font-mono text-ink tracking-wider uppercase mt-1">
+                  COLLECTOR PHOTOGRAPHY &bull; UNFILTERED NARRATIVE
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -190,6 +199,13 @@ export default function StoriesPage() {
 
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => navigate('/stories/new')}
+                >
+                  SHARE YOUR STORY &rarr;
+                </Button>
+                <Button
                   variant="secondary"
                   size="sm"
                   onClick={() => navigate('/explore')}
@@ -244,13 +260,15 @@ export default function StoriesPage() {
 
                     {/* Timepiece Badge */}
                     <div className="absolute top-4 left-4 px-3 py-1.5 bg-warm-white/95 backdrop-blur-sm border border-hairline text-[10px] font-mono tracking-[0.2em] uppercase text-ink font-semibold shadow-sm">
-                      {leadStory.watch.brand} &bull; {leadStory.watch.model}
+                      {leadStory.personal_watch_brand} &bull; {leadStory.personal_watch_model}
                     </div>
 
                     {/* Reference Tag */}
-                    <div className="absolute bottom-4 left-4 hidden sm:block px-2.5 py-1 bg-warm-surface/90 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink-secondary">
-                      REF. {leadStory.watch.reference_number}
-                    </div>
+                    {leadStory.personal_watch_reference && (
+                      <div className="absolute bottom-4 left-4 hidden sm:block px-2.5 py-1 bg-warm-surface/90 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink-secondary">
+                        REF. {leadStory.personal_watch_reference}
+                      </div>
+                    )}
                   </div>
 
                   {/* Lead Narrative (5 cols on desktop) */}
@@ -347,7 +365,7 @@ export default function StoriesPage() {
 
                           {/* Associated Watch Pill Badge */}
                           <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white/95 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium max-w-[85%] truncate shadow-sm">
-                            {story.watch.brand} &bull; {story.watch.model}
+                            {story.personal_watch_brand} &bull; {story.personal_watch_model}
                           </div>
                         </div>
 
@@ -397,7 +415,7 @@ export default function StoriesPage() {
                           {/* Footer */}
                           <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase">
                             <span className="text-ink-muted">
-                              REF. {story.watch.reference_number}
+                              {story.personal_watch_reference ? `REF. ${story.personal_watch_reference}` : story.personal_watch_brand}
                             </span>
                             <span className="text-ink font-semibold group-hover:text-gold transition-colors flex items-center gap-1">
                               READ STORY <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>

@@ -226,12 +226,18 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-mono uppercase tracking-wider text-ink-secondary">
               <span>{publishedDate}</span>
               <span>&bull;</span>
-              <Link
-                to={`/watches/${story.watch.slug}`}
-                className="px-3 py-1 bg-warm-surface border border-hairline hover:border-ink hover:text-ink transition-colors text-ink-secondary font-medium"
-              >
-                {story.watch.brand} {story.watch.model} &rarr;
-              </Link>
+              {story.watch ? (
+                <Link
+                  to={`/watches/${story.watch.slug}`}
+                  className="px-3 py-1 bg-warm-surface border border-hairline hover:border-ink hover:text-ink transition-colors text-ink-secondary font-medium"
+                >
+                  {story.personal_watch_brand} {story.personal_watch_model} &rarr;
+                </Link>
+              ) : (
+                <span className="px-3 py-1 bg-warm-surface border border-hairline text-ink font-medium">
+                  {story.personal_watch_brand} {story.personal_watch_model}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -254,7 +260,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
             {/* Photograph Terminal Colophon Plate */}
             <div className="px-5 py-3 border-t border-hairline bg-warm-surface/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
               <span>ORIGINAL COLLECTOR PHOTOGRAPH</span>
-              <span>SUBJECT: {story.watch.brand} {story.watch.model}</span>
+              <span>SUBJECT: {story.personal_watch_brand} {story.personal_watch_model}</span>
             </div>
           </div>
         </div>
@@ -278,29 +284,31 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
         {/* Featured Timepiece Card */}
         <div className="max-w-4xl mx-auto mb-16 sm:mb-20 border-t border-hairline pt-12">
           <div className="mb-4 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-            FEATURED TIMEPIECE // CENTRAL DATABASE
+            {story.watch ? 'FEATURED TIMEPIECE // CENTRAL DATABASE' : 'FEATURED TIMEPIECE // COLLECTOR SPECIMEN'}
           </div>
 
           <div className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-ink transition-colors">
             <div>
               <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink-secondary">
-                {story.watch.brand}
+                {story.personal_watch_brand}
               </div>
               <h3 className="mt-1 font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
-                {story.watch.model}
+                {story.personal_watch_model}
               </h3>
               <div className="mt-2 text-xs font-mono text-ink-muted tracking-wider">
-                REF. {story.watch.reference_number}
-                {story.watch.case_diameter_mm ? ` • ${story.watch.case_diameter_mm} MM` : ''}
-                {story.watch.movement_type ? ` • ${story.watch.movement_type.toUpperCase()}` : ''}
+                {story.personal_watch_reference ? `REF. ${story.personal_watch_reference}` : 'COMMUNITY TIMEPIECE'}
+                {story.watch?.case_diameter_mm ? ` • ${story.watch.case_diameter_mm} MM` : ''}
+                {story.watch?.movement_type ? ` • ${story.watch.movement_type.toUpperCase()}` : ''}
               </div>
             </div>
 
-            <Link to={`/watches/${story.watch.slug}`}>
-              <Button variant="secondary" size="sm">
-                VIEW FULL SPECIFICATIONS &rarr;
-              </Button>
-            </Link>
+            {story.watch && (
+              <Link to={`/watches/${story.watch.slug}`}>
+                <Button variant="secondary" size="sm">
+                  VIEW FULL SPECIFICATIONS &rarr;
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 

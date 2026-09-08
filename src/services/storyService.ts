@@ -2,16 +2,25 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import type { Profile } from '../types/auth'
 import type { Watch } from '../types/watch'
 import type {
+  Story,
   StoryStatus,
   StoryWithAuthorAndWatch,
   FetchStoriesResult,
   FetchStoryResult,
+  UploadStoryPhotoResult,
+  CreateStoryInput,
+  CreateStoryResult,
+  UpdateStoryInput,
+  UpdateStoryResult,
 } from '../types/story'
 
 interface RawStoryRow {
   id: string
   user_id: string
-  watch_id: string
+  watch_id: string | null
+  personal_watch_brand: string
+  personal_watch_model: string
+  personal_watch_reference: string | null
   slug: string
   title: string
   story_text: string
@@ -21,13 +30,16 @@ interface RawStoryRow {
   created_at: string
   updated_at: string
   author: Profile | Profile[] | null
-  watch: Watch | Watch[] | null
+  watch?: Watch | Watch[] | null
 }
 
 const STORY_SELECT_FIELDS = `
   id,
   user_id,
   watch_id,
+  personal_watch_brand,
+  personal_watch_model,
+  personal_watch_reference,
   slug,
   title,
   story_text,
@@ -36,15 +48,14 @@ const STORY_SELECT_FIELDS = `
   published_at,
   created_at,
   updated_at,
-  author:profiles (*),
-  watch:watches (*)
+  author:profiles (*)
 `
 
 function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | null {
   const authorRecord = Array.isArray(row.author) ? row.author[0] : row.author
   const watchRecord = Array.isArray(row.watch) ? row.watch[0] : row.watch
 
-  if (!authorRecord || !watchRecord) {
+  if (!authorRecord) {
     return null
   }
 
@@ -52,6 +63,9 @@ function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | null {
     id: row.id,
     user_id: row.user_id,
     watch_id: row.watch_id,
+    personal_watch_brand: row.personal_watch_brand || '',
+    personal_watch_model: row.personal_watch_model || '',
+    personal_watch_reference: row.personal_watch_reference || null,
     slug: row.slug,
     title: row.title,
     story_text: row.story_text,
@@ -61,7 +75,7 @@ function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | null {
     created_at: row.created_at,
     updated_at: row.updated_at,
     author: authorRecord,
-    watch: watchRecord,
+    watch: watchRecord || null,
   }
 }
 
@@ -230,3 +244,536 @@ export async function fetchStoriesByWatchId(watchId: string): Promise<FetchStori
     }
   }
 }
+
+const ALLOWED_PHOTO_MIME_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+}
+
+const MAX_PHOTO_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
+
+/**
+ * Upload an authenticated collector's real watch photograph to Supabase Storage.
+ * Stores photos under: story-photos/{userId}/{timestamp}-{uuid}.{ext}
+ * Enforces strict MIME type (JPEG, PNG, WebP) and 10MB size limits.
+ */
+export async function uploadStoryPhoto(
+  userId: string,
+  file: File
+): Promise<UploadStoryPhotoResult> {
+  const cleanUserId = typeof userId === 'string' ? userId.trim() : ''
+  if (!cleanUserId) {
+    return {
+      publicUrl: null,
+      filePath: null,
+      error: new Error('A valid user ID is required to upload a story photo.'),
+      isConfigured: isSupabaseConfigured,
+    }
+  }
+
+  if (!file) {
+    return {
+      publicUrl: null,
+      filePath: null,
+      error: new Error('A photo file is required.'),
+      isConfigured: isSupabaseConfigured,
+    }
+  }
+
+  const extension = ALLOWED_PHOTO_MIME_TYPES[file.type]
+  if (!extension) {
+    return {
+      publicUrl: null,
+      filePath: null,
+      error: new Error('Invalid file format. Please upload a JPEG, PNG, or WebP photograph.'),
+      isConfigured: isSupabaseConfigured,
+    }
+  }
+
+  if (file.size > MAX_PHOTO_SIZE_BYTES) {
+    return {
+      publicUrl: null,
+      filePath: null,
+      error: new Error('File size exceeds the 10MB limit. Please upload an image under 10MB.'),
+      isConfigured: isSupabaseConfigured,
+    }
+  }
+
+  if (!isSupabaseConfigured) {
+    return {
+      publicUrl: null,
+      filePath: null,
+      error: new Error('Supabase project credentials not configured in environment variables.'),
+      isConfigured: false,
+    }
+  }
+
+  try {
+    const uniqueId =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2, 15)
+
+    const fileName = `${Date.now()}-${uniqueId}.${extension}`
+    const storagePath = `${cleanUserId}/${fileName}`
+
+    const { data, error: uploadError } = await supabase.storage
+      .from('story-photos')
+      .upload(storagePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      })
+
+    if (uploadError) {
+      return {
+        publicUrl: null,
+        filePath: null,
+        error: new Error(uploadError.message),
+        isConfigured: true,
+      }
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('story-photos')
+      .getPublicUrl(storagePath)
+
+    return {
+      publicUrl: urlData?.publicUrl || null,
+      filePath: data?.path || storagePath,
+      error: null,
+      isConfigured: true,
+    }
+  } catch (err) {
+    return {
+      publicUrl: null,
+      filePath: null,
+      error: err instanceof Error ? err : new Error('An unexpected storage error occurred.'),
+      isConfigured: true,
+    }
+  }
+}
+
+/**
+ * Generates a clean, URL-safe slug from a story title.
+ * - Converts to lowercase
+ * - Trims whitespace
+ * - Strips diacritics / accents
+ * - Replaces non-alphanumeric character sequences with a single hyphen
+ * - Strips leading and trailing hyphens
+ * - Falls back to 'story' if string produces empty slug
+ */
+export function generateStorySlug(title: string): string {
+  const base = title
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return base || 'story'
+}
+
+/**
+ * Create a community story record for an authenticated collector.
+ * Enforces ownership via RLS, generates a collision-resistant unique slug,
+ * validates title, text, watch reference, and publication rules.
+ *
+ * Publication integrity:
+ * - Draft: photo_url is optional, published_at is null.
+ * - Published: photo_url is required, published_at is set to current timestamp.
+ */
+export async function createStory(input: CreateStoryInput): Promise<CreateStoryResult> {
+  if (!isSupabaseConfigured) {
+    return {
+      data: null,
+      error: new Error('Supabase project credentials not configured in environment variables.'),
+      isConfigured: false,
+    }
+  }
+
+  // 1. Validate userId
+  const cleanUserId = typeof input.userId === 'string' ? input.userId.trim() : ''
+  if (!cleanUserId) {
+    return {
+      data: null,
+      error: new Error('A valid user ID is required to create a story.'),
+      isConfigured: true,
+    }
+  }
+
+  // 2. Validate personal_watch_brand
+  const cleanBrand =
+    typeof input.personal_watch_brand === 'string' ? input.personal_watch_brand.trim() : ''
+  if (!cleanBrand) {
+    return {
+      data: null,
+      error: new Error('The watch brand is required.'),
+      isConfigured: true,
+    }
+  }
+
+  // 3. Validate personal_watch_model
+  const cleanModel =
+    typeof input.personal_watch_model === 'string' ? input.personal_watch_model.trim() : ''
+  if (!cleanModel) {
+    return {
+      data: null,
+      error: new Error('The watch model or name is required.'),
+      isConfigured: true,
+    }
+  }
+
+  // Optional personal_watch_reference
+  const cleanReference =
+    typeof input.personal_watch_reference === 'string' && input.personal_watch_reference.trim()
+      ? input.personal_watch_reference.trim()
+      : null
+
+  // 4. Validate title
+  const cleanTitle = typeof input.title === 'string' ? input.title.trim() : ''
+  if (!cleanTitle) {
+    return {
+      data: null,
+      error: new Error('A story title is required.'),
+      isConfigured: true,
+    }
+  }
+
+  // 5. Validate story_text
+  const rawStoryText = input.story_text
+  const cleanStoryText = typeof rawStoryText === 'string' ? rawStoryText.trim() : ''
+  if (!cleanStoryText) {
+    return {
+      data: null,
+      error: new Error('Story text is required.'),
+      isConfigured: true,
+    }
+  }
+
+  // 6. Validate status & publication constraints
+  const status: StoryStatus = input.status === 'published' ? 'published' : 'draft'
+  const cleanPhotoUrl =
+    typeof input.photo_url === 'string' && input.photo_url.trim()
+      ? input.photo_url.trim()
+      : null
+
+  if (status === 'published' && !cleanPhotoUrl) {
+    return {
+      data: null,
+      error: new Error('A photograph is required to publish a community story.'),
+      isConfigured: true,
+    }
+  }
+
+  try {
+    // 7. Generate URL-safe unique slug
+    const baseSlug = generateStorySlug(cleanTitle)
+    let slug = baseSlug
+
+    // Check if the base slug is already in use
+    const { data: existingSlugRow } = await supabase
+      .from('stories')
+      .select('id')
+      .eq('slug', baseSlug)
+      .maybeSingle()
+
+    if (existingSlugRow) {
+      const uniqueSuffix = (
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : Math.random().toString(36).substring(2, 10)
+      )
+        .replace(/-/g, '')
+        .slice(0, 8)
+
+      slug = `${baseSlug}-${uniqueSuffix}`
+    }
+
+    const payload = {
+      user_id: cleanUserId,
+      watch_id: null,
+      personal_watch_brand: cleanBrand,
+      personal_watch_model: cleanModel,
+      personal_watch_reference: cleanReference,
+      slug,
+      title: cleanTitle,
+      story_text: cleanStoryText,
+      photo_url: cleanPhotoUrl,
+      status,
+      published_at: status === 'published' ? new Date().toISOString() : null,
+    }
+
+    let { data, error } = await supabase
+      .from('stories')
+      .insert(payload)
+      .select()
+      .single()
+
+    // If a collision occurs concurrently, retry with a unique suffix
+    if (error && (error.code === '23505' || error.message.includes('slug'))) {
+      const fallbackSuffix = (
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : Math.random().toString(36).substring(2, 10)
+      )
+        .replace(/-/g, '')
+        .slice(0, 8)
+
+      slug = `${baseSlug}-${fallbackSuffix}`
+      const retry = await supabase
+        .from('stories')
+        .insert({ ...payload, slug })
+        .select()
+        .single()
+
+      data = retry.data
+      error = retry.error
+    }
+
+    if (error) {
+      return {
+        data: null,
+        error: new Error(error.message),
+        isConfigured: true,
+      }
+    }
+
+    return {
+      data: data as Story,
+      error: null,
+      isConfigured: true,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err : new Error('An unexpected database error occurred.'),
+      isConfigured: true,
+    }
+  }
+}
+
+/**
+ * Update an existing story owned by the authenticated collector.
+ * Enforces ownership via RLS and userId verification.
+ * Preserves publication integrity constraints.
+ */
+export async function updateStory(
+  userId: string,
+  storyId: string,
+  input: UpdateStoryInput
+): Promise<UpdateStoryResult> {
+  if (!isSupabaseConfigured) {
+    return {
+      data: null,
+      error: new Error('Supabase project credentials not configured in environment variables.'),
+      isConfigured: false,
+    }
+  }
+
+  const cleanUserId = typeof userId === 'string' ? userId.trim() : ''
+  if (!cleanUserId) {
+    return {
+      data: null,
+      error: new Error('A valid user ID is required to update a story.'),
+      isConfigured: true,
+    }
+  }
+
+  const cleanStoryId = typeof storyId === 'string' ? storyId.trim() : ''
+  if (!cleanStoryId) {
+    return {
+      data: null,
+      error: new Error('A story ID is required to update a story.'),
+      isConfigured: true,
+    }
+  }
+
+  try {
+    // 1. Fetch current story to check ownership and state
+    const { data: existing, error: fetchError } = await supabase
+      .from('stories')
+      .select('*')
+      .eq('id', cleanStoryId)
+      .eq('user_id', cleanUserId)
+      .maybeSingle()
+
+    if (fetchError) {
+      return {
+        data: null,
+        error: new Error(fetchError.message),
+        isConfigured: true,
+      }
+    }
+
+    if (!existing) {
+      return {
+        data: null,
+        error: new Error('Story not found or you do not have permission to modify it.'),
+        isConfigured: true,
+      }
+    }
+
+    // 2. Build update payload
+    const payload: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    }
+
+    if (input.personal_watch_brand !== undefined) {
+      const cleanBrand = input.personal_watch_brand.trim()
+      if (!cleanBrand) {
+        return {
+          data: null,
+          error: new Error('Watch brand cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      payload.personal_watch_brand = cleanBrand
+    }
+
+    if (input.personal_watch_model !== undefined) {
+      const cleanModel = input.personal_watch_model.trim()
+      if (!cleanModel) {
+        return {
+          data: null,
+          error: new Error('Watch model cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      payload.personal_watch_model = cleanModel
+    }
+
+    if (input.personal_watch_reference !== undefined) {
+      payload.personal_watch_reference =
+        input.personal_watch_reference && input.personal_watch_reference.trim()
+          ? input.personal_watch_reference.trim()
+          : null
+    }
+
+    if (input.title !== undefined) {
+      const cleanTitle = input.title.trim()
+      if (!cleanTitle) {
+        return {
+          data: null,
+          error: new Error('Story title cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      payload.title = cleanTitle
+    }
+
+    if (input.story_text !== undefined) {
+      const cleanStoryText = input.story_text.trim()
+      if (!cleanStoryText) {
+        return {
+          data: null,
+          error: new Error('Story text cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      payload.story_text = cleanStoryText
+    }
+
+    if (input.photo_url !== undefined) {
+      payload.photo_url =
+        input.photo_url && input.photo_url.trim() ? input.photo_url.trim() : null
+    }
+
+    if (input.status !== undefined) {
+      if (input.status !== 'draft' && input.status !== 'published') {
+        return {
+          data: null,
+          error: new Error('Status must be either "draft" or "published".'),
+          isConfigured: true,
+        }
+      }
+      payload.status = input.status
+    }
+
+    // 3. Maintain publication integrity
+    const effectiveStatus: StoryStatus =
+      (payload.status as StoryStatus) || (existing.status as StoryStatus)
+    const effectivePhotoUrl =
+      payload.photo_url !== undefined
+        ? (payload.photo_url as string | null)
+        : (existing.photo_url as string | null)
+    const effectiveTitle = (payload.title as string) || existing.title
+    const effectiveStoryText = (payload.story_text as string) || existing.story_text
+    const effectiveBrand = (payload.personal_watch_brand as string) || existing.personal_watch_brand
+    const effectiveModel = (payload.personal_watch_model as string) || existing.personal_watch_model
+
+    if (effectiveStatus === 'published') {
+      if (!effectiveBrand || !effectiveBrand.trim()) {
+        return {
+          data: null,
+          error: new Error('Watch brand cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      if (!effectiveModel || !effectiveModel.trim()) {
+        return {
+          data: null,
+          error: new Error('Watch model cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      if (!effectivePhotoUrl || !effectivePhotoUrl.trim()) {
+        return {
+          data: null,
+          error: new Error('A photograph is required to publish a community story.'),
+          isConfigured: true,
+        }
+      }
+      if (!effectiveTitle || !effectiveTitle.trim()) {
+        return {
+          data: null,
+          error: new Error('Story title cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      if (!effectiveStoryText || !effectiveStoryText.trim()) {
+        return {
+          data: null,
+          error: new Error('Story text cannot be empty.'),
+          isConfigured: true,
+        }
+      }
+      if (!existing.published_at) {
+        payload.published_at = new Date().toISOString()
+      }
+    }
+
+    // 4. Execute update
+    const { data, error } = await supabase
+      .from('stories')
+      .update(payload)
+      .eq('id', cleanStoryId)
+      .eq('user_id', cleanUserId)
+      .select()
+      .single()
+
+    if (error) {
+      return {
+        data: null,
+        error: new Error(error.message),
+        isConfigured: true,
+      }
+    }
+
+    return {
+      data: data as Story,
+      error: null,
+      isConfigured: true,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err : new Error('An unexpected database error occurred.'),
+      isConfigured: true,
+    }
+  }
+}
+
+

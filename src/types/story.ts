@@ -6,7 +6,10 @@ export type StoryStatus = 'draft' | 'published'
 export interface Story {
   id: string
   user_id: string
-  watch_id: string
+  watch_id: string | null
+  personal_watch_brand: string
+  personal_watch_model: string
+  personal_watch_reference: string | null
   slug: string
   title: string
   story_text: string
@@ -19,7 +22,7 @@ export interface Story {
 
 export interface StoryWithAuthorAndWatch extends Story {
   author: Profile
-  watch: Watch
+  watch?: Watch | null
 }
 
 export interface FetchStoriesResult {
@@ -33,3 +36,44 @@ export interface FetchStoryResult {
   error: Error | null
   isConfigured: boolean
 }
+
+export interface UploadStoryPhotoResult {
+  publicUrl: string | null
+  filePath: string | null
+  error: Error | null
+  isConfigured: boolean
+}
+
+export interface CreateStoryInput {
+  userId: string
+  personal_watch_brand: string
+  personal_watch_model: string
+  personal_watch_reference?: string | null
+  title: string
+  story_text: string
+  photo_url?: string | null
+  status?: StoryStatus
+}
+
+export interface CreateStoryResult {
+  data: Story | null
+  error: Error | null
+  isConfigured: boolean
+}
+
+export interface UpdateStoryInput {
+  personal_watch_brand?: string
+  personal_watch_model?: string
+  personal_watch_reference?: string | null
+  title?: string
+  story_text?: string
+  photo_url?: string | null
+  status?: StoryStatus
+}
+
+export interface UpdateStoryResult {
+  data: Story | null
+  error: Error | null
+  isConfigured: boolean
+}
+

@@ -6,6 +6,7 @@ import Container from './components/common/Container'
 import HomePage from './pages/HomePage'
 import StoriesPage from './pages/StoriesPage'
 import StoryDetailPage from './pages/StoryDetailPage'
+import CreateStoryPage from './pages/CreateStoryPage'
 import WatchesPage from './pages/WatchesPage'
 import WatchDetailPage from './pages/WatchDetailPage'
 import BattlesPage from './pages/BattlesPage'
@@ -20,6 +21,11 @@ function AppContent() {
   const { pathname } = useRouter()
 
   const renderPage = () => {
+    // Create Story route: /stories/new (must be checked before dynamic :slug)
+    if (pathname === '/stories/new') {
+      return <CreateStoryPage />
+    }
+
     // Dynamic Story Detail route: /stories/:slug
     if (pathname.startsWith('/stories/') && pathname !== '/stories') {
       const slug = pathname.replace('/stories/', '')
