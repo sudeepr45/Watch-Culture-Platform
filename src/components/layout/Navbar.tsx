@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Container from '../common/Container'
+import BrandLogo from '../common/BrandLogo'
 import { Link } from '../../router'
 import { useRouter } from '../../router/useRouter'
 import { useAuth } from '../../context/useAuth'
@@ -45,18 +46,19 @@ export default function Navbar() {
     >
       <Container>
         <div className="flex items-center justify-between h-20">
-          {/* Left: Brand Placeholder */}
+          {/* Left: Brand Masthead */}
           <div className="flex items-center">
             <Link
               to="/"
               className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+              aria-label="MOERI & JEANNERET Home"
             >
-              <span className="font-sans text-sm sm:text-base font-extrabold tracking-[0.25em] text-ink uppercase group-hover:text-neutral-700 transition-colors">
-                PROJECT WATCH
-              </span>
-              <span className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-                Culture &bull; Stories &bull; Index
-              </span>
+              <BrandLogo
+                variant="horizontal"
+                size="sm"
+                withSubtitle
+                subtitle="CULTURE &bull; STORIES &bull; ARCHIVE"
+              />
             </Link>
           </div>
 
@@ -87,7 +89,7 @@ export default function Navbar() {
                   )}
                   {!isActive && (
                     <span
-                      className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gold transition-all duration-300 group-hover:w-full"
+                      className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-steel transition-all duration-300 group-hover:w-full"
                       aria-hidden="true"
                     />
                   )}

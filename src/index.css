@@ -1,18 +1,30 @@
 @import "tailwindcss";
 
 @theme {
+  /* Archival Paper Warmth (20%) */
   --color-warm-white: #FAF9F5;
   --color-warm-surface: #F3F1EA;
   --color-ink: #121212;
   --color-ink-secondary: #57534E;
   --color-ink-muted: #8C877E;
-  --color-gold: #C5A059;
-  --color-gold-hover: #AF8B45;
   --color-hairline: #E7E5DF;
   --color-hairline-dark: #2B2A27;
 
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Cold Precision & Architectural Tones (80%) */
+  --color-graphite: #181A1D;
+  --color-charcoal: #23272E;
+  --color-steel: #64748B;
+  --color-steel-light: #94A3B8;
+  --color-steel-dark: #334155;
+  --color-steel-muted: #CBD5E1;
+
+  /* Retained Accent (For un-migrated downstream pages during Stage 1) */
+  --color-gold: #C5A059;
+  --color-gold-hover: #AF8B45;
+
+  /* European Architectural Typography */
+  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 @layer base {

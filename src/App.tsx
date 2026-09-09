@@ -76,7 +76,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-warm-white text-ink selection:bg-gold/20 selection:text-ink">
+    <div className="min-h-screen flex flex-col bg-warm-white text-ink selection:bg-steel/20 selection:text-ink">
       {/* Sticky Editorial Navigation */}
       <Navbar />
 
@@ -88,12 +88,12 @@ function AppContent() {
         <Container>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono tracking-[0.16em] text-ink-muted uppercase">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-ink">PROJECT WATCH</span>
+              <span className="font-semibold text-ink">MOERI &amp; JEANNERET</span>
               <span>&bull;</span>
-              <span>PHASE 2E // AUTHENTICATION &amp; PROFILES</span>
+              <span>CULTURAL ARCHIVE &amp; DISPATCHES</span>
             </div>
             <div>
-              &copy; {new Date().getFullYear()} WATCH CULTURE PLATFORM. ALL RIGHTS RESERVED.
+              &copy; {new Date().getFullYear()} MOERI &amp; JEANNERET. ALL RIGHTS RESERVED.
             </div>
           </div>
         </Container>
