@@ -22,9 +22,14 @@ export interface Story {
   comments_count?: number
 }
 
+export type StoryArchiveWatch = Pick<
+  Watch,
+  'id' | 'brand' | 'model' | 'reference_number' | 'slug' | 'image_url'
+>
+
 export interface StoryWithAuthorAndWatch extends Story {
   author: Profile
-  watch?: Watch | null
+  watch?: StoryArchiveWatch | null
 }
 
 export interface FetchStoriesResult {
@@ -48,6 +53,7 @@ export interface UploadStoryPhotoResult {
 
 export interface CreateStoryInput {
   userId: string
+  watch_id?: string | null
   personal_watch_brand: string
   personal_watch_model: string
   personal_watch_reference?: string | null
@@ -64,6 +70,7 @@ export interface CreateStoryResult {
 }
 
 export interface UpdateStoryInput {
+  watch_id?: string | null
   personal_watch_brand?: string
   personal_watch_model?: string
   personal_watch_reference?: string | null

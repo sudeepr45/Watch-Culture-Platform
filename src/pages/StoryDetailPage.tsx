@@ -641,28 +641,30 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
         {/* Featured Timepiece Card */}
         <div className="max-w-4xl mx-auto mb-16 sm:mb-20 border-t border-hairline pt-12">
           <div className="mb-4 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-            {story.watch ? 'FEATURED TIMEPIECE // CENTRAL DATABASE' : 'FEATURED TIMEPIECE // COLLECTOR SPECIMEN'}
+            {story.watch ? 'VERIFIED WATCH ARCHIVE' : 'PERSONAL TIMEPIECE // COLLECTOR SPECIMEN'}
           </div>
 
           <div className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-ink transition-colors">
             <div>
               <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink-secondary">
-                {story.personal_watch_brand}
+                {story.watch ? story.watch.brand : story.personal_watch_brand}
               </div>
               <h3 className="mt-1 font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
-                {story.personal_watch_model}
+                {story.watch ? story.watch.model : story.personal_watch_model}
               </h3>
               <div className="mt-2 text-xs font-mono text-ink-muted tracking-wider">
-                {story.personal_watch_reference ? `REF. ${story.personal_watch_reference}` : 'COMMUNITY TIMEPIECE'}
-                {story.watch?.case_diameter_mm ? ` • ${story.watch.case_diameter_mm} MM` : ''}
-                {story.watch?.movement_type ? ` • ${story.watch.movement_type.toUpperCase()}` : ''}
+                {story.watch
+                  ? `REF. ${story.watch.reference_number}`
+                  : story.personal_watch_reference
+                  ? `REF. ${story.personal_watch_reference}`
+                  : 'COMMUNITY TIMEPIECE'}
               </div>
             </div>
 
             {story.watch && (
               <Link to={`/watches/${story.watch.slug}`}>
                 <Button variant="secondary" size="sm">
-                  VIEW FULL SPECIFICATIONS &rarr;
+                  VIEW WATCH DOSSIER &rarr;
                 </Button>
               </Link>
             )}

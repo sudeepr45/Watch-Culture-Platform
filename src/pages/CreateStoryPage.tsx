@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef, type ChangeEvent } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback, type ChangeEvent } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import { uploadStoryPhoto, createStory } from '../services/storyService'
+import { fetchWatches } from '../services/watchService'
+import type { Watch } from '../types/watch'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
@@ -16,6 +18,13 @@ export default function CreateStoryPage() {
   const [watchBrand, setWatchBrand] = useState('')
   const [watchModel, setWatchModel] = useState('')
   const [watchReference, setWatchReference] = useState('')
+
+  // Verified Watch Archive State (Optional connection)
+  const [selectedArchiveWatch, setSelectedArchiveWatch] = useState<Watch | null>(null)
+  const [isArchivePickerOpen, setIsArchivePickerOpen] = useState(false)
+  const [archiveSearchQuery, setArchiveSearchQuery] = useState('')
+  const [archiveWatches, setArchiveWatches] = useState<Watch[]>([])
+  const [archiveWatchesLoading, setArchiveWatchesLoading] = useState(false)
 
   // Story Content State
   const [title, setTitle] = useState('')
@@ -34,6 +43,58 @@ export default function CreateStoryPage() {
   const [submitAction, setSubmitAction] = useState<'draft' | 'publish' | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'compose' | 'preview'>('compose')
+
+  // Preload verified archive watches for modal responsiveness
+  useEffect(() => {
+    let isMounted = true
+    async function loadWatches() {
+      setArchiveWatchesLoading(true)
+      const res = await fetchWatches()
+      if (isMounted) {
+        if (res.data) {
+          setArchiveWatches(res.data)
+        }
+        setArchiveWatchesLoading(false)
+      }
+    }
+    loadWatches()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  // Close archive picker on Escape key
+  const handleCloseArchivePicker = useCallback(() => {
+    setArchiveSearchQuery('')
+    setIsArchivePickerOpen(false)
+  }, [])
+
+  useEffect(() => {
+    if (!isArchivePickerOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleCloseArchivePicker()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isArchivePickerOpen, handleCloseArchivePicker])
+
+  // Filter watches by search query
+  const filteredArchiveWatches = useMemo(() => {
+    if (!archiveSearchQuery.trim()) return archiveWatches
+
+    const query = archiveSearchQuery.toLowerCase().trim()
+    return archiveWatches.filter(
+      (w) =>
+        w.brand.toLowerCase().includes(query) ||
+        w.model.toLowerCase().includes(query) ||
+        w.reference_number.toLowerCase().includes(query) ||
+        (w.category && w.category.toLowerCase().includes(query))
+    )
+  }, [archiveWatches, archiveSearchQuery])
 
   // Revoke object URL when replaced or unmounted to prevent memory leaks
   useEffect(() => {
@@ -231,6 +292,7 @@ export default function CreateStoryPage() {
 
     const res = await createStory({
       userId: user.id,
+      watch_id: selectedArchiveWatch?.id ?? null,
       personal_watch_brand: watchBrand.trim(),
       personal_watch_model: watchModel.trim(),
       personal_watch_reference: watchReference.trim() || null,
@@ -313,6 +375,7 @@ export default function CreateStoryPage() {
 
     const res = await createStory({
       userId: user.id,
+      watch_id: selectedArchiveWatch?.id ?? null,
       personal_watch_brand: watchBrand.trim(),
       personal_watch_model: watchModel.trim(),
       personal_watch_reference: watchReference.trim() || null,
@@ -486,6 +549,105 @@ export default function CreateStoryPage() {
                   className="w-full bg-warm-white border border-hairline px-4 py-3 text-sm font-mono text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-ink transition-colors"
                 />
               </div>
+            </section>
+
+            {/* OPTIONAL ARCHIVE CONNECTION */}
+            <section className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-hairline">
+                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                  <span>OPTIONAL // VERIFIED ARCHIVE CONNECTION</span>
+                </div>
+                <span className="text-[10px] font-mono tracking-wider text-ink-muted uppercase">
+                  OPTIONAL &bull; 01 SPECIMEN
+                </span>
+              </div>
+
+              <div>
+                <p className="text-xs font-mono text-ink-secondary leading-relaxed">
+                  Does your personal watch correspond to an official specimen in our Verified Watch Archive?
+                  Connecting your story links it to the central watch dossier and presents your dispatch to collectors researching that model.
+                  This is completely optional &mdash; personal stories can always stand on their own.
+                </p>
+              </div>
+
+              {selectedArchiveWatch ? (
+                <div className="border border-hairline bg-warm-white p-5 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+                      {selectedArchiveWatch.image_url ? (
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-warm-surface border border-hairline shrink-0 overflow-hidden relative flex items-center justify-center">
+                          <img
+                            src={selectedArchiveWatch.image_url}
+                            alt={`${selectedArchiveWatch.brand} ${selectedArchiveWatch.model}`}
+                            className="w-full h-full object-contain p-1"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-warm-surface border border-hairline shrink-0 flex items-center justify-center text-[10px] font-mono text-ink-muted">
+                          NO SPECIMEN IMAGE
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5 min-w-0">
+                        <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-gold font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                          <span>VERIFIED ARCHIVE RECORD LINKED</span>
+                        </div>
+                        <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase tracking-tight truncate">
+                          {selectedArchiveWatch.brand} &bull; {selectedArchiveWatch.model}
+                        </h3>
+                        <div className="text-xs font-mono text-ink-secondary">
+                          REF. {selectedArchiveWatch.reference_number}
+                          {selectedArchiveWatch.category ? ` \u2022 ${selectedArchiveWatch.category}` : ''}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-hairline">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setIsArchivePickerOpen(true)}
+                      >
+                        CHANGE
+                      </Button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedArchiveWatch(null)}
+                        className="text-[11px] font-mono tracking-wider text-ink-muted hover:text-ink uppercase underline cursor-pointer px-2 py-1"
+                      >
+                        CLEAR LINK
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="border border-dashed border-hairline bg-warm-white p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted mb-1">
+                      CURRENT ARCHIVE STATUS
+                    </div>
+                    <div className="font-display text-lg text-ink uppercase tracking-tight">
+                      Personal Provenance Only (Unlinked)
+                    </div>
+                    <p className="text-xs font-mono text-ink-secondary mt-1 max-w-lg">
+                      Your story will be published under your personal timepiece details without an official archive catalog link.
+                    </p>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setIsArchivePickerOpen(true)}
+                    className="shrink-0"
+                  >
+                    LINK ARCHIVE DOSSIER &rarr;
+                  </Button>
+                </div>
+              )}
             </section>
 
             {/* STEP 2: REAL COLLECTOR PHOTOGRAPH */}
@@ -749,6 +911,12 @@ export default function CreateStoryPage() {
                         REF. {watchReference.trim()}
                       </div>
                     )}
+                    {selectedArchiveWatch && (
+                      <div className="mt-1 flex items-center justify-end gap-1.5 text-[9px] font-mono text-gold uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                        <span>ARCHIVE DOSSIER: {selectedArchiveWatch.brand} {selectedArchiveWatch.model}</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -807,8 +975,19 @@ export default function CreateStoryPage() {
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] tracking-widest uppercase text-gold">
-                    AUTHENTICATED COMMUNITY RECORD
+                  <div className="flex flex-col sm:items-end gap-1">
+                    <div className="text-[10px] tracking-widest uppercase text-gold">
+                      AUTHENTICATED COMMUNITY RECORD
+                    </div>
+                    {selectedArchiveWatch ? (
+                      <div className="text-[9px] font-mono text-ink-muted uppercase">
+                        CONNECTS TO ARCHIVE: {selectedArchiveWatch.brand} {selectedArchiveWatch.model} (REF. {selectedArchiveWatch.reference_number})
+                      </div>
+                    ) : (
+                      <div className="text-[9px] font-mono text-ink-muted uppercase">
+                        STANDALONE PERSONAL DISPATCH
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -844,6 +1023,206 @@ export default function CreateStoryPage() {
               >
                 &larr; EDIT STORY
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Archive Watch Picker Modal */}
+        {isArchivePickerOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-ink/60 backdrop-blur-sm animate-fadeIn"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="archive-picker-title"
+            onClick={handleCloseArchivePicker}
+          >
+            <div
+              className="relative w-full max-w-4xl max-h-[90vh] bg-warm-white border border-hairline shadow-2xl flex flex-col overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="p-6 sm:p-8 border-b border-hairline flex items-start justify-between bg-warm-surface/20">
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                    <span>VERIFIED WATCH ARCHIVE // SELECT SPECIMEN</span>
+                  </div>
+                  <h2
+                    id="archive-picker-title"
+                    className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase"
+                  >
+                    Connect to Archive Dossier
+                  </h2>
+                  <p className="mt-1 text-xs font-mono text-ink-secondary">
+                    Select the official archive watch corresponding to your dispatch.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleCloseArchivePicker}
+                  aria-label="Close archive selector"
+                  className="p-2 border border-hairline hover:border-ink bg-warm-white text-ink transition-colors cursor-pointer"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="square" strokeLinejoin="miter" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Search Bar */}
+              <div className="p-4 sm:p-6 border-b border-hairline bg-warm-white">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={archiveSearchQuery}
+                    onChange={(e) => setArchiveSearchQuery(e.target.value)}
+                    placeholder="Search archive by brand, model, reference number, or category..."
+                    className="w-full bg-warm-surface/40 border border-hairline px-4 py-3 pl-11 text-xs font-mono text-ink placeholder:text-ink-muted focus:outline-none focus:border-ink transition-colors"
+                    autoFocus
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ink-secondary">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      aria-hidden="true"
+                    >
+                      <circle cx="11" cy="11" r="7" />
+                      <line x1="16.5" y1="16.5" x2="21" y2="21" />
+                    </svg>
+                  </div>
+                  {archiveSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setArchiveSearchQuery('')}
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-ink-muted hover:text-ink text-xs font-mono cursor-pointer"
+                    >
+                      CLEAR
+                    </button>
+                  )}
+                </div>
+
+                <div className="mt-3 flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+                  <span>
+                    SHOWING {filteredArchiveWatches.length} OF {archiveWatches.length} ARCHIVE SPECIMENS
+                  </span>
+                  <span>CENTRAL WATCH DATABASE</span>
+                </div>
+              </div>
+
+              {/* Watch Grid */}
+              <div className="overflow-y-auto p-4 sm:p-6 flex-1 space-y-3 sm:space-y-4">
+                {archiveWatchesLoading ? (
+                  <div className="py-16 text-center">
+                    <div className="w-8 h-8 mx-auto mb-4 border-2 border-gold border-t-transparent animate-spin rounded-full" />
+                    <p className="text-xs font-mono text-ink-muted uppercase tracking-widest">
+                      QUERYING WATCH ARCHIVE...
+                    </p>
+                  </div>
+                ) : filteredArchiveWatches.length === 0 ? (
+                  <div className="py-16 text-center border border-dashed border-hairline bg-warm-surface/20">
+                    <p className="text-xs font-mono tracking-widest text-ink-muted uppercase">
+                      NO ARCHIVE SPECIMENS MATCH &ldquo;{archiveSearchQuery}&rdquo;
+                    </p>
+                    {archiveSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setArchiveSearchQuery('')}
+                        className="mt-3 text-[11px] font-mono uppercase tracking-wider text-ink underline cursor-pointer"
+                      >
+                        Reset Search
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredArchiveWatches.map((watch) => {
+                      const isSelected = selectedArchiveWatch?.id === watch.id
+
+                      return (
+                        <div
+                          key={watch.id}
+                          onClick={() => {
+                            setSelectedArchiveWatch(watch)
+                            handleCloseArchivePicker()
+                          }}
+                          className={`relative border text-left transition-all duration-200 flex flex-col justify-between overflow-hidden cursor-pointer group ${
+                            isSelected
+                              ? 'border-gold bg-warm-surface/60 ring-1 ring-gold'
+                              : 'border-hairline bg-warm-surface/20 hover:border-ink hover:bg-warm-surface/60'
+                          }`}
+                        >
+                          <div className="p-4 flex gap-4 items-center">
+                            <div className="w-16 h-16 bg-warm-surface border border-hairline shrink-0 overflow-hidden flex items-center justify-center">
+                              {watch.image_url ? (
+                                <img
+                                  src={watch.image_url}
+                                  alt={`${watch.brand} ${watch.model}`}
+                                  className="w-full h-full object-contain p-1"
+                                />
+                              ) : (
+                                <span className="text-[9px] font-mono text-ink-muted">NO IMAGE</span>
+                              )}
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted">
+                                {watch.brand}
+                              </div>
+                              <div className="text-xs font-serif font-medium text-ink uppercase tracking-tight truncate">
+                                {watch.model}
+                              </div>
+                              <div className="text-[10px] font-mono text-ink-secondary truncate">
+                                REF. {watch.reference_number}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="px-4 py-2 border-t border-hairline bg-warm-surface/40 flex items-center justify-between text-[9px] font-mono tracking-wider uppercase text-ink-muted group-hover:text-ink">
+                            <span>{watch.category || 'TIMEPIECE'}</span>
+                            <span className={isSelected ? 'text-gold font-bold' : ''}>
+                              {isSelected ? '\u2713 SELECTED' : 'LINK SPECIMEN \u2192'}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 sm:p-6 border-t border-hairline bg-warm-surface/20 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedArchiveWatch(null)
+                    handleCloseArchivePicker()
+                  }}
+                  className="text-xs font-mono tracking-wider uppercase text-ink-muted hover:text-ink underline cursor-pointer"
+                >
+                  CLEAR / PROCEED UNLINKED
+                </button>
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleCloseArchivePicker}
+                >
+                  CLOSE
+                </Button>
+              </div>
             </div>
           </div>
         )}

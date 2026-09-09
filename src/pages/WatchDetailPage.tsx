@@ -10,7 +10,9 @@ import {
   addWatchToCollection,
   removeWatchFromCollection,
 } from '../services/collectionService'
+import { fetchStoriesByWatchId } from '../services/storyService'
 import type { Watch } from '../types/watch'
+import type { StoryWithAuthorAndWatch } from '../types/story'
 
 interface WatchDetailPageProps {
   slug: string
@@ -24,6 +26,9 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
   const [checkingCollection, setCheckingCollection] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [communityStories, setCommunityStories] = useState<StoryWithAuthorAndWatch[]>([])
+  const [storiesLoading, setStoriesLoading] = useState(true)
+  const [storiesError, setStoriesError] = useState<string | null>(null)
   const { user, isAuthenticated } = useAuth()
   const { navigate } = useRouter()
 
@@ -42,6 +47,21 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
         setError('Watch record not found in the index.')
       } else {
         setWatch(result.data)
+        setStoriesLoading(true)
+        setStoriesError(null)
+        fetchStoriesByWatchId(result.data.id).then((storiesResult) => {
+          if (!isMounted) return
+          if (storiesResult.error) {
+            setStoriesError('Unable to load community stories for this timepiece.')
+          } else {
+            setCommunityStories(storiesResult.data || [])
+          }
+          setStoriesLoading(false)
+        }).catch(() => {
+          if (!isMounted) return
+          setStoriesError('Unable to load community stories for this timepiece.')
+          setStoriesLoading(false)
+        })
       }
       setLoading(false)
     }
@@ -423,6 +443,126 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Community Stories / Field Reports Section */}
+        <div className="border-t border-hairline mt-16 sm:mt-24 pt-12 sm:pt-16">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mb-8">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                <span>COMMUNITY STORIES // FIELD REPORTS</span>
+              </div>
+              <h2 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
+                Owner Dispatches
+              </h2>
+            </div>
+            <p className="text-xs font-mono text-ink-muted">
+              Stories from collectors who live with this watch.
+            </p>
+          </div>
+
+          {storiesLoading ? (
+            <div className="p-12 border border-hairline bg-warm-surface/20 text-center">
+              <span className="font-mono text-xs text-ink-muted uppercase tracking-[0.2em] animate-pulse">
+                QUERYING COMMUNITY DISPATCHES...
+              </span>
+            </div>
+          ) : storiesError ? (
+            <div className="p-6 border border-hairline bg-warm-surface/30 text-center">
+              <p className="text-xs font-mono text-ink-muted uppercase tracking-wider">
+                {storiesError}
+              </p>
+            </div>
+          ) : communityStories.length === 0 ? (
+            <div className="border border-hairline p-8 sm:p-12 bg-warm-surface/10 text-center">
+              <div className="font-mono text-[10px] tracking-[0.2em] text-ink-muted uppercase mb-2">
+                COLLECTOR ARCHIVE // UNANNOTATED REFERENCE
+              </div>
+              <p className="text-base font-serif text-ink-secondary italic max-w-md mx-auto mb-4">
+                No collector stories have been linked to this watch yet.
+              </p>
+              <p className="text-xs font-mono text-ink-muted max-w-md mx-auto mb-6">
+                Own this reference? Document your personal provenance, wrist reflections, and acquisition story for the archive.
+              </p>
+              <Link
+                to="/stories/new"
+                className="inline-flex items-center text-xs font-mono text-ink font-semibold hover:text-gold uppercase tracking-wider transition-colors"
+              >
+                RECORD YOUR STORY &rarr;
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {communityStories.map((story) => {
+                const authorName = story.author.display_name || story.author.username
+                const formattedDate = story.published_at
+                  ? new Date(story.published_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : 'RECENT DISPATCH'
+
+                return (
+                  <Link
+                    key={story.id}
+                    to={`/stories/${story.slug}`}
+                    className="group border border-hairline bg-warm-white flex flex-col justify-between hover:border-ink/60 transition-colors"
+                  >
+                    <div>
+                      {story.photo_url ? (
+                        <div className="aspect-[16/10] overflow-hidden bg-warm-surface border-b border-hairline">
+                          <img
+                            src={story.photo_url}
+                            alt={story.title}
+                            loading="lazy"
+                            className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <div className="aspect-[16/10] flex items-center justify-center bg-warm-surface/40 border-b border-hairline text-[10px] font-mono tracking-widest text-ink-muted uppercase">
+                          SPECIMEN PHOTO PENDING
+                        </div>
+                      )}
+
+                      <div className="p-5 sm:p-6">
+                        <div className="flex items-center justify-between text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-2">
+                          <span className="truncate max-w-[70%]">
+                            {story.personal_watch_brand} &bull; {story.personal_watch_model}
+                          </span>
+                          <span>{formattedDate}</span>
+                        </div>
+
+                        <h3 className="font-display text-xl uppercase tracking-tight text-ink group-hover:text-gold transition-colors line-clamp-2 leading-snug">
+                          {story.title}
+                        </h3>
+
+                        <p className="mt-2.5 text-xs sm:text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
+                          {story.story_text}
+                        </p>
+
+                        <div className="mt-4 pt-3 border-t border-hairline/60 flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-ink-muted">
+                          <span>BY {authorName}</span>
+                          {((story.likes_count ?? 0) > 0 || (story.comments_count ?? 0) > 0) && (
+                            <span>
+                              {story.likes_count ?? 0}L &bull; {story.comments_count ?? 0}N
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-5 sm:p-6 pt-0 mt-auto">
+                      <span className="text-[11px] font-mono font-semibold text-ink group-hover:text-gold transition-colors flex items-center gap-1 uppercase tracking-wider">
+                        READ DISPATCH <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
         </div>
       </Container>
     </div>

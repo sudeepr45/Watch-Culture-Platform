@@ -1,9 +1,9 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import type { Profile } from '../types/auth'
-import type { Watch } from '../types/watch'
 import type {
   Story,
   StoryStatus,
+  StoryArchiveWatch,
   StoryWithAuthorAndWatch,
   FetchStoriesResult,
   FetchStoryResult,
@@ -13,6 +13,15 @@ import type {
   UpdateStoryInput,
   UpdateStoryResult,
 } from '../types/story'
+
+interface RawStoryWatch {
+  id: string
+  brand: string
+  model: string
+  reference_number: string
+  slug: string
+  image_url: string | null
+}
 
 interface RawStoryRow {
   id: string
@@ -32,7 +41,7 @@ interface RawStoryRow {
   likes_count?: number
   comments_count?: number
   author: Profile | Profile[] | null
-  watch?: Watch | Watch[] | null
+  watch?: RawStoryWatch | RawStoryWatch[] | null
 }
 
 export const STORY_SELECT_FIELDS = `
@@ -52,16 +61,36 @@ export const STORY_SELECT_FIELDS = `
   updated_at,
   likes_count,
   comments_count,
-  author:profiles (*)
+  author:profiles (*),
+  watch:watches (
+    id,
+    brand,
+    model,
+    reference_number,
+    slug,
+    image_url
+  )
 `
 
 export function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | null {
   const authorRecord = Array.isArray(row.author) ? row.author[0] : row.author
-  const watchRecord = Array.isArray(row.watch) ? row.watch[0] : row.watch
+  const rawWatchRecord = Array.isArray(row.watch) ? row.watch[0] : row.watch
 
   if (!authorRecord) {
     return null
   }
+
+  const watchRecord: StoryArchiveWatch | null =
+    rawWatchRecord && rawWatchRecord.id
+      ? {
+          id: rawWatchRecord.id,
+          brand: rawWatchRecord.brand,
+          model: rawWatchRecord.model,
+          reference_number: rawWatchRecord.reference_number,
+          slug: rawWatchRecord.slug,
+          image_url: rawWatchRecord.image_url ?? null,
+        }
+      : null
 
   return {
     id: row.id,
@@ -81,7 +110,7 @@ export function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | n
     likes_count: typeof row.likes_count === 'number' ? row.likes_count : 0,
     comments_count: typeof row.comments_count === 'number' ? row.comments_count : 0,
     author: authorRecord,
-    watch: watchRecord || null,
+    watch: watchRecord,
   }
 }
 
@@ -498,9 +527,14 @@ export async function createStory(input: CreateStoryInput): Promise<CreateStoryR
       slug = `${baseSlug}-${uniqueSuffix}`
     }
 
+    const cleanWatchId =
+      typeof input.watch_id === 'string' && input.watch_id.trim()
+        ? input.watch_id.trim()
+        : null
+
     const payload = {
       user_id: cleanUserId,
-      watch_id: null,
+      watch_id: cleanWatchId,
       personal_watch_brand: cleanBrand,
       personal_watch_model: cleanModel,
       personal_watch_reference: cleanReference,
@@ -625,6 +659,13 @@ export async function updateStory(
     // 2. Build update payload
     const payload: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
+    }
+
+    if (input.watch_id !== undefined) {
+      payload.watch_id =
+        typeof input.watch_id === 'string' && input.watch_id.trim()
+          ? input.watch_id.trim()
+          : null
     }
 
     if (input.personal_watch_brand !== undefined) {
