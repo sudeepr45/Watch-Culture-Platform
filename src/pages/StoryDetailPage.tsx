@@ -479,25 +479,31 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
             &larr; <span>BACK TO STORIES</span>
           </Link>
 
-          {/* Owner Actions */}
+          {/* Owner Editorial Controls */}
           {isOwner && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => navigate(`/stories/${story.slug}/edit`)}
-                className="px-3 py-1.5 border border-hairline bg-warm-white text-[10px] font-mono tracking-[0.2em] uppercase text-ink-secondary hover:text-ink hover:border-ink transition-colors cursor-pointer"
+                className="group inline-flex items-center gap-2 px-3.5 py-1.5 border border-hairline bg-warm-white hover:border-gold hover:bg-warm-surface/40 text-[10px] font-mono tracking-[0.22em] uppercase text-ink transition-all duration-200 cursor-pointer"
               >
-                [ EDIT DISPATCH ]
+                <span className="w-1.5 h-1.5 rounded-full bg-gold transition-transform duration-200 group-hover:scale-125" aria-hidden="true" />
+                <span>EDIT DISPATCH</span>
+                <span className="text-ink-muted group-hover:text-gold group-hover:translate-x-0.5 transition-all duration-200" aria-hidden="true">&rarr;</span>
               </button>
+
+              <div className="h-3 w-px bg-hairline" aria-hidden="true" />
+
               <button
                 type="button"
                 onClick={() => {
                   setDeleteError(null)
                   setDeleteDialogOpen(true)
                 }}
-                className="px-3 py-1.5 border border-hairline bg-warm-white text-[10px] font-mono tracking-[0.2em] uppercase text-accent-burgundy/80 hover:text-accent-burgundy hover:border-accent-burgundy transition-colors cursor-pointer"
+                className="group inline-flex items-center gap-1.5 px-3 py-1.5 border border-transparent hover:border-hairline text-[10px] font-mono tracking-[0.22em] uppercase text-ink-muted hover:text-accent-burgundy hover:bg-warm-surface/30 transition-all duration-200 cursor-pointer"
               >
-                [ DELETE DISPATCH ]
+                <span className="opacity-0 group-hover:opacity-100 text-accent-burgundy transition-opacity duration-200 text-xs leading-none" aria-hidden="true">&times;</span>
+                <span>DELETE DISPATCH</span>
               </button>
             </div>
           )}
@@ -966,47 +972,87 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
       {/* Delete Confirmation Modal Dialog */}
       {deleteDialogOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-ink/60 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-ink/75 backdrop-blur-sm animate-fadeIn"
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-dialog-title"
           onClick={handleCloseDeleteDialog}
         >
           <div
-            className="w-full max-w-lg border border-hairline bg-warm-white p-6 sm:p-8 shadow-2xl space-y-6"
+            className="w-full max-w-lg border border-hairline bg-warm-white p-7 sm:p-10 shadow-2xl relative"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="border-b border-hairline pb-4">
-              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-accent-burgundy uppercase mb-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-burgundy" />
-                <span>PERMANENT REMOVAL</span>
+            {/* Editorial Folio Header Bar */}
+            <div className="flex items-center justify-between pb-5 border-b border-hairline mb-6">
+              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-accent-burgundy uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-burgundy" aria-hidden="true" />
+                <span>PERMANENT REMOVAL // ARCHIVE ACTION</span>
               </div>
-              <h3
-                id="delete-dialog-title"
-                className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink"
+              <button
+                type="button"
+                disabled={deletingStory}
+                onClick={handleCloseDeleteDialog}
+                aria-label="Close dialog"
+                className="p-1.5 border border-hairline hover:border-ink bg-warm-white text-ink transition-colors cursor-pointer disabled:opacity-50"
               >
-                DELETE THIS DISPATCH?
-              </h3>
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="square" strokeLinejoin="miter" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Headline */}
+            <h3
+              id="delete-dialog-title"
+              className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink mb-4"
+            >
+              DELETE THIS DISPATCH?
+            </h3>
+
+            {/* Target Specimen Citation Card */}
+            <div className="mb-6 border border-hairline bg-warm-surface/30 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+              <div>
+                <span className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase block">
+                  SPECIMEN DOSSIER
+                </span>
+                <span className="text-ink font-semibold uppercase tracking-wider">
+                  {story.personal_watch_brand} {story.personal_watch_model}
+                </span>
+              </div>
+              <div className="sm:text-right">
+                <span className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase block">
+                  DISPATCH REF
+                </span>
+                <span className="text-ink-secondary truncate max-w-[200px] block">
+                  /{story.slug}
+                </span>
+              </div>
             </div>
 
             {/* Body */}
-            <p className="text-xs sm:text-sm font-sans text-ink-secondary leading-relaxed">
+            <p className="text-xs sm:text-sm font-sans text-ink-secondary leading-relaxed mb-6">
               This will permanently remove your story and its associated comments, bookmarks, and engagement records. This action cannot be undone.
             </p>
 
             {/* Error if delete failed */}
             {deleteError && (
-              <div className="p-3 border border-hairline bg-warm-surface/60 flex items-start gap-2.5">
-                <span className="text-accent-burgundy text-xs font-mono shrink-0">&bull;</span>
-                <p className="text-xs font-mono text-ink tracking-wide">
+              <div className="mb-6 p-3.5 border border-hairline bg-warm-surface/60 flex items-start gap-2.5">
+                <span className="text-accent-burgundy text-xs font-mono shrink-0 font-bold">&bull;</span>
+                <p className="text-xs font-mono text-ink tracking-wide leading-relaxed">
                   {deleteError}
                 </p>
               </div>
             )}
 
             {/* Actions */}
-            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
+            <div className="pt-5 border-t border-hairline flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
               <Button
                 variant="secondary"
                 size="md"
@@ -1021,7 +1067,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
                 size="md"
                 disabled={deletingStory}
                 onClick={handleConfirmDeleteStory}
-                className="w-full sm:w-auto !bg-accent-burgundy hover:!bg-accent-burgundy/90 text-warm-white"
+                className="w-full sm:w-auto !bg-accent-burgundy hover:!bg-neutral-900 !border-accent-burgundy hover:!border-neutral-900 text-warm-white font-mono tracking-[0.18em] transition-all duration-200"
               >
                 {deletingStory ? 'REMOVING DISPATCH...' : 'DELETE STORY'}
               </Button>
