@@ -47,6 +47,7 @@ const FUTURE_MODULES: FeatureModule[] = [
     description:
       'Spontaneous exploration engine surfacing forgotten references, prototypes, and icons.',
     status: 'DISCOVERY TOOL',
+    to: '/random',
   },
   {
     tag: 'COMMUNITY // VAULT',
@@ -54,6 +55,7 @@ const FUTURE_MODULES: FeatureModule[] = [
     description:
       'Personal digital watch boxes, provenance logs, wrist shots, and collection telemetry.',
     status: 'COLLECTOR PROFILE',
+    to: '/profile',
   },
 ]
 

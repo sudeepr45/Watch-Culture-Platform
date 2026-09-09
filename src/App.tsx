@@ -16,6 +16,7 @@ import ExplorePage from './pages/ExplorePage'
 import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
 import SearchPage from './pages/SearchPage'
+import RandomWatchPage from './pages/RandomWatchPage'
 
 function AppContent() {
   const { pathname } = useRouter()
@@ -61,6 +62,8 @@ function AppContent() {
         return <Watch101Page />
       case '/explore':
         return <ExplorePage />
+      case '/random':
+        return <RandomWatchPage />
       case '/profile':
         return <ProfilePage />
       case '/login':

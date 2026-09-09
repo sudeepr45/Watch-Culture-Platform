@@ -93,3 +93,46 @@ export async function fetchWatchBySlug(slug: string): Promise<FetchWatchResult> 
     }
   }
 }
+
+/**
+ * Fetch a random watch from the central Supabase Watch Database.
+ * If excludeId is provided and multiple watches exist, excludes that watch ID
+ * so consecutive draws produce distinct specimens.
+ */
+export async function fetchRandomWatch(excludeId?: string): Promise<FetchWatchResult> {
+  const result = await fetchWatches()
+
+  if (result.error || !result.data) {
+    return {
+      data: null,
+      error: result.error,
+      isConfigured: result.isConfigured,
+    }
+  }
+
+  const allWatches = result.data
+
+  if (allWatches.length === 0) {
+    return {
+      data: null,
+      error: null,
+      isConfigured: result.isConfigured,
+    }
+  }
+
+  // Filter out the excluded watch if more than one watch exists
+  const candidates =
+    excludeId && allWatches.length > 1
+      ? allWatches.filter((w) => w.id !== excludeId)
+      : allWatches
+
+  const selectedPool = candidates.length > 0 ? candidates : allWatches
+  const randomIndex = Math.floor(Math.random() * selectedPool.length)
+  const randomWatch = selectedPool[randomIndex]
+
+  return {
+    data: randomWatch,
+    error: null,
+    isConfigured: true,
+  }
+}
