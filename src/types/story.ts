@@ -18,6 +18,8 @@ export interface Story {
   published_at: string | null
   created_at: string
   updated_at: string
+  likes_count?: number
+  comments_count?: number
 }
 
 export interface StoryWithAuthorAndWatch extends Story {

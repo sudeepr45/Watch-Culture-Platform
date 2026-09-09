@@ -8,7 +8,12 @@ import {
   fetchUserCollection,
   removeWatchFromCollection,
 } from '../services/collectionService'
+import {
+  fetchBookmarkedStories,
+  unbookmarkStory,
+} from '../services/interactionService'
 import type { UserWatchWithWatch } from '../types/collection'
+import type { StoryWithAuthorAndWatch } from '../types/story'
 
 export default function ProfilePage() {
   const { user, profile, loading, isAuthenticated, signOut, updateProfile } = useAuth()
@@ -28,6 +33,12 @@ export default function ProfilePage() {
   const [collection, setCollection] = useState<UserWatchWithWatch[] | null>(null)
   const [collectionLoading, setCollectionLoading] = useState(() => Boolean(user?.id))
   const [collectionError, setCollectionError] = useState<string | null>(null)
+
+  // Saved / Bookmarked Stories State
+  const [savedStories, setSavedStories] = useState<StoryWithAuthorAndWatch[] | null>(null)
+  const [savedStoriesLoading, setSavedStoriesLoading] = useState(() => Boolean(user?.id))
+  const [savedStoriesError, setSavedStoriesError] = useState<string | null>(null)
+  const [removingBookmarkId, setRemovingBookmarkId] = useState<string | null>(null)
 
   // Start editing mode with current profile values
   const startEditing = () => {
@@ -117,6 +128,40 @@ export default function ProfilePage() {
     if (result.success) {
       setCollection((prev) => (prev ? prev.filter((item) => item.watch_id !== watchId) : []))
     }
+  }
+
+  // Load collector's bookmarked stories without synchronous setState in effect
+  useEffect(() => {
+    let isMounted = true
+    const userId = user?.id
+
+    if (!userId) {
+      return
+    }
+
+    fetchBookmarkedStories(userId).then((result) => {
+      if (!isMounted) return
+      if (result.error) {
+        setSavedStoriesError(result.error.message)
+      } else {
+        setSavedStories(result.data || [])
+      }
+      setSavedStoriesLoading(false)
+    })
+
+    return () => {
+      isMounted = false
+    }
+  }, [user?.id])
+
+  const handleRemoveBookmark = async (storyId: string) => {
+    if (!user?.id || removingBookmarkId) return
+    setRemovingBookmarkId(storyId)
+    const res = await unbookmarkStory(user.id, storyId)
+    if (res.success) {
+      setSavedStories((prev) => (prev ? prev.filter((s) => s.id !== storyId) : []))
+    }
+    setRemovingBookmarkId(null)
   }
 
   // Format member since date
@@ -646,11 +691,122 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Future Capabilities Architecture */}
+        {/* Saved Stories / Bookmarked Dispatches */}
         <div className="border-t border-hairline pt-12">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mb-8">
+            <div>
+              <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
+                PRIVATE DOSSIER // CURATED ARCHIVE
+              </div>
+              <h3 className="font-display text-2xl font-normal uppercase text-ink">
+                Saved Stories
+              </h3>
+            </div>
+            <div className="text-xs font-mono text-ink-muted">
+              {savedStories ? `${savedStories.length} ${savedStories.length === 1 ? 'DISPATCH' : 'DISPATCHES'} SAVED` : '0 DISPATCHES'}
+            </div>
+          </div>
+
+          {savedStoriesLoading ? (
+            <div className="p-8 border border-hairline bg-warm-surface/20 text-center">
+              <span className="font-mono text-xs text-ink-muted uppercase tracking-[0.2em] animate-pulse">
+                QUERYING SAVED DISPATCHES...
+              </span>
+            </div>
+          ) : savedStoriesError ? (
+            <div className="p-6 border border-hairline bg-red-50 text-red-700 text-xs font-mono">
+              FAILED TO LOAD SAVED STORIES: {savedStoriesError}
+            </div>
+          ) : !savedStories || savedStories.length === 0 ? (
+            <div className="border border-hairline p-8 bg-warm-surface/10 text-center">
+              <div className="font-mono text-[10px] tracking-[0.2em] text-ink-muted uppercase mb-2">
+                COLLECTOR BOOKMARKS // EMPTY ARCHIVE
+              </div>
+              <p className="text-sm font-serif text-ink-secondary italic max-w-md mx-auto mb-4">
+                No saved dispatches yet. Bookmark compelling collector accounts, provenance records, and technical narratives to reference anytime.
+              </p>
+              <Link
+                to="/stories"
+                className="inline-flex items-center text-xs font-mono text-ink font-semibold hover:text-gold uppercase tracking-wider transition-colors"
+              >
+                DISCOVER COMMUNITY STORIES &rarr;
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {savedStories.map((story) => {
+                const watchBrand = story.personal_watch_brand || story.watch?.brand || 'ARCHIVE'
+                const watchModel = story.personal_watch_model || story.watch?.model || 'TIMEPIECE'
+                const authorName = story.author?.display_name || story.author?.username || 'ANONYMOUS'
+                const formattedDate = new Date(story.created_at).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+
+                const imageUrl = story.photo_url || story.watch?.image_url
+
+                return (
+                  <div
+                    key={story.id}
+                    className="border border-hairline bg-warm-white flex flex-col justify-between group hover:border-ink/40 transition-colors"
+                  >
+                    <div>
+                      {imageUrl && (
+                        <Link to={`/stories/${story.slug}`} className="block relative aspect-[16/10] overflow-hidden bg-warm-surface border-b border-hairline">
+                          <img
+                            src={imageUrl}
+                            alt={story.title}
+                            className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                            loading="lazy"
+                          />
+                        </Link>
+                      )}
+                      <div className="p-5">
+                        <div className="flex items-center justify-between text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-2">
+                          <span className="truncate max-w-[70%]">{watchBrand} &bull; {watchModel}</span>
+                          <span>{formattedDate}</span>
+                        </div>
+                        <Link
+                          to={`/stories/${story.slug}`}
+                          className="font-display text-lg uppercase text-ink tracking-tight line-clamp-2 group-hover:text-gold transition-colors"
+                        >
+                          {story.title}
+                        </Link>
+                        <div className="mt-2 text-[10px] font-mono text-ink-secondary tracking-wider uppercase">
+                          BY {authorName}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0 border-t border-hairline/50 mt-4 flex items-center justify-between text-[11px] font-mono">
+                      <Link
+                        to={`/stories/${story.slug}`}
+                        className="text-ink font-semibold hover:text-gold transition-colors flex items-center gap-1 text-[10px] tracking-wider uppercase"
+                      >
+                        READ DISPATCH &rarr;
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveBookmark(story.id)}
+                        disabled={removingBookmarkId === story.id}
+                        className="text-[10px] text-ink-muted hover:text-rose-800 transition-colors uppercase tracking-wider cursor-pointer disabled:opacity-50"
+                      >
+                        {removingBookmarkId === story.id ? 'REMOVING...' : 'REMOVE'}
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Future Capabilities Architecture */}
+        <div className="border-t border-hairline pt-12 mt-12">
           <div className="mb-8">
             <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-              COLLECTOR TELEMETRY // COMING IN PHASE 3
+              COLLECTOR TELEMETRY // COMING IN PHASE 4
             </div>
             <h3 className="font-display text-2xl font-normal uppercase text-ink">
               Activity &amp; Community Archive
@@ -660,21 +816,21 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="border border-hairline p-6 bg-warm-surface/20">
               <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase pb-3 border-b border-hairline">
-                <span>SAVED STORIES</span>
-                <span>0 ARTICLES</span>
-              </div>
-              <p className="mt-4 text-xs font-mono text-ink-secondary leading-relaxed">
-                Bookmark editorial investigations, historical chronologies, and technical guides to review at any time.
-              </p>
-            </div>
-
-            <div className="border border-hairline p-6 bg-warm-surface/20">
-              <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase pb-3 border-b border-hairline">
                 <span>SHOWDOWN RECORD</span>
                 <span>0 VOTES</span>
               </div>
               <p className="mt-4 text-xs font-mono text-ink-secondary leading-relaxed">
                 Your authenticated Watch Battle verdicts, category judging records, and community showdown discussions.
+              </p>
+            </div>
+
+            <div className="border border-hairline p-6 bg-warm-surface/20">
+              <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase pb-3 border-b border-hairline">
+                <span>CURATOR NOTES</span>
+                <span>COMMUNITY REPUTATION</span>
+              </div>
+              <p className="mt-4 text-xs font-mono text-ink-secondary leading-relaxed">
+                Reputation score, accredited discussion contributions, and provenance citations across the horological ledger.
               </p>
             </div>
           </div>

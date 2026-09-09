@@ -315,16 +315,28 @@ export default function StoriesPage() {
                     </div>
 
                     {/* Bottom Meta */}
-                    <div className="mt-8 pt-6 border-t border-hairline flex items-center justify-between text-xs font-mono uppercase tracking-wider">
-                      <span className="text-ink-muted text-[11px]">
-                        {leadStory.published_at
-                          ? new Date(leadStory.published_at).toLocaleDateString('en-US', {
-                              month: 'long',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })
-                          : 'RECENT DISPATCH'}
-                      </span>
+                    <div className="mt-8 pt-6 border-t border-hairline flex flex-wrap items-center justify-between gap-3 text-xs font-mono uppercase tracking-wider">
+                      <div className="flex items-center gap-3 text-ink-muted text-[11px]">
+                        <span>
+                          {leadStory.published_at
+                            ? new Date(leadStory.published_at).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })
+                            : 'RECENT DISPATCH'}
+                        </span>
+                        {((leadStory.likes_count ?? 0) > 0 || (leadStory.comments_count ?? 0) > 0) && (
+                          <>
+                            <span>&bull;</span>
+                            <span className="text-ink font-medium tracking-wide">
+                              {leadStory.likes_count ?? 0} {(leadStory.likes_count ?? 0) === 1 ? 'LIKE' : 'LIKES'}
+                              {' '}&bull;{' '}
+                              {leadStory.comments_count ?? 0} {(leadStory.comments_count ?? 0) === 1 ? 'NOTE' : 'NOTES'}
+                            </span>
+                          </>
+                        )}
+                      </div>
                       <span className="text-ink font-semibold group-hover:text-gold transition-colors flex items-center gap-1">
                         READ DISPATCH <span className="group-hover:translate-x-1.5 transition-transform inline-block">&rarr;</span>
                       </span>
@@ -414,10 +426,17 @@ export default function StoriesPage() {
 
                           {/* Footer */}
                           <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase">
-                            <span className="text-ink-muted">
-                              {story.personal_watch_reference ? `REF. ${story.personal_watch_reference}` : story.personal_watch_brand}
-                            </span>
-                            <span className="text-ink font-semibold group-hover:text-gold transition-colors flex items-center gap-1">
+                            <div className="text-ink-muted flex items-center gap-2 truncate max-w-[65%]">
+                              <span className="truncate">
+                                {story.personal_watch_reference ? `REF. ${story.personal_watch_reference}` : story.personal_watch_brand}
+                              </span>
+                              {((story.likes_count ?? 0) > 0 || (story.comments_count ?? 0) > 0) && (
+                                <span className="text-ink font-medium flex-shrink-0">
+                                  &bull; {story.likes_count ?? 0}L &bull; {story.comments_count ?? 0}N
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-ink font-semibold group-hover:text-gold transition-colors flex items-center gap-1 flex-shrink-0">
                               READ STORY <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>
                             </span>
                           </div>

@@ -29,11 +29,13 @@ interface RawStoryRow {
   published_at: string | null
   created_at: string
   updated_at: string
+  likes_count?: number
+  comments_count?: number
   author: Profile | Profile[] | null
   watch?: Watch | Watch[] | null
 }
 
-const STORY_SELECT_FIELDS = `
+export const STORY_SELECT_FIELDS = `
   id,
   user_id,
   watch_id,
@@ -48,10 +50,12 @@ const STORY_SELECT_FIELDS = `
   published_at,
   created_at,
   updated_at,
+  likes_count,
+  comments_count,
   author:profiles (*)
 `
 
-function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | null {
+export function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | null {
   const authorRecord = Array.isArray(row.author) ? row.author[0] : row.author
   const watchRecord = Array.isArray(row.watch) ? row.watch[0] : row.watch
 
@@ -74,6 +78,8 @@ function normalizeStoryRow(row: RawStoryRow): StoryWithAuthorAndWatch | null {
     published_at: row.published_at,
     created_at: row.created_at,
     updated_at: row.updated_at,
+    likes_count: typeof row.likes_count === 'number' ? row.likes_count : 0,
+    comments_count: typeof row.comments_count === 'number' ? row.comments_count : 0,
     author: authorRecord,
     watch: watchRecord || null,
   }
