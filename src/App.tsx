@@ -26,6 +26,12 @@ function AppContent() {
       return <CreateStoryPage />
     }
 
+    // Edit Story route: /stories/:slug/edit (must be checked before dynamic :slug)
+    if (pathname.startsWith('/stories/') && pathname.endsWith('/edit')) {
+      const slug = pathname.replace('/stories/', '').replace(/\/edit$/, '')
+      return <CreateStoryPage editSlug={slug} />
+    }
+
     // Dynamic Story Detail route: /stories/:slug
     if (pathname.startsWith('/stories/') && pathname !== '/stories') {
       const slug = pathname.replace('/stories/', '')

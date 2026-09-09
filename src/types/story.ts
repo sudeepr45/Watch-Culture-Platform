@@ -86,3 +86,8 @@ export interface UpdateStoryResult {
   isConfigured: boolean
 }
 
+export interface DeleteStoryResult {
+  success: boolean
+  error: Error | null
+  isConfigured: boolean
+}

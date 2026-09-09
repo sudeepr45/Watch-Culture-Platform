@@ -1,10 +1,10 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, useCallback, type FormEvent } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { useAuth } from '../context/useAuth'
-import { fetchStoryBySlug } from '../services/storyService'
+import { fetchStoryBySlug, deleteStory } from '../services/storyService'
 import {
   likeStory,
   unlikeStory,
@@ -32,6 +32,53 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isConfigured, setIsConfigured] = useState(true)
+
+  // Story ownership and deletion state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deletingStory, setDeletingStory] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  const isOwner = Boolean(user && story && user.id === story.user_id)
+
+  const handleCloseDeleteDialog = useCallback(() => {
+    if (!deletingStory) {
+      setDeleteDialogOpen(false)
+      setDeleteError(null)
+    }
+  }, [deletingStory])
+
+  const handleConfirmDeleteStory = async () => {
+    if (!user || !story || deletingStory) return
+
+    setDeletingStory(true)
+    setDeleteError(null)
+
+    const result = await deleteStory(user.id, story.id)
+
+    if (!result.success || result.error) {
+      setDeleteError(result.error?.message || 'Failed to delete story.')
+      setDeletingStory(false)
+      return
+    }
+
+    setDeletingStory(false)
+    setDeleteDialogOpen(false)
+    navigate('/stories')
+  }
+
+  // Close delete dialog on Escape key
+  useEffect(() => {
+    if (!deleteDialogOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !deletingStory) {
+        handleCloseDeleteDialog()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [deleteDialogOpen, deletingStory, handleCloseDeleteDialog])
 
   // Interaction state
   const [isLiked, setIsLiked] = useState(false)
@@ -423,14 +470,37 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
   return (
     <div className="py-12 sm:py-16 lg:py-20">
       <Container>
-        {/* Navigation Breadcrumb */}
-        <div className="mb-8 sm:mb-12">
+        {/* Navigation Breadcrumb & Owner Controls */}
+        <div className="mb-8 sm:mb-12 flex flex-wrap items-center justify-between gap-4">
           <Link
             to="/stories"
             className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-ink-secondary hover:text-ink transition-colors"
           >
             &larr; <span>BACK TO STORIES</span>
           </Link>
+
+          {/* Owner Actions */}
+          {isOwner && (
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => navigate(`/stories/${story.slug}/edit`)}
+                className="px-3 py-1.5 border border-hairline bg-warm-white text-[10px] font-mono tracking-[0.2em] uppercase text-ink-secondary hover:text-ink hover:border-ink transition-colors cursor-pointer"
+              >
+                [ EDIT DISPATCH ]
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteError(null)
+                  setDeleteDialogOpen(true)
+                }}
+                className="px-3 py-1.5 border border-hairline bg-warm-white text-[10px] font-mono tracking-[0.2em] uppercase text-accent-burgundy/80 hover:text-accent-burgundy hover:border-accent-burgundy transition-colors cursor-pointer"
+              >
+                [ DELETE DISPATCH ]
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Story Header */}
@@ -892,6 +962,73 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
           </span>
         </div>
       </Container>
+
+      {/* Delete Confirmation Modal Dialog */}
+      {deleteDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-ink/60 backdrop-blur-sm animate-fadeIn"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-dialog-title"
+          onClick={handleCloseDeleteDialog}
+        >
+          <div
+            className="w-full max-w-lg border border-hairline bg-warm-white p-6 sm:p-8 shadow-2xl space-y-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="border-b border-hairline pb-4">
+              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-accent-burgundy uppercase mb-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-burgundy" />
+                <span>PERMANENT REMOVAL</span>
+              </div>
+              <h3
+                id="delete-dialog-title"
+                className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink"
+              >
+                DELETE THIS DISPATCH?
+              </h3>
+            </div>
+
+            {/* Body */}
+            <p className="text-xs sm:text-sm font-sans text-ink-secondary leading-relaxed">
+              This will permanently remove your story and its associated comments, bookmarks, and engagement records. This action cannot be undone.
+            </p>
+
+            {/* Error if delete failed */}
+            {deleteError && (
+              <div className="p-3 border border-hairline bg-warm-surface/60 flex items-start gap-2.5">
+                <span className="text-accent-burgundy text-xs font-mono shrink-0">&bull;</span>
+                <p className="text-xs font-mono text-ink tracking-wide">
+                  {deleteError}
+                </p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
+              <Button
+                variant="secondary"
+                size="md"
+                disabled={deletingStory}
+                onClick={handleCloseDeleteDialog}
+                className="w-full sm:w-auto"
+              >
+                CANCEL
+              </Button>
+              <Button
+                variant="primary"
+                size="md"
+                disabled={deletingStory}
+                onClick={handleConfirmDeleteStory}
+                className="w-full sm:w-auto !bg-accent-burgundy hover:!bg-accent-burgundy/90 text-warm-white"
+              >
+                {deletingStory ? 'REMOVING DISPATCH...' : 'DELETE STORY'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

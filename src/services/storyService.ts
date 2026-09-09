@@ -12,6 +12,7 @@ import type {
   CreateStoryResult,
   UpdateStoryInput,
   UpdateStoryResult,
+  DeleteStoryResult,
 } from '../types/story'
 
 interface RawStoryWatch {
@@ -823,4 +824,110 @@ export async function updateStory(
   }
 }
 
+/**
+ * Permanently delete a story owned by the authenticated collector.
+ * Enforces ownership via RLS and strict userId verification.
+ * Automatically cascades associated likes, bookmarks, and comments in PostgreSQL.
+ * Attempts non-blocking Supabase Storage cleanup for the story photo if present.
+ */
+export async function deleteStory(
+  userId: string,
+  storyId: string
+): Promise<DeleteStoryResult> {
+  if (!isSupabaseConfigured) {
+    return {
+      success: false,
+      error: new Error('Supabase project credentials not configured in environment variables.'),
+      isConfigured: false,
+    }
+  }
 
+  const cleanUserId = typeof userId === 'string' ? userId.trim() : ''
+  if (!cleanUserId) {
+    return {
+      success: false,
+      error: new Error('A valid user ID is required to delete a story.'),
+      isConfigured: true,
+    }
+  }
+
+  const cleanStoryId = typeof storyId === 'string' ? storyId.trim() : ''
+  if (!cleanStoryId) {
+    return {
+      success: false,
+      error: new Error('A story ID is required to delete a story.'),
+      isConfigured: true,
+    }
+  }
+
+  try {
+    // 1. Resolve and validate story ownership and existing photo URL
+    const { data: existing, error: fetchError } = await supabase
+      .from('stories')
+      .select('id, user_id, photo_url')
+      .eq('id', cleanStoryId)
+      .eq('user_id', cleanUserId)
+      .maybeSingle()
+
+    if (fetchError) {
+      return {
+        success: false,
+        error: new Error(fetchError.message),
+        isConfigured: true,
+      }
+    }
+
+    if (!existing) {
+      return {
+        success: false,
+        error: new Error('Story not found or you do not have permission to delete it.'),
+        isConfigured: true,
+      }
+    }
+
+    // 2. Delete database story (Postgres ON DELETE CASCADE purges interactions atomically)
+    const { error: deleteError } = await supabase
+      .from('stories')
+      .delete()
+      .eq('id', cleanStoryId)
+      .eq('user_id', cleanUserId)
+
+    if (deleteError) {
+      return {
+        success: false,
+        error: new Error(deleteError.message),
+        isConfigured: true,
+      }
+    }
+
+    // 3. Attempt non-blocking Storage cleanup afterward if photo exists in story-photos bucket
+    if (existing.photo_url && typeof existing.photo_url === 'string') {
+      try {
+        const bucketMarker = '/story-photos/'
+        const markerIndex = existing.photo_url.indexOf(bucketMarker)
+        if (markerIndex !== -1) {
+          const rawPath = existing.photo_url.substring(markerIndex + bucketMarker.length).split('?')[0]
+          const decodedPath = decodeURIComponent(rawPath)
+          // Ensure path is safely within the owner's storage directory
+          if (decodedPath && decodedPath.startsWith(`${cleanUserId}/`)) {
+            await supabase.storage.from('story-photos').remove([decodedPath])
+          }
+        }
+      } catch {
+        // Storage cleanup failures MUST NOT block successful database deletion
+      }
+    }
+
+    return {
+      success: true,
+      error: null,
+      isConfigured: true,
+    }
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err : new Error('An unexpected database error occurred.'),
+      isConfigured: true,
+    }
+  }
+}

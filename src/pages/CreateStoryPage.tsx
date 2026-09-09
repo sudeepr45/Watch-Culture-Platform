@@ -3,16 +3,27 @@ import Container from '../components/common/Container'
 import Button from '../components/common/Button'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
-import { uploadStoryPhoto, createStory } from '../services/storyService'
+import { uploadStoryPhoto, createStory, updateStory, fetchStoryBySlug } from '../services/storyService'
 import { fetchWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
+import type { StoryWithAuthorAndWatch } from '../types/story'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
 
-export default function CreateStoryPage() {
+interface CreateStoryPageProps {
+  editSlug?: string
+}
+
+export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {}) {
   const { user, profile, loading: authLoading, isAuthenticated } = useAuth()
   const { navigate } = useRouter()
+
+  // Edit Mode State
+  const [editingStory, setEditingStory] = useState<StoryWithAuthorAndWatch | null>(null)
+  const [editLoading, setEditLoading] = useState(Boolean(editSlug))
+  const [editError, setEditError] = useState<string | null>(null)
+  const [isNotOwner, setIsNotOwner] = useState(false)
 
   // Personal Watch State
   const [watchBrand, setWatchBrand] = useState('')
@@ -43,6 +54,67 @@ export default function CreateStoryPage() {
   const [submitAction, setSubmitAction] = useState<'draft' | 'publish' | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'compose' | 'preview'>('compose')
+
+  // Preload existing story when in edit mode
+  useEffect(() => {
+    if (!editSlug) return
+
+    let isMounted = true
+
+    async function loadStoryForEdit() {
+      setEditLoading(true)
+      setEditError(null)
+      setIsNotOwner(false)
+
+      const res = await fetchStoryBySlug(editSlug!)
+
+      if (!isMounted) return
+
+      if (res.error || !res.data) {
+        setEditError(res.error?.message || 'Failed to retrieve dispatch from archive.')
+        setEditLoading(false)
+        return
+      }
+
+      const story = res.data
+
+      // Check ownership against authenticated collector
+      if (user && story.user_id !== user.id) {
+        setIsNotOwner(true)
+        setEditLoading(false)
+        return
+      }
+
+      setEditingStory(story)
+      setWatchBrand(story.personal_watch_brand || '')
+      setWatchModel(story.personal_watch_model || '')
+      setWatchReference(story.personal_watch_reference || '')
+      setTitle(story.title || '')
+      setStoryText(story.story_text || '')
+
+      if (story.photo_url) {
+        setUploadedPhotoUrl(story.photo_url)
+        setPreviewUrl(story.photo_url)
+        setUploadStatus('uploaded')
+      }
+
+      if (story.watch_id && story.watch) {
+        setSelectedArchiveWatch(story.watch as Watch)
+      } else {
+        setSelectedArchiveWatch(null)
+      }
+
+      setEditLoading(false)
+    }
+
+    if (!authLoading) {
+      loadStoryForEdit()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [editSlug, authLoading, user])
 
   // Preload verified archive watches for modal responsiveness
   useEffect(() => {
@@ -241,7 +313,99 @@ export default function CreateStoryPage() {
     )
   }
 
-  // 3. Draft Submission Handler
+  // 3. Edit Mode Loading State
+  if (editSlug && editLoading) {
+    return (
+      <div className="py-20 sm:py-32">
+        <Container>
+          <div className="border border-hairline bg-warm-surface/30 p-16 text-center max-w-xl mx-auto">
+            <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
+              <svg
+                className="w-5 h-5 text-gold animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="12" />
+              </svg>
+            </div>
+            <h2 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
+              Loading Dispatch
+            </h2>
+            <p className="mt-2 text-xs font-mono tracking-widest text-ink-muted uppercase">
+              RETRIEVING STORY FROM ARCHIVE...
+            </p>
+          </div>
+        </Container>
+      </div>
+    )
+  }
+
+  // 4. Edit Mode Retrieval Error State
+  if (editSlug && editError) {
+    return (
+      <div className="py-16 sm:py-24">
+        <Container>
+          <div className="border border-hairline bg-warm-surface/40 p-8 sm:p-12 max-w-xl mx-auto text-center">
+            <div className="w-12 h-12 mx-auto mb-5 flex items-center justify-center border border-hairline bg-warm-white text-gold">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <h2 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
+              Unable to Load Dispatch
+            </h2>
+            <p className="mt-3 text-xs font-mono text-ink-muted leading-relaxed">
+              {editError}
+            </p>
+            <div className="mt-6">
+              <Button variant="secondary" size="md" onClick={() => navigate('/stories')}>
+                &larr; RETURN TO STORIES
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </div>
+    )
+  }
+
+  // 5. Edit Mode Ownership Verification (Permission Denied) State
+  if (editSlug && (isNotOwner || (editingStory && user && editingStory.user_id !== user.id))) {
+    return (
+      <div className="py-16 sm:py-24">
+        <Container>
+          <div className="border border-hairline bg-warm-surface/40 p-8 sm:p-12 max-w-xl mx-auto text-center">
+            <div className="w-12 h-12 mx-auto mb-5 flex items-center justify-center border border-hairline bg-warm-white text-ink-secondary">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </div>
+            <div className="flex items-center justify-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              <span>PERMISSION DENIED // ACCESS RESTRICTED</span>
+            </div>
+            <h2 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
+              Restricted Dispatch
+            </h2>
+            <p className="mt-3 text-xs font-mono text-ink-muted leading-relaxed">
+              You can only edit community stories that you have authored. This dispatch belongs to another collector dossier.
+            </p>
+            <div className="mt-6">
+              <Button variant="secondary" size="md" onClick={() => navigate('/stories')}>
+                &larr; RETURN TO STORIES
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </div>
+    )
+  }
+
+  // 6. Draft Submission Handler
   const handleSaveDraft = async () => {
     if (!user?.id) return
 
@@ -290,6 +454,29 @@ export default function CreateStoryPage() {
       setUploadStatus('uploaded')
     }
 
+    if (editingStory) {
+      const res = await updateStory(user.id, editingStory.id, {
+        watch_id: selectedArchiveWatch?.id ?? null,
+        personal_watch_brand: watchBrand.trim(),
+        personal_watch_model: watchModel.trim(),
+        personal_watch_reference: watchReference.trim() || null,
+        title: title.trim(),
+        story_text: storyText.trim(),
+        photo_url: effectivePhotoUrl,
+        status: 'draft',
+      })
+
+      if (res.error || !res.data) {
+        setFormError(res.error?.message || 'Failed to update draft.')
+        setSubmitting(false)
+        setSubmitAction(null)
+        return
+      }
+
+      navigate(`/stories/${editingStory.slug}`)
+      return
+    }
+
     const res = await createStory({
       userId: user.id,
       watch_id: selectedArchiveWatch?.id ?? null,
@@ -312,7 +499,7 @@ export default function CreateStoryPage() {
     navigate(`/stories/${res.data.slug}`)
   }
 
-  // 4. Publish Submission Handler
+  // 7. Publish Submission Handler
   const handlePublish = async () => {
     if (!user?.id) return
 
@@ -373,6 +560,29 @@ export default function CreateStoryPage() {
       return
     }
 
+    if (editingStory) {
+      const res = await updateStory(user.id, editingStory.id, {
+        watch_id: selectedArchiveWatch?.id ?? null,
+        personal_watch_brand: watchBrand.trim(),
+        personal_watch_model: watchModel.trim(),
+        personal_watch_reference: watchReference.trim() || null,
+        title: title.trim(),
+        story_text: storyText.trim(),
+        photo_url: effectivePhotoUrl,
+        status: 'published',
+      })
+
+      if (res.error || !res.data) {
+        setFormError(res.error?.message || 'Failed to update story.')
+        setSubmitting(false)
+        setSubmitAction(null)
+        return
+      }
+
+      navigate(`/stories/${editingStory.slug}`)
+      return
+    }
+
     const res = await createStory({
       userId: user.id,
       watch_id: selectedArchiveWatch?.id ?? null,
@@ -408,13 +618,19 @@ export default function CreateStoryPage() {
             <div>
               <div className="flex items-center gap-2.5 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
-                <span>COMMUNITY PROVENANCE &bull; DISPATCH ARCHIVE</span>
+                <span>
+                  {editSlug
+                    ? 'EDIT YOUR STORY // MANAGE DISPATCH'
+                    : 'COMMUNITY PROVENANCE \u2022 DISPATCH ARCHIVE'}
+                </span>
               </div>
               <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-                Create Your Story
+                {editSlug ? 'Edit Your Story' : 'Create Your Story'}
               </h1>
               <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-normal leading-relaxed">
-                Document your personal watch with your own photograph and unfiltered experience.
+                {editSlug
+                  ? 'Update your personal watch details, photograph, or narrative provenance.'
+                  : 'Document your personal watch with your own photograph and unfiltered experience.'}
               </p>
             </div>
 
@@ -827,24 +1043,38 @@ export default function CreateStoryPage() {
                   className="w-full sm:w-auto"
                 >
                   {submitting && submitAction === 'publish'
-                    ? 'PUBLISHING TO ARCHIVE...'
-                    : 'PUBLISH COMMUNITY STORY \u2192'}
+                    ? editingStory?.status === 'published'
+                      ? 'UPDATING STORY...'
+                      : 'PUBLISHING TO ARCHIVE...'
+                    : editingStory?.status === 'published'
+                      ? 'UPDATE STORY \u2192'
+                      : 'PUBLISH COMMUNITY STORY \u2192'}
                 </Button>
 
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  disabled={submitting}
-                  onClick={handleSaveDraft}
-                  className="w-full sm:w-auto"
-                >
-                  {submitting && submitAction === 'draft' ? 'SAVING DRAFT...' : 'SAVE AS DRAFT'}
-                </Button>
+                {(!editingStory || editingStory.status === 'draft') && (
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    disabled={submitting}
+                    onClick={handleSaveDraft}
+                    className="w-full sm:w-auto"
+                  >
+                    {submitting && submitAction === 'draft'
+                      ? editingStory
+                        ? 'UPDATING DRAFT...'
+                        : 'SAVING DRAFT...'
+                      : editingStory
+                        ? 'UPDATE DRAFT'
+                        : 'SAVE AS DRAFT'}
+                  </Button>
+                )}
               </div>
 
               <button
                 type="button"
-                onClick={() => navigate('/stories')}
+                onClick={() =>
+                  editingStory ? navigate(`/stories/${editingStory.slug}`) : navigate('/stories')
+                }
                 disabled={submitting}
                 className="text-xs font-mono tracking-widest text-ink-muted hover:text-ink uppercase cursor-pointer"
               >
@@ -1003,18 +1233,30 @@ export default function CreateStoryPage() {
                 className="w-full sm:w-auto"
               >
                 {submitting && submitAction === 'publish'
-                  ? 'PUBLISHING TO ARCHIVE...'
-                  : 'PUBLISH COMMUNITY STORY \u2192'}
+                  ? editingStory?.status === 'published'
+                    ? 'UPDATING STORY...'
+                    : 'PUBLISHING TO ARCHIVE...'
+                  : editingStory?.status === 'published'
+                    ? 'UPDATE STORY \u2192'
+                    : 'PUBLISH COMMUNITY STORY \u2192'}
               </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                disabled={submitting}
-                onClick={handleSaveDraft}
-                className="w-full sm:w-auto"
-              >
-                {submitting && submitAction === 'draft' ? 'SAVING DRAFT...' : 'SAVE AS DRAFT'}
-              </Button>
+              {(!editingStory || editingStory.status === 'draft') && (
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  disabled={submitting}
+                  onClick={handleSaveDraft}
+                  className="w-full sm:w-auto"
+                >
+                  {submitting && submitAction === 'draft'
+                    ? editingStory
+                      ? 'UPDATING DRAFT...'
+                      : 'SAVING DRAFT...'
+                    : editingStory
+                      ? 'UPDATE DRAFT'
+                      : 'SAVE AS DRAFT'}
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 size="lg"
