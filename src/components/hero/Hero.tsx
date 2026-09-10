@@ -1,14 +1,10 @@
 import Container from '../common/Container'
 import Button from '../common/Button'
-import WatchImage from '../common/WatchImage'
 import { useRouter } from '../../router/useRouter'
 import heroWatchImage from '../../assets/hero-watch.png'
 
 export default function Hero() {
   const { navigate } = useRouter()
-
-  // Editorial watch photograph reference
-  const watchImageUrl = heroWatchImage
 
   return (
     <section
@@ -100,7 +96,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Column: Dominant Visual (5 cols on lg) */}
+          {/* Right Column: Editorial Archival Monolith (5 cols on lg) */}
           <div className="lg:col-span-5 order-1 lg:order-2">
             <div className="relative group mx-auto max-w-[460px] lg:max-w-none">
               {/* Architectural framing line */}
@@ -109,19 +105,28 @@ export default function Hero() {
                 aria-hidden="true"
               />
 
-              {/* Image Container with Restrained Motion */}
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-warm-surface border border-hairline">
-                <WatchImage
-                  src={watchImageUrl}
-                  alt="Precision horological archival specimen detail"
-                  aspectRatio="h-full w-full"
-                  loading="eager"
-                />
+              {/* Archival Monolith Specimen Panel */}
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#191c1f] border border-hairline flex flex-col justify-between p-6 sm:p-8 select-none">
+                {/* Top Archival Metadata Header */}
+                <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono tracking-[0.2em] text-warm-white/40 uppercase">
+                  <span>MONOGRAPH // SPECIMEN 01</span>
+                  <span>EST. 1893</span>
+                </div>
 
-                {/* Floating Technical Plate */}
-                <div className="absolute bottom-4 left-4 right-4 p-3 bg-warm-white border border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase text-ink">
-                  <span>SPECIMEN // STUDY</span>
-                  <span className="text-steel font-semibold">HOROLOGY ARCHIVE</span>
+                {/* Central Deliberate Brand Lockup Presentation */}
+                <div className="flex-1 flex items-center justify-center p-4">
+                  <img
+                    src={heroWatchImage}
+                    alt="MOERI & JEANNERET — Horological Archive"
+                    className="w-full max-w-[280px] sm:max-w-[320px] h-auto object-contain transition-opacity duration-300"
+                    loading="eager"
+                  />
+                </div>
+
+                {/* Bottom Archival Identifier Plate */}
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-[9px] sm:text-[10px] font-mono tracking-[0.2em] text-warm-white/40 uppercase">
+                  <span>ARCHIVAL IDENTIFIER</span>
+                  <span className="text-warm-white/60 font-medium">VERIFIED CULTURE</span>
                 </div>
               </div>
             </div>
