@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { label: 'HOME', to: '/' },
   { label: 'STORIES', to: '/stories' },
   { label: 'WATCHES', to: '/watches' },
-  { label: 'THE CASE', to: '/case' },
+  { label: 'WORTH IT?', to: '/case' },
   { label: 'BATTLES', to: '/battles' },
   { label: 'EXPLORE', to: '/explore' },
 ]

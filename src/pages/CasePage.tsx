@@ -12,7 +12,7 @@ import {
   removeWatchFromCollection,
 } from '../services/collectionService'
 import { evaluateWatchContender } from '../services/evaluationEngine'
-import { EVALUATION_PILLARS, type ContenderEvaluation } from '../types/evaluation'
+import type { ContenderEvaluation } from '../types/evaluation'
 import type { Watch } from '../types/watch'
 
 // User Priority Options
@@ -36,9 +36,9 @@ const PRIORITY_OPTIONS: { key: UserPriorityKey; label: string; pillarHint: strin
 ]
 
 const COMPROMISE_OPTIONS: { key: CompromiseTolerance; label: string; desc: string }[] = [
-  { key: 'VERY LITTLE', label: 'VERY LITTLE', desc: 'Strict standards. Key priorities must excel with zero material compromises.' },
-  { key: 'SOME', label: 'SOME', desc: 'Balanced view. Strong core strengths can offset minor trade-offs.' },
-  { key: "I'M FLEXIBLE", label: "I'M FLEXIBLE", desc: 'Open-minded. Character, history, or singular strengths outweigh spec deficiencies.' },
+  { key: 'VERY LITTLE', label: 'VERY STRICT', desc: "Don't overlook important weaknesses." },
+  { key: 'SOME', label: 'BALANCED', desc: 'Allow some trade-offs.' },
+  { key: "I'M FLEXIBLE", label: 'OPEN-MINDED', desc: 'Judge the watch as a whole.' },
 ]
 
 interface CasePageProps {
@@ -181,136 +181,86 @@ export default function CasePage({ initialSlug }: CasePageProps) {
 
     const watch = selectedWatch
     const scores = evaluation.scores
-    const breakdowns = evaluation.breakdowns
 
-    // Evidence FOR (positive facts grounded in data)
-    const positivePoints: { label: string; text: string }[] = []
+    // Evidence FOR (short, positive facts grounded in real data)
+    const positivePoints: string[] = []
 
-    // Evidence AGAINST (meaningful compromises grounded in data)
-    const compromisePoints: { label: string; text: string }[] = []
+    // Evidence AGAINST (short, factual compromises grounded in real data)
+    const compromisePoints: string[] = []
 
-    // Dimensional Analysis
-    // 1. The Machine
-    if (scores.engineering >= 75) {
-      positivePoints.push({
-        label: 'CALIBRE INTEGRITY',
-        text: breakdowns.engineering.summary,
-      })
-    } else if (scores.engineering < 60) {
-      compromisePoints.push({
-        label: 'MODEST CALIBRE SPEC',
-        text: breakdowns.engineering.summary,
-      })
+    // 1. Calibre / Movement & Autonomy
+    if (watch.movement_type?.toLowerCase().includes('quartz') || watch.movement_name?.toLowerCase().includes('quartz')) {
+      positivePoints.push('High-accuracy quartz movement with multi-year battery autonomy')
+    } else if (watch.power_reserve_hours && watch.power_reserve_hours >= 60) {
+      positivePoints.push(`${watch.power_reserve_hours}-hour power reserve (weekend-proof autonomy)`)
+    } else if (scores.engineering >= 75) {
+      positivePoints.push(`${watch.calibre || watch.movement_type || 'In-house'} calibre with proven mechanical precision`)
     }
 
-    // Check reserve specifically
-    if (watch.power_reserve_hours && watch.power_reserve_hours >= 70) {
-      positivePoints.push({
-        label: 'EXTENDED AUTONOMY',
-        text: `${watch.power_reserve_hours}-hour power reserve provides weekend-proof convenience without resetting.`,
-      })
-    } else if (watch.power_reserve_hours && watch.power_reserve_hours <= 42) {
-      compromisePoints.push({
-        label: 'STANDARD AUTONOMY',
-        text: `${watch.power_reserve_hours}-hour reserve requires regular winding if rotated among multiple watches.`,
-      })
+    if (watch.power_reserve_hours && watch.power_reserve_hours <= 42) {
+      compromisePoints.push(`${watch.power_reserve_hours}-hour power reserve requires regular winding if rotated off-wrist.`)
+    } else if (scores.engineering < 55) {
+      compromisePoints.push('Basic movement architecture without advanced regulation or silicon components.')
     }
 
-    // 2. The Object (Materials & Build)
-    if (scores.materials >= 75) {
-      positivePoints.push({
-        label: 'MATERIAL & FINISHING',
-        text: breakdowns.materials.summary,
-      })
-    } else if (scores.materials < 60) {
-      compromisePoints.push({
-        label: 'MATERIAL COMPROMISE',
-        text: breakdowns.materials.summary,
-      })
+    // 2. Case Materials & Crystal
+    if (watch.crystal?.toLowerCase().includes('sapphire')) {
+      positivePoints.push('Synthetic sapphire crystal provides premium scratch resistance')
+    } else if (watch.crystal) {
+      compromisePoints.push(`${watch.crystal} scratches more easily than synthetic sapphire.`)
     }
 
-    // Specific crystal check
-    const crystalLower = (watch.crystal || '').toLowerCase()
-    if (!crystalLower.includes('sapphire') && !crystalLower.includes('hesalite')) {
-      compromisePoints.push({
-        label: 'OPTICAL DEFENSE',
-        text: `${watch.crystal || 'Mineral glass'} offers lower scratch defense compared to synthetic sapphire.`,
-      })
+    if (watch.case_material) {
+      positivePoints.push(`${watch.case_material} case construction`)
     }
 
-    // Water resistance check
+    // 3. Water Resistance
     const wr = watch.water_resistance_m
     if (wr !== null && wr >= 100) {
-      positivePoints.push({
-        label: 'AQUATIC VERSATILITY',
-        text: `${wr}m water resistance guarantees everyday aquatic resilience.`,
-      })
+      positivePoints.push(`${wr} m water resistance for confident aquatic resilience`)
     } else if (wr !== null && wr < 50) {
-      compromisePoints.push({
-        label: 'SPLASH-ONLY RESISTANCE',
-        text: `${wr}m water resistance requires conscious care around water and rain.`,
-      })
+      compromisePoints.push(`${wr} m water resistance requires caution around water and heavy rain.`)
     }
 
-    // 3. The Wrist (Wearability)
-    if (scores.wearability >= 75) {
-      positivePoints.push({
-        label: 'WRIST HARMONY',
-        text: breakdowns.wearability.summary,
-      })
-    } else {
-      if (watch.case_thickness_mm && watch.case_thickness_mm > 13.0) {
-        compromisePoints.push({
-          label: 'VERTICAL WRIST HEIGHT',
-          text: `${watch.case_thickness_mm}mm thickness has noticeable height that will not slip under tight shirt cuffs.`,
-        })
-      }
-      if (watch.lug_to_lug_mm && watch.lug_to_lug_mm > 49.0) {
-        compromisePoints.push({
-          label: 'EXTENDED LUG SPAN',
-          text: `${watch.lug_to_lug_mm}mm lug-to-lug stance may create slight overhang on slender wrists under 6.75 inches.`,
-        })
-      }
+    // 4. Case Dimensions & Ergonomics
+    if (watch.case_diameter_mm && watch.case_diameter_mm >= 43.0) {
+      compromisePoints.push(`${watch.case_diameter_mm} mm case diameter wears prominently on smaller wrists.`)
+    }
+    if (watch.case_thickness_mm && watch.case_thickness_mm >= 13.5) {
+      compromisePoints.push(`${watch.case_thickness_mm} mm thickness has noticeable height under shirt cuffs.`)
+    }
+    if (watch.lug_to_lug_mm && watch.lug_to_lug_mm >= 50.0) {
+      compromisePoints.push(`${watch.lug_to_lug_mm} mm lug span may create slight overhang on wrists under 6.75".`)
     }
 
-    // 4. The Story (Heritage)
+    if (watch.case_thickness_mm && watch.case_thickness_mm <= 12.0) {
+      positivePoints.push(`Slim ${watch.case_thickness_mm} mm case profile offers comfortable everyday wear`)
+    } else if (scores.wearability >= 75) {
+      positivePoints.push('Balanced case ergonomics suited for everyday wear')
+    }
+
+    // 5. Value & Price
+    if (watch.price !== null && watch.price <= 200) {
+      positivePoints.push(`Accessible $${watch.price.toLocaleString()} ${watch.currency} entry price`)
+    } else if (scores.value >= 75 && watch.price !== null) {
+      positivePoints.push(`High substance-to-price ratio at $${watch.price.toLocaleString()} ${watch.currency}`)
+    } else if (scores.value < 55 && watch.price !== null) {
+      compromisePoints.push(`$${watch.price.toLocaleString()} ${watch.currency} price reflects brand demand and prestige over pure component yield.`)
+    }
+
+    // 6. Heritage & Lineage
     if (scores.heritage >= 75) {
-      positivePoints.push({
-        label: 'LINEAGE PROVENANCE',
-        text: breakdowns.heritage.summary,
-      })
+      positivePoints.push(`Distinguished horological lineage and recognized standing from ${watch.brand}`)
     } else if (scores.heritage < 55) {
-      compromisePoints.push({
-        label: 'MODERN ARCHIVAL FOOTPRINT',
-        text: 'More contemporary lineage without the deep historical pedigree of centenarian horological icons.',
-      })
+      compromisePoints.push('Heritage depth is limited compared with historic manufacture watchmakers.')
     }
 
-    // 5. The Money (Value)
-    if (scores.value >= 75) {
-      positivePoints.push({
-        label: 'VALUE EFFICIENCY',
-        text: breakdowns.value.summary,
-      })
-    } else if (scores.value < 55) {
-      compromisePoints.push({
-        label: 'LUXURY BRAND PREMIUM',
-        text: `At $${watch.price?.toLocaleString()} ${watch.currency}, the price reflects high brand prestige and market demand over raw component yields.`,
-      })
-    }
-
-    // Guarantee minimum of 1 for and against for balanced case file
+    // Fallbacks if lists are empty
     if (positivePoints.length === 0) {
-      positivePoints.push({
-        label: 'HOROLOGICAL COHESION',
-        text: `${watch.brand} executes this model with established production quality aligned with its category.`,
-      })
+      positivePoints.push(`Proven ${watch.brand} manufacturing standards and reliable daily execution`)
     }
     if (compromisePoints.length === 0) {
-      compromisePoints.push({
-        label: 'PRESERVATION & CARE',
-        text: 'Demands standard mechanical maintenance and service intervals to preserve timekeeping tolerances.',
-      })
+      compromisePoints.push('Requires standard mechanical service intervals to maintain factory tolerances.')
     }
 
     return {
@@ -326,6 +276,7 @@ export default function CasePage({ initialSlug }: CasePageProps) {
     thinkTwiceIf: string
     alignmentScore: number
     priorityLabels: string
+    strictnessLabel: string
   } | null>(() => {
     if (!selectedWatch || !evaluation) return null
 
@@ -397,25 +348,34 @@ export default function CasePage({ initialSlug }: CasePageProps) {
         ? selectedPriorities.join(' and ').toLowerCase()
         : 'overall horological merit'
 
+    const strictnessLabel =
+      compromiseTolerance === 'VERY LITTLE'
+        ? 'VERY STRICT'
+        : compromiseTolerance === 'SOME'
+        ? 'BALANCED'
+        : 'OPEN-MINDED'
+
     let why: string
     let thinkTwiceIf: string
 
     if (verdict === 'BUY') {
-      why = `The ${watch.brand} ${watch.model} makes an authoritative buying case for your focus on ${priorityLabels}. It registers an alignment rating of ${alignmentScore.toFixed(1)}/100, backed by strong ${scores.engineering >= scores.heritage ? 'mechanical execution' : 'provenance'} and a case architecture that fits your tolerance for compromise.`
+      why = `The ${watch.brand} ${watch.model} aligns strongly with your focus on ${priorityLabels}. Its core specifications deliver genuine substance where you prioritize it most, with no disqualifying compromises under a ${strictnessLabel.toLowerCase()} evaluation.`
       thinkTwiceIf =
         scores.value < 65
           ? 'You expect maximum dollar-for-spec yields; market pricing reflects luxury cachet over sheer feature count.'
-          : watch.case_thickness_mm && watch.case_thickness_mm > 12.5
-          ? `You need an ultra-thin silhouette; the ${watch.case_thickness_mm}mm case has tangible presence on the wrist.`
-          : 'Your aesthetic leans toward unconventional avant-garde silhouettes rather than classical genre archetypes.'
+          : watch.case_diameter_mm && watch.case_diameter_mm >= 43.0
+          ? `You have slender wrists; the ${watch.case_diameter_mm} mm case has substantial physical presence.`
+          : 'Your aesthetic leans toward unconventional silhouettes rather than established genre archetypes.'
     } else if (verdict === 'CONSIDER') {
-      why = `A compelling timepiece with genuine merit, but one that presents noticeable trade-offs against your selected priorities (${priorityLabels}). At ${alignmentScore.toFixed(1)}/100 alignment, it warrants serious consideration only if you are comfortable balancing ${scores.value < 60 ? 'market pricing against substance' : 'its specific case dimensions against daily wear'}.`
+      why = `A compelling timepiece with genuine merit, but one that presents noticeable trade-offs for a ${priorityLabels}-focused decision. It warrants buying only if you are comfortable balancing its specific compromises against your priorities under a ${strictnessLabel.toLowerCase()} standard.`
       thinkTwiceIf =
-        'You are unwilling to make concessions on your top priorities. There are more focused references in the archive if you demand absolute optimization.'
+        selectedPriorities.length > 0
+          ? `You are unwilling to compromise on ${priorityLabels}. There are more focused references if you demand absolute optimization.`
+          : 'You are looking for an uncompromising specialist rather than an all-around contender.'
     } else {
-      why = `While the ${watch.brand} ${watch.model} is a cataloged reference in horological history, it struggles to make a convincing case for a buyer prioritizing ${priorityLabels} with ${compromiseTolerance.toLowerCase()} tolerance. Its ${alignmentScore.toFixed(1)}/100 alignment highlights friction between what you seek and what this case delivers.`
+      why = `The ${watch.brand} ${watch.model} struggles to make a convincing case when evaluated specifically for ${priorityLabels}. Friction between its specifications and your priorities outweighs its overall appeal under a ${strictnessLabel.toLowerCase()} standard.`
       thinkTwiceIf =
-        'You find deep subjective emotional resonance with this reference that transcends analytical specification matching.'
+        'You have a strong personal or emotional connection to this reference that outweighs analytical specification matching.'
     }
 
     return {
@@ -424,6 +384,7 @@ export default function CasePage({ initialSlug }: CasePageProps) {
       thinkTwiceIf,
       alignmentScore,
       priorityLabels,
+      strictnessLabel,
     }
   }, [selectedWatch, evaluation, selectedPriorities, compromiseTolerance])
 
@@ -530,9 +491,9 @@ export default function CasePage({ initialSlug }: CasePageProps) {
         {/* ================================================================== */}
         <div className="border-b border-hairline pb-8 mb-10 sm:mb-12">
           <div className="flex items-center justify-between gap-4 mb-3">
-            <div className="flex items-center gap-2 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
+            <div className="flex items-center gap-2 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-muted">
               <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span>THE CASE // DISCOVER • EXAMINE • DECIDE</span>
+              <span>WORTH IT? // DISCOVER • EXAMINE • DECIDE</span>
             </div>
 
             {selectedWatch && (
@@ -547,14 +508,36 @@ export default function CasePage({ initialSlug }: CasePageProps) {
           </div>
 
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            The Case
+            Worth It?
           </h1>
-          <p className="mt-2 text-xl sm:text-2xl font-light text-ink tracking-tight uppercase">
-            Discover a watch. Examine the case. Make the call.
+          <p className="mt-2 text-base sm:text-lg font-light text-ink">
+            See the facts. Decide if it's worth it for you.
           </p>
-          <p className="mt-3 text-xs sm:text-sm font-mono text-ink-secondary max-w-3xl leading-relaxed">
-            An objective buying-decision instrument. We examine verified mechanical substance, case architecture, and market yield against what you actually prioritize in a watch.
-          </p>
+
+          {/* Simple "HOW IT WORKS" Intro */}
+          <div className="mt-6 pt-5 border-t border-hairline/80 max-w-3xl">
+            <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-3 font-semibold">
+              HOW IT WORKS
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs font-mono text-ink">
+              <div className="flex items-baseline gap-2">
+                <span className="text-steel font-bold">1.</span>
+                <span>Choose what matters to you.</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-steel font-bold">2.</span>
+                <span>Tell us how strict you are.</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-steel font-bold">3.</span>
+                <span>See the important facts.</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-steel font-bold">4.</span>
+                <span>Get your verdict.</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ================================================================== */}
@@ -799,35 +782,12 @@ export default function CasePage({ initialSlug }: CasePageProps) {
                     {selectedWatch.model}
                   </h2>
 
-                  {/* Quick Specification Architecture */}
-                  <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-hairline text-xs font-mono">
-                    <div>
-                      <dt className="text-[10px] text-ink-muted uppercase tracking-wider">Calibre</dt>
-                      <dd className="mt-1 text-ink font-medium truncate">
-                        {selectedWatch.calibre || selectedWatch.movement_name || '—'}
-                      </dd>
+                  {selectedWatch.category && (
+                    <div className="mt-4 inline-flex items-center gap-2 px-2.5 py-1 border border-hairline bg-warm-white text-[10px] font-mono tracking-widest uppercase text-ink-muted">
+                      <span>CATEGORY // {selectedWatch.category}</span>
+                      {selectedWatch.style && <span>&bull; {selectedWatch.style}</span>}
                     </div>
-                    <div>
-                      <dt className="text-[10px] text-ink-muted uppercase tracking-wider">Diameter</dt>
-                      <dd className="mt-1 text-ink font-medium">
-                        {selectedWatch.case_diameter_mm ? `${selectedWatch.case_diameter_mm} mm` : '—'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] text-ink-muted uppercase tracking-wider">Thickness</dt>
-                      <dd className="mt-1 text-ink font-medium">
-                        {selectedWatch.case_thickness_mm ? `${selectedWatch.case_thickness_mm} mm` : '—'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] text-ink-muted uppercase tracking-wider">MSRP / Est.</dt>
-                      <dd className="mt-1 text-ink font-medium">
-                        {selectedWatch.price !== null
-                          ? `$${selectedWatch.price.toLocaleString()} ${selectedWatch.currency}`
-                          : 'ON REQUEST'}
-                      </dd>
-                    </div>
-                  </dl>
+                  )}
 
                   {/* Editorial Description if available */}
                   {selectedWatch.description && (
@@ -953,7 +913,7 @@ export default function CasePage({ initialSlug }: CasePageProps) {
                 {/* Question 2: Compromise Tolerance */}
                 <div className="lg:col-span-5 border-t lg:border-t-0 lg:border-l border-hairline pt-6 lg:pt-0 lg:pl-8">
                   <div className="text-xs font-mono font-semibold text-ink uppercase mb-3">
-                    2. How much compromise are you willing to accept?
+                    2. HOW STRICT SHOULD WE BE?
                   </div>
 
                   <div className="space-y-2.5">
@@ -985,274 +945,206 @@ export default function CasePage({ initialSlug }: CasePageProps) {
               </div>
             </div>
 
-            {/* 3. The Buying Dimensions & Factual Pillars */}
+            {/* 3. THE FACTS */}
             <div>
-              <div className="border-b border-hairline pb-4 mb-8 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+              <div className="border-b border-hairline pb-4 mb-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
                 <div>
                   <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-                    FACTUAL ARCHIVE DECONSTRUCTION
+                    VERIFIED SPECIFICATIONS
                   </div>
                   <h3 className="font-display text-2xl sm:text-3xl font-normal text-ink uppercase tracking-tight">
-                    The Five Pillars of Evidence
+                    The Facts
                   </h3>
                 </div>
                 <div className="text-xs font-mono text-ink-muted uppercase">
-                  DETERMINISTIC PHASE 2H METHODOLOGY
+                  ARCHIVE DATA RECORD
                 </div>
               </div>
 
-              {/* 5 Factual Pillars Telemetry Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
-                {EVALUATION_PILLARS.map((p, idx) => (
-                  <div key={p.key} className="border border-hairline bg-warm-white p-3.5 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-ink-muted uppercase mb-1">
-                        <span>0{idx + 1}</span>
-                        <span>{p.weightLabel}</span>
-                      </div>
-                      <div className="text-xs font-mono font-semibold text-ink uppercase truncate">
-                        {p.name}
-                      </div>
-                    </div>
-                    <div className="mt-2 text-xl font-display font-normal text-ink">
-                      {evaluation.scores[p.key].toFixed(1)}{' '}
-                      <span className="text-[10px] font-mono text-ink-muted">/ 100</span>
-                    </div>
+              {/* 6 High-Density Factual Blocks */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Movement */}
+                <div className="border border-hairline bg-warm-surface/20 p-5">
+                  <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase mb-2">
+                    MOVEMENT
                   </div>
-                ))}
-              </div>
-
-              {/* 6 Buying Dimension Plates */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* 1. The Machine */}
-                <div className="border border-hairline bg-warm-surface/20 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-ink-muted uppercase mb-2">
-                      <span>THE MACHINE</span>
-                      <span>{evaluation.scores.engineering.toFixed(1)} / 100</span>
-                    </div>
-                    <div className="font-display text-lg uppercase text-ink">Engineering &amp; Mechanics</div>
-                    <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
-                      {evaluation.breakdowns.engineering.summary}
-                    </p>
+                  <div className="font-mono text-sm font-semibold text-ink uppercase">
+                    {selectedWatch.movement_type || 'Mechanical'}
                   </div>
-                  <dl className="mt-4 pt-3 border-t border-hairline text-[11px] font-mono text-ink-muted space-y-1">
+                  <dl className="mt-3 text-xs font-mono text-ink-secondary space-y-1">
                     <div className="flex justify-between">
-                      <span>Movement</span>
-                      <span className="text-ink font-medium truncate max-w-[55%]">{selectedWatch.movement_type || '—'}</span>
+                      <span className="text-ink-muted">Calibre</span>
+                      <span className="text-ink font-medium truncate max-w-[60%]">{selectedWatch.calibre || selectedWatch.movement_name || '—'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Calibre</span>
-                      <span className="text-ink font-medium truncate max-w-[55%]">{selectedWatch.calibre || '—'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Power Reserve</span>
-                      <span className="text-ink font-medium">{selectedWatch.power_reserve_hours ? `${selectedWatch.power_reserve_hours}h` : '—'}</span>
+                      <span className="text-ink-muted">Autonomy</span>
+                      <span className="text-ink font-medium">
+                        {selectedWatch.movement_type?.toLowerCase().includes('quartz') || selectedWatch.movement_name?.toLowerCase().includes('quartz')
+                          ? 'Multi-year battery'
+                          : selectedWatch.power_reserve_hours
+                          ? `${selectedWatch.power_reserve_hours} hours`
+                          : 'Standard mechanical'}
+                      </span>
                     </div>
                   </dl>
                 </div>
 
-                {/* 2. The Object */}
-                <div className="border border-hairline bg-warm-surface/20 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-ink-muted uppercase mb-2">
-                      <span>THE OBJECT</span>
-                      <span>{evaluation.scores.materials.toFixed(1)} / 100</span>
-                    </div>
-                    <div className="font-display text-lg uppercase text-ink">Build &amp; Materials</div>
-                    <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
-                      {evaluation.breakdowns.materials.summary}
-                    </p>
+                {/* Case */}
+                <div className="border border-hairline bg-warm-surface/20 p-5">
+                  <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase mb-2">
+                    CASE
                   </div>
-                  <dl className="mt-4 pt-3 border-t border-hairline text-[11px] font-mono text-ink-muted space-y-1">
+                  <div className="font-mono text-sm font-semibold text-ink uppercase">
+                    {selectedWatch.case_material || 'Stainless Steel'}
+                  </div>
+                  <dl className="mt-3 text-xs font-mono text-ink-secondary space-y-1">
                     <div className="flex justify-between">
-                      <span>Case Metallurgy</span>
-                      <span className="text-ink font-medium truncate max-w-[55%]">{selectedWatch.case_material || '—'}</span>
+                      <span className="text-ink-muted">Diameter</span>
+                      <span className="text-ink font-medium">{selectedWatch.case_diameter_mm ? `${selectedWatch.case_diameter_mm} mm` : '—'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Crystal Defense</span>
-                      <span className="text-ink font-medium truncate max-w-[55%]">{selectedWatch.crystal || '—'}</span>
+                      <span className="text-ink-muted">Thickness</span>
+                      <span className="text-ink font-medium">{selectedWatch.case_thickness_mm ? `${selectedWatch.case_thickness_mm} mm` : '—'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Water Resistance</span>
-                      <span className="text-ink font-medium">{selectedWatch.water_resistance_m ? `${selectedWatch.water_resistance_m}m` : '—'}</span>
+                      <span className="text-ink-muted">Lug-to-Lug</span>
+                      <span className="text-ink font-medium">{selectedWatch.lug_to_lug_mm ? `${selectedWatch.lug_to_lug_mm} mm` : '—'}</span>
                     </div>
                   </dl>
                 </div>
 
-                {/* 3. The Wrist */}
-                <div className="border border-hairline bg-warm-surface/20 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-ink-muted uppercase mb-2">
-                      <span>THE WRIST</span>
-                      <span>{evaluation.scores.wearability.toFixed(1)} / 100</span>
-                    </div>
-                    <div className="font-display text-lg uppercase text-ink">Wearability &amp; Ergonomics</div>
-                    <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
-                      {evaluation.breakdowns.wearability.summary}
-                    </p>
+                {/* Crystal */}
+                <div className="border border-hairline bg-warm-surface/20 p-5">
+                  <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase mb-2">
+                    CRYSTAL
                   </div>
-                  <dl className="mt-4 pt-3 border-t border-hairline text-[11px] font-mono text-ink-muted space-y-1">
-                    <div className="flex justify-between">
-                      <span>Case Diameter</span>
-                      <span className="text-ink font-medium">{selectedWatch.case_diameter_mm ? `${selectedWatch.case_diameter_mm}mm` : '—'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Thickness Profile</span>
-                      <span className="text-ink font-medium">{selectedWatch.case_thickness_mm ? `${selectedWatch.case_thickness_mm}mm` : '—'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Lug-to-Lug Span</span>
-                      <span className="text-ink font-medium">{selectedWatch.lug_to_lug_mm ? `${selectedWatch.lug_to_lug_mm}mm` : '—'}</span>
-                    </div>
-                  </dl>
+                  <div className="font-mono text-sm font-semibold text-ink uppercase">
+                    {selectedWatch.crystal || 'Mineral Glass'}
+                  </div>
+                  <p className="mt-3 text-xs font-mono text-ink-secondary leading-relaxed">
+                    {selectedWatch.crystal?.toLowerCase().includes('sapphire')
+                      ? 'Synthetic sapphire offering maximum scratch resistance.'
+                      : selectedWatch.crystal
+                      ? `${selectedWatch.crystal} with authentic period optical clarity.`
+                      : 'Protective crystal glass facing.'}
+                  </p>
                 </div>
 
-                {/* 4. The Story */}
-                <div className="border border-hairline bg-warm-surface/20 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-ink-muted uppercase mb-2">
-                      <span>THE STORY</span>
-                      <span>{evaluation.scores.heritage.toFixed(1)} / 100</span>
-                    </div>
-                    <div className="font-display text-lg uppercase text-ink">Heritage &amp; Lineage</div>
-                    <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
-                      {evaluation.breakdowns.heritage.summary}
-                    </p>
+                {/* Water Resistance */}
+                <div className="border border-hairline bg-warm-surface/20 p-5">
+                  <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase mb-2">
+                    WATER RESISTANCE
                   </div>
-                  <dl className="mt-4 pt-3 border-t border-hairline text-[11px] font-mono text-ink-muted space-y-1">
+                  <div className="font-mono text-sm font-semibold text-ink uppercase">
+                    {selectedWatch.water_resistance_m !== null ? `${selectedWatch.water_resistance_m} m / ${Math.round(selectedWatch.water_resistance_m / 10)} bar` : '—'}
+                  </div>
+                  <p className="mt-3 text-xs font-mono text-ink-secondary leading-relaxed">
+                    {selectedWatch.water_resistance_m && selectedWatch.water_resistance_m >= 100
+                      ? 'Suitable for swimming, surface water sports, and daily exposure.'
+                      : selectedWatch.water_resistance_m && selectedWatch.water_resistance_m >= 30
+                      ? 'Splash resistant; avoid prolonged submersion or swimming.'
+                      : 'Vintage or dress specification; avoid water contact.'}
+                  </p>
+                </div>
+
+                {/* Heritage */}
+                <div className="border border-hairline bg-warm-surface/20 p-5">
+                  <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase mb-2">
+                    HERITAGE
+                  </div>
+                  <div className="font-mono text-sm font-semibold text-ink uppercase">
+                    {selectedWatch.brand}
+                  </div>
+                  <dl className="mt-3 text-xs font-mono text-ink-secondary space-y-1">
                     <div className="flex justify-between">
-                      <span>Brand Standing</span>
-                      <span className="text-ink font-medium">{selectedWatch.brand}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Lineage Origin</span>
+                      <span className="text-ink-muted">Origin / Release</span>
                       <span className="text-ink font-medium">{selectedWatch.release_year || 'Modern'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Category</span>
-                      <span className="text-ink font-medium">{selectedWatch.category || '—'}</span>
+                      <span className="text-ink-muted">Category</span>
+                      <span className="text-ink font-medium">{selectedWatch.category || 'Horology'}</span>
                     </div>
                   </dl>
                 </div>
 
-                {/* 5. The Money */}
-                <div className="border border-hairline bg-warm-surface/20 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-ink-muted uppercase mb-2">
-                      <span>THE MONEY</span>
-                      <span>{evaluation.scores.value.toFixed(1)} / 100</span>
-                    </div>
-                    <div className="font-display text-lg uppercase text-ink">Value Proposition</div>
-                    <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
-                      {evaluation.breakdowns.value.summary}
-                    </p>
+                {/* Price */}
+                <div className="border border-hairline bg-warm-surface/20 p-5">
+                  <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase mb-2">
+                    PRICE
                   </div>
-                  <dl className="mt-4 pt-3 border-t border-hairline text-[11px] font-mono text-ink-muted space-y-1">
-                    <div className="flex justify-between">
-                      <span>MSRP / Estimate</span>
-                      <span className="text-ink font-medium">{selectedWatch.price ? `$${selectedWatch.price.toLocaleString()} ${selectedWatch.currency}` : 'ON REQUEST'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Yield Tier</span>
-                      <span className="text-ink font-medium">{evaluation.scores.value >= 75 ? 'HIGH YIELD' : evaluation.scores.value >= 55 ? 'BALANCED' : 'PRESTIGE PREMIUM'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Substance Yield</span>
-                      <span className="text-ink font-medium">{evaluation.breakdowns.value.subScores[0].score}/50 PTS</span>
-                    </div>
-                  </dl>
-                </div>
-
-                {/* 6. The Life (Personal Context) */}
-                <div className="border border-hairline bg-warm-surface/40 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-ink-muted uppercase mb-2">
-                      <span>THE LIFE</span>
-                      <span>PERSONAL CONTEXT</span>
-                    </div>
-                    <div className="font-display text-lg uppercase text-ink">Everyday Compatibility</div>
-                    <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
-                      Evaluating how this watch integrates into your life given your focus on {verdictData.priorityLabels} and {compromiseTolerance.toLowerCase()} tolerance for compromises.
-                    </p>
+                  <div className="font-mono text-sm font-semibold text-ink uppercase">
+                    {selectedWatch.price !== null ? `$${selectedWatch.price.toLocaleString()} ${selectedWatch.currency}` : 'Contact brand'}
                   </div>
-                  <div className="mt-4 pt-3 border-t border-hairline text-[11px] font-mono">
-                    <div className="text-ink font-medium uppercase tracking-wider">
-                      PRIORITY ALIGNMENT: {verdictData.alignmentScore.toFixed(1)} / 100
-                    </div>
-                  </div>
+                  <p className="mt-3 text-xs font-mono text-ink-secondary leading-relaxed">
+                    {selectedWatch.price !== null
+                      ? 'Published manufacturer retail price / verified market estimate.'
+                      : 'Price on request from official brand boutique or retailer.'}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* 4. THE CASE: Evidence FOR and AGAINST */}
-            <div className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 lg:p-10">
-              <div className="border-b border-hairline pb-4 mb-8">
-                <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-                  FORENSIC BALANCE SHEET
-                </div>
-                <h3 className="font-display text-2xl sm:text-3xl font-normal text-ink uppercase tracking-tight">
-                  The Case: For &amp; Against
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* FOR COLUMN */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-hairline text-xs font-mono uppercase tracking-widest text-ink font-semibold">
-                    <span className="text-ink">＋</span>
-                    <span>THE CASE FOR</span>
+            {/* 4. WHAT'S GOOD & WHAT TO KNOW */}
+            {caseEvidence && (
+              <div className="border border-hairline bg-warm-surface/20 p-6 sm:p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* WHAT'S GOOD */}
+                  <div>
+                    <div className="flex items-center gap-2 pb-3 border-b border-hairline text-xs font-mono uppercase tracking-widest text-ink font-semibold">
+                      <span className="text-ink">＋</span>
+                      <span>WHAT'S GOOD</span>
+                    </div>
+                    <ul className="mt-4 space-y-2.5">
+                      {caseEvidence.positivePoints.map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5 text-xs font-mono text-ink leading-relaxed">
+                          <span className="text-ink-muted mt-0.5">•</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
-                  <div className="space-y-3">
-                    {caseEvidence.positivePoints.map((item) => (
-                      <div key={item.label} className="p-4 border border-hairline bg-warm-white">
-                        <div className="text-[10px] font-mono tracking-widest uppercase text-ink-muted mb-1">
-                          {item.label}
-                        </div>
-                        <p className="text-xs font-mono text-ink leading-relaxed">
-                          {item.text}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* AGAINST COLUMN */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-hairline text-xs font-mono uppercase tracking-widest text-ink font-semibold">
-                    <span className="text-ink">－</span>
-                    <span>THE CASE AGAINST (COMPROMISES)</span>
-                  </div>
-
-                  <div className="space-y-3">
-                    {caseEvidence.compromisePoints.map((item) => (
-                      <div key={item.label} className="p-4 border border-hairline bg-warm-surface/30">
-                        <div className="text-[10px] font-mono tracking-widest uppercase text-ink-muted mb-1">
-                          {item.label}
-                        </div>
-                        <p className="text-xs font-mono text-ink-secondary leading-relaxed">
-                          {item.text}
-                        </p>
-                      </div>
-                    ))}
+                  {/* WHAT TO KNOW */}
+                  <div>
+                    <div className="flex items-center gap-2 pb-3 border-b border-hairline text-xs font-mono uppercase tracking-widest text-ink font-semibold">
+                      <span className="text-ink">－</span>
+                      <span>WHAT TO KNOW</span>
+                    </div>
+                    <ul className="mt-4 space-y-2.5">
+                      {caseEvidence.compromisePoints.map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5 text-xs font-mono text-ink-secondary leading-relaxed">
+                          <span className="text-ink-muted mt-0.5">•</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* 5. THE VERDICT */}
             <div className="border border-hairline bg-warm-surface/40 p-8 sm:p-10 lg:p-12">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-8">
                 <div>
                   <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted mb-2">
-                    THE CALL // INDEPENDENT EDITORIAL VERDICT
+                    THE VERDICT
                   </div>
                   <h3 className="font-display text-3xl sm:text-4xl font-normal text-ink uppercase tracking-tight">
-                    The Verdict
+                    The Decision
                   </h3>
-                  <div className="mt-2 text-xs font-mono text-ink-secondary">
-                    EVALUATED AGAINST {selectedPriorities.length > 0 ? selectedPriorities.join(' & ') : 'ARCHIVE BASELINE'} • {compromiseTolerance} COMPROMISE TOLERANCE
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-ink-secondary">
+                    <span>
+                      <strong className="text-ink-muted uppercase">Evaluated for:</strong> {verdictData.priorityLabels}
+                    </span>
+                    <span className="text-hairline">•</span>
+                    <span>
+                      <strong className="text-ink-muted uppercase">Strictness:</strong> {verdictData.strictnessLabel}
+                    </span>
+                    <span className="text-hairline">•</span>
+                    <span>
+                      <strong className="text-ink-muted uppercase">Alignment:</strong> {verdictData.alignmentScore.toFixed(0)}%
+                    </span>
                   </div>
                 </div>
 

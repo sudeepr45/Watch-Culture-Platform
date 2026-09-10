@@ -28,9 +28,9 @@ const FUTURE_MODULES: FeatureModule[] = [
   },
   {
     tag: 'EXAMINATION // VERDICT',
-    title: 'THE CASE',
+    title: 'WORTH IT?',
     description:
-      'Discover a watch. Examine the case. Make the call. An objective buying-decision instrument evaluating substance against your priorities.',
+      "See the facts. Decide if it's worth it for you. An objective buying-decision instrument evaluating substance against your priorities.",
     status: 'DECISION INSTRUMENT',
     to: '/case',
   },
