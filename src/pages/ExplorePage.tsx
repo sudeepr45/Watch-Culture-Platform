@@ -27,11 +27,12 @@ const FUTURE_MODULES: FeatureModule[] = [
     to: '/battles',
   },
   {
-    tag: 'DECONSTRUCTION // VALUE',
-    title: 'WORTH IT?',
+    tag: 'EXAMINATION // VERDICT',
+    title: 'THE CASE',
     description:
-      'Critical breakdowns of retail vs secondary value, finishing quality, and horological merit.',
-    status: 'EDITORIAL ANALYSIS',
+      'Discover a watch. Examine the case. Make the call. An objective buying-decision instrument evaluating substance against your priorities.',
+    status: 'DECISION INSTRUMENT',
+    to: '/case',
   },
   {
     tag: 'ACADEMY // FUNDAMENTALS',

@@ -17,6 +17,7 @@ import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
 import SearchPage from './pages/SearchPage'
 import RandomWatchPage from './pages/RandomWatchPage'
+import CasePage from './pages/CasePage'
 
 function AppContent() {
   const { pathname } = useRouter()
@@ -51,6 +52,12 @@ function AppContent() {
       return <Watch101TopicPage slug={slug} />
     }
 
+    // Dynamic The Case route: /case/:slug
+    if (pathname.startsWith('/case/') && pathname !== '/case') {
+      const slug = pathname.replace('/case/', '')
+      return <CasePage initialSlug={slug} />
+    }
+
     switch (pathname) {
       case '/stories':
         return <StoriesPage />
@@ -64,6 +71,8 @@ function AppContent() {
         return <ExplorePage />
       case '/random':
         return <RandomWatchPage />
+      case '/case':
+        return <CasePage />
       case '/profile':
         return <ProfilePage />
       case '/login':
