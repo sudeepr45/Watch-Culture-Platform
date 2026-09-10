@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { useAuth } from '../context/useAuth'
 
@@ -332,8 +333,23 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
               </div>
             )}
 
+            {/* Legal Terms Notice on Signup */}
+            {mode === 'signup' && (
+              <p className="text-[11px] font-mono text-ink-muted leading-relaxed text-center">
+                By creating an account, you agree to our{' '}
+                <Link to="/terms" className="text-ink underline hover:text-steel">
+                  Terms &amp; Conditions
+                </Link>{' '}
+                and{' '}
+                <Link to="/privacy" className="text-ink underline hover:text-steel">
+                  Privacy Policy
+                </Link>
+                .
+              </p>
+            )}
+
             {/* Submit Action */}
-            <div className="pt-3">
+            <div className="pt-1">
               <Button
                 type="submit"
                 variant="primary"
@@ -353,7 +369,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
           {/* Switch helper footer */}
           <div className="mt-8 pt-6 border-t border-hairline flex items-center justify-between text-xs font-mono text-ink-secondary">
             <span>
-              {mode === 'signup' ? 'Already registered?' : 'New to Project Watch?'}
+              {mode === 'signup' ? 'Already registered?' : 'New collector?'}
             </span>
             <button
               type="button"

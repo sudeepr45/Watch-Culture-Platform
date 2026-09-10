@@ -2,7 +2,7 @@ import { RouterProvider } from './router'
 import { useRouter } from './router/useRouter'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/layout/Navbar'
-import Container from './components/common/Container'
+import Footer from './components/layout/Footer'
 import HomePage from './pages/HomePage'
 import StoriesPage from './pages/StoriesPage'
 import StoryDetailPage from './pages/StoryDetailPage'
@@ -21,6 +21,13 @@ import CasePage from './pages/CasePage'
 import CuratorPage from './pages/CuratorPage'
 import CuratorNewWatchPage from './pages/CuratorNewWatchPage'
 import CuratorEditWatchPage from './pages/CuratorEditWatchPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
+import CommunityGuidelinesPage from './pages/CommunityGuidelinesPage'
+import DisclaimerPage from './pages/DisclaimerPage'
+import CopyrightPage from './pages/CopyrightPage'
+import AboutPage from './pages/AboutPage'
+import ContactPage from './pages/ContactPage'
 
 function AppContent() {
   const { pathname } = useRouter()
@@ -98,6 +105,20 @@ function AppContent() {
         return <LoginPage initialMode="signup" />
       case '/search':
         return <SearchPage />
+      case '/privacy':
+        return <PrivacyPage />
+      case '/terms':
+        return <TermsPage />
+      case '/community-guidelines':
+        return <CommunityGuidelinesPage />
+      case '/disclaimer':
+        return <DisclaimerPage />
+      case '/copyright':
+        return <CopyrightPage />
+      case '/about':
+        return <AboutPage />
+      case '/contact':
+        return <ContactPage />
       case '/':
       default:
         return <HomePage />
@@ -112,21 +133,8 @@ function AppContent() {
       {/* Dynamic Page Content */}
       <main className="flex-grow">{renderPage()}</main>
 
-      {/* Understated Editorial Colophon */}
-      <footer className="border-t border-hairline bg-warm-white py-10">
-        <Container>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono tracking-[0.16em] text-ink-muted uppercase">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-ink">MOERI &amp; JEANNERET</span>
-              <span>&bull;</span>
-              <span>CULTURAL ARCHIVE &amp; DISPATCHES</span>
-            </div>
-            <div>
-              &copy; {new Date().getFullYear()} MOERI &amp; JEANNERET. ALL RIGHTS RESERVED.
-            </div>
-          </div>
-        </Container>
-      </footer>
+      {/* Comprehensive Editorial Footer */}
+      <Footer />
     </div>
   )
 }
