@@ -110,7 +110,6 @@ export default function Hero() {
                 {/* Top Archival Metadata Header */}
                 <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono tracking-[0.2em] text-warm-white/40 uppercase">
                   <span>MONOGRAPH // SPECIMEN 01</span>
-                  <span>EST. 1893</span>
                 </div>
 
                 {/* Central Deliberate Brand Lockup Presentation */}
