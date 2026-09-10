@@ -48,8 +48,8 @@ export default function WatchesPage() {
       <Container>
         {/* Page Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>CENTRAL WATCH DATABASE &bull; INDEX</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -65,7 +65,7 @@ export default function WatchesPage() {
           <div className="relative border border-hairline bg-warm-surface/30 p-12 sm:p-20 text-center max-w-3xl mx-auto">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -129,7 +129,7 @@ export default function WatchesPage() {
 
             <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
               <span>POSTGRESQL ARCHITECTURE</span>
-              <span className="text-gold">SUPABASE WATCH DATABASE</span>
+              <span className="text-ink">SUPABASE WATCH DATABASE</span>
             </div>
           </div>
         )}

@@ -346,7 +346,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
           <div className="border border-hairline bg-warm-surface/30 p-16 text-center max-w-2xl mx-auto">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -485,11 +485,11 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
               <button
                 type="button"
                 onClick={() => navigate(`/stories/${story.slug}/edit`)}
-                className="group inline-flex items-center gap-2 px-3.5 py-1.5 border border-hairline bg-warm-white hover:border-gold hover:bg-warm-surface/40 text-[10px] font-mono tracking-[0.22em] uppercase text-ink transition-all duration-200 cursor-pointer"
+                className="group inline-flex items-center gap-2 px-3.5 py-1.5 border border-hairline bg-warm-white hover:border-ink hover:bg-warm-surface/60 text-[10px] font-mono tracking-[0.22em] uppercase text-ink transition-all duration-200 cursor-pointer"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-gold transition-transform duration-200 group-hover:scale-125" aria-hidden="true" />
+                <span className="w-1.5 h-1.5 rounded-full bg-steel transition-transform duration-200 group-hover:scale-125" aria-hidden="true" />
                 <span>EDIT DISPATCH</span>
-                <span className="text-ink-muted group-hover:text-gold group-hover:translate-x-0.5 transition-all duration-200" aria-hidden="true">&rarr;</span>
+                <span className="text-ink-muted group-hover:text-ink group-hover:translate-x-0.5 transition-all duration-200" aria-hidden="true">&rarr;</span>
               </button>
 
               <div className="h-3 w-px bg-hairline" aria-hidden="true" />
@@ -500,9 +500,9 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
                   setDeleteError(null)
                   setDeleteDialogOpen(true)
                 }}
-                className="group inline-flex items-center gap-1.5 px-3 py-1.5 border border-transparent hover:border-hairline text-[10px] font-mono tracking-[0.22em] uppercase text-ink-muted hover:text-accent-burgundy hover:bg-warm-surface/30 transition-all duration-200 cursor-pointer"
+                className="group inline-flex items-center gap-1.5 px-3 py-1.5 border border-transparent hover:border-hairline text-[10px] font-mono tracking-[0.22em] uppercase text-ink-muted hover:text-rose-800 hover:bg-warm-surface/30 transition-all duration-200 cursor-pointer"
               >
-                <span className="opacity-0 group-hover:opacity-100 text-accent-burgundy transition-opacity duration-200 text-xs leading-none" aria-hidden="true">&times;</span>
+                <span className="opacity-0 group-hover:opacity-100 text-rose-800 transition-opacity duration-200 text-xs leading-none" aria-hidden="true">&times;</span>
                 <span>DELETE DISPATCH</span>
               </button>
             </div>
@@ -512,8 +512,8 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
         {/* Story Header */}
         <div className="max-w-4xl mx-auto border-b border-hairline pb-8 mb-10 sm:mb-12">
           {/* Section Indicator */}
-          <div className="flex items-center gap-2 mb-4 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>COMMUNITY DISPATCH // WRIST STORY</span>
           </div>
 
@@ -593,7 +593,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
         {/* Personal Story Narrative */}
         <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
           <div className="mb-6 flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>THE COLLECTOR&rsquo;S NOTE</span>
           </div>
 
@@ -622,7 +622,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
               }`}
             >
               <svg
-                className="w-3.5 h-3.5 transition-transform active:scale-125"
+                className="w-3.5 h-3.5 transition-colors duration-200"
                 viewBox="0 0 24 24"
                 fill={userHasLiked ? 'currentColor' : 'none'}
                 stroke="currentColor"
@@ -653,7 +653,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
               }`}
             >
               <svg
-                className="w-3.5 h-3.5 transition-transform active:scale-125"
+                className="w-3.5 h-3.5 transition-colors duration-200"
                 viewBox="0 0 24 24"
                 fill={userHasBookmarked ? 'currentColor' : 'none'}
                 stroke="currentColor"
@@ -752,7 +752,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
           <div className="mb-8 pb-4 border-b border-hairline flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
             <div>
               <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                 <span>COMMUNITY NOTES // DISCUSSIONS</span>
               </div>
               <h2 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
@@ -984,8 +984,8 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
           >
             {/* Editorial Folio Header Bar */}
             <div className="flex items-center justify-between pb-5 border-b border-hairline mb-6">
-              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-accent-burgundy uppercase">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-burgundy" aria-hidden="true" />
+              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-rose-800 uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-800" aria-hidden="true" />
                 <span>PERMANENT REMOVAL // ARCHIVE ACTION</span>
               </div>
               <button
@@ -1044,7 +1044,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
             {/* Error if delete failed */}
             {deleteError && (
               <div className="mb-6 p-3.5 border border-hairline bg-warm-surface/60 flex items-start gap-2.5">
-                <span className="text-accent-burgundy text-xs font-mono shrink-0 font-bold">&bull;</span>
+                <span className="text-rose-800 text-xs font-mono shrink-0 font-bold">&bull;</span>
                 <p className="text-xs font-mono text-ink tracking-wide leading-relaxed">
                   {deleteError}
                 </p>
@@ -1067,7 +1067,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
                 size="md"
                 disabled={deletingStory}
                 onClick={handleConfirmDeleteStory}
-                className="w-full sm:w-auto !bg-accent-burgundy hover:!bg-neutral-900 !border-accent-burgundy hover:!border-neutral-900 text-warm-white font-mono tracking-[0.18em] transition-all duration-200"
+                className="w-full sm:w-auto !bg-rose-800 hover:!bg-neutral-900 !border-rose-800 hover:!border-neutral-900 text-warm-white font-mono tracking-[0.18em] transition-all duration-200"
               >
                 {deletingStory ? 'REMOVING DISPATCH...' : 'DELETE STORY'}
               </Button>

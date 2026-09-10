@@ -20,8 +20,8 @@ export default function SectionHeading({
   return (
     <div className={`max-w-4xl ${alignmentStyles} ${className}`}>
       {label && (
-        <div className={`flex items-center gap-2 mb-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-secondary ${align === 'center' ? 'justify-center' : ''}`}>
-          <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+        <div className={`flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted ${align === 'center' ? 'justify-center' : ''}`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
           <span>{label}</span>
         </div>
       )}

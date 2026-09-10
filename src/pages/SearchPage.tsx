@@ -127,8 +127,8 @@ export default function SearchPage() {
       <Container>
         {/* Editorial Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>GLOBAL REPOSITORY &bull; SEARCH &amp; DISCOVERY</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -246,7 +246,7 @@ export default function SearchPage() {
           <div className="border border-hairline bg-warm-surface/20 p-16 text-center max-w-2xl mx-auto my-8">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -427,7 +427,7 @@ export default function SearchPage() {
                       <div>
                         {/* Topic Category & Read Time */}
                         <div className="flex items-center justify-between gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3">
-                          <span className="font-semibold text-gold">{topic.category}</span>
+                          <span className="font-semibold text-ink">{topic.category}</span>
                           <span>{topic.readTimeMinutes} MIN</span>
                         </div>
 
@@ -442,7 +442,7 @@ export default function SearchPage() {
                         {/* Interactive Widget indicator */}
                         {topic.interactiveType && (
                           <div className="mt-4 inline-flex items-center gap-1.5 px-2 py-0.5 border border-hairline bg-warm-white text-[8px] font-mono tracking-widest uppercase text-ink font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                             <span>INTERACTIVE LAB</span>
                           </div>
                         )}
@@ -451,7 +451,7 @@ export default function SearchPage() {
                       {/* Footer Callout */}
                       <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono uppercase text-ink-muted group-hover:text-ink transition-colors">
                         <span className="tracking-wider">EXPLORE LESSON</span>
-                        <span className="text-gold font-semibold transition-transform duration-300 group-hover:translate-x-1">
+                        <span className="text-ink font-semibold transition-transform duration-200 group-hover:translate-x-1">
                           &rarr;
                         </span>
                       </div>

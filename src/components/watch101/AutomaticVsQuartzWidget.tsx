@@ -16,7 +16,7 @@ export default function AutomaticVsQuartzWidget() {
       {/* Widget Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hairline pb-4 mb-6">
         <div>
-          <div className="text-[10px] font-mono tracking-[0.25em] text-gold uppercase mb-1">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
             INTERACTIVE LAB // MOVEMENT COMPARATOR
           </div>
           <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
@@ -63,7 +63,7 @@ export default function AutomaticVsQuartzWidget() {
               <div>
                 <div className="flex items-center justify-between mb-3 text-[10px] font-mono uppercase tracking-widest text-ink-muted">
                   <span>MECHANICAL</span>
-                  <span className="text-gold font-semibold">SWEEPING SECONDS</span>
+                  <span className="text-ink font-semibold">SWEEPING SECONDS</span>
                 </div>
                 <h4 className="font-display text-2xl font-normal text-ink uppercase mb-2">
                   Automatic Movement
@@ -234,7 +234,7 @@ export default function AutomaticVsQuartzWidget() {
 
             {/* Recommendation Result Banner */}
             <div className="border border-ink bg-ink text-warm-white p-6 mt-6">
-              <div className="text-[10px] font-mono tracking-[0.2em] text-gold uppercase mb-1">
+              <div className="text-[10px] font-mono tracking-[0.2em] text-warm-white/70 uppercase mb-1">
                 TAILORED RECOMMENDATION
               </div>
               <h4 className="font-display text-2xl font-normal uppercase tracking-tight">

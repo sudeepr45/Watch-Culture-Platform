@@ -52,8 +52,8 @@ export default function StoriesPage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
-              <div className="flex items-center gap-2.5 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+              <div className="flex items-center gap-2.5 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                 <span>COMMUNITY ARCHIVE &bull; DISPATCHES</span>
                 <span className="text-ink-muted">&bull;</span>
                 <span className="text-ink-muted">VOL. I</span>
@@ -92,7 +92,7 @@ export default function StoriesPage() {
           <div className="relative border border-hairline bg-warm-surface/30 p-12 sm:p-20 text-center max-w-3xl mx-auto">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -156,7 +156,7 @@ export default function StoriesPage() {
 
             <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
               <span>COMMUNITY REPOSITORY</span>
-              <span className="text-gold">SUPABASE STORIES ENGINE</span>
+              <span className="text-ink">SUPABASE STORIES ENGINE</span>
             </div>
           </div>
         )}
@@ -217,7 +217,7 @@ export default function StoriesPage() {
 
             <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
               <span>AUTHENTICATED ARCHIVE</span>
-              <span className="text-gold">COMMUNITY PUBLISHING ENGINE</span>
+              <span className="text-ink">COMMUNITY PUBLISHING ENGINE</span>
             </div>
           </div>
         )}
@@ -231,7 +231,7 @@ export default function StoriesPage() {
               {/* Feed Telemetry Bar */}
               <div className="mb-8 flex items-center justify-between text-[11px] font-mono tracking-[0.2em] text-ink-muted uppercase">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                   <span>COMMUNITY DISPATCHES // {stories.length} {stories.length === 1 ? 'ENTRY' : 'ENTRIES'}</span>
                 </div>
                 <span>ORDER: CHRONOLOGICAL // NEWEST</span>
@@ -276,7 +276,7 @@ export default function StoriesPage() {
                     <div>
                       {/* Lead Section Marker */}
                       <div className="flex items-center gap-2 mb-4 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                         <span>LEAD DISPATCH // SPOTLIGHT</span>
                       </div>
 
@@ -337,7 +337,7 @@ export default function StoriesPage() {
                           </>
                         )}
                       </div>
-                      <span className="text-ink font-semibold group-hover:text-gold transition-colors flex items-center gap-1">
+                      <span className="text-ink font-semibold group-hover:text-neutral-700 transition-colors flex items-center gap-1">
                         READ DISPATCH <span className="group-hover:translate-x-1.5 transition-transform inline-block">&rarr;</span>
                       </span>
                     </div>
@@ -436,7 +436,7 @@ export default function StoriesPage() {
                                 </span>
                               )}
                             </div>
-                            <span className="text-ink font-semibold group-hover:text-gold transition-colors flex items-center gap-1 flex-shrink-0">
+                            <span className="text-ink font-semibold group-hover:text-neutral-700 transition-colors flex items-center gap-1 flex-shrink-0">
                               READ STORY <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>
                             </span>
                           </div>

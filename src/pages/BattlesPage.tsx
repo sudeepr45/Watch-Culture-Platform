@@ -279,8 +279,8 @@ export default function BattlesPage() {
       <Container>
         {/* Page Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>INTERACTIVE ARENA &bull; HEAD-TO-HEAD SHOWDOWN</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -296,7 +296,7 @@ export default function BattlesPage() {
           <div className="border border-hairline bg-warm-surface/30 p-12 sm:p-20 text-center max-w-3xl mx-auto mb-12">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -557,8 +557,8 @@ export default function BattlesPage() {
                 {deterministicEvaluation && (
                   <div className="mb-20">
                     <div className="border-b border-hairline pb-6 mb-10">
-                      <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                      <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                         <span>DETERMINISTIC BENCHMARK // 5-PILLAR EVALUATION ENGINE</span>
                       </div>
                       <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
@@ -571,12 +571,12 @@ export default function BattlesPage() {
 
                     {/* Benchmark Composite Score Card */}
                     <div className="border border-hairline bg-ink text-warm-white p-8 sm:p-10 mb-10 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-80 h-80 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
+                      <div className="absolute top-0 right-0 w-80 h-80 bg-steel/5 rounded-full blur-3xl pointer-events-none" />
 
                       {/* Top Bar: Verdict Meta */}
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-warm-white/15 pb-6 mb-8">
                         <div>
-                          <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gold mb-1">
+                          <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-warm-white/80 mb-1">
                             OBJECTIVE HOROLOGICAL SCORING &bull; ZERO FABRICATED DATA
                           </div>
                           <div className="text-xs font-mono text-warm-white/70">
@@ -592,12 +592,12 @@ export default function BattlesPage() {
                             </span>
                           )}
                           {deterministicEvaluation.verdictType === 'SLIGHT EDGE' && (
-                            <span className="border border-gold/50 bg-gold/15 text-gold px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-semibold">
+                            <span className="border border-warm-white/40 bg-warm-white/10 text-warm-white px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-semibold">
                               SLIGHT EDGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
                             </span>
                           )}
                           {deterministicEvaluation.verdictType === 'CLEAR ADVANTAGE' && (
-                            <span className="border border-gold bg-gold text-ink px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-bold">
+                            <span className="border border-warm-white bg-warm-white text-ink px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-bold">
                               CLEAR ADVANTAGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
                             </span>
                           )}
@@ -625,7 +625,7 @@ export default function BattlesPage() {
                             <div
                               className={`h-full transition-all duration-500 ${
                                 deterministicEvaluation.winnerSlot === 1
-                                  ? 'bg-gold'
+                                  ? 'bg-warm-white'
                                   : 'bg-warm-white/60'
                               }`}
                               style={{ width: `${deterministicEvaluation.contender1.overallScore}%` }}
@@ -636,7 +636,7 @@ export default function BattlesPage() {
                         {/* Center Versus Divider */}
                         <div className="md:col-span-2 flex flex-col items-center justify-center text-center py-2">
                           <span className="font-mono text-xs tracking-widest text-warm-white/30 uppercase font-light">VS</span>
-                          <span className="font-mono text-[10px] text-gold tracking-widest uppercase mt-1">
+                          <span className="font-mono text-[10px] text-warm-white/80 tracking-widest uppercase mt-1">
                             &Delta; {deterministicEvaluation.margin.toFixed(1)}
                           </span>
                         </div>
@@ -660,7 +660,7 @@ export default function BattlesPage() {
                             <div
                               className={`h-full transition-all duration-500 ml-auto ${
                                 deterministicEvaluation.winnerSlot === 2
-                                  ? 'bg-gold'
+                                  ? 'bg-warm-white'
                                   : 'bg-warm-white/60'
                               }`}
                               style={{ width: `${deterministicEvaluation.contender2.overallScore}%` }}
@@ -671,7 +671,7 @@ export default function BattlesPage() {
 
                       {/* Editorial Benchmark Verdict Callout */}
                       <div>
-                        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gold mb-2">
+                        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-warm-white/80 mb-2">
                           {deterministicEvaluation.headline}
                         </div>
                         <p className="text-xs sm:text-sm text-warm-white/90 font-mono leading-relaxed max-w-4xl">
@@ -701,7 +701,7 @@ export default function BattlesPage() {
                                   <span className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
                                     PILLAR 0{idx + 1}
                                   </span>
-                                  <span className="text-[10px] font-mono tracking-widest text-gold uppercase font-semibold">
+                                  <span className="text-[10px] font-mono tracking-widest text-ink uppercase font-semibold">
                                     [{pillar.weightLabel} WEIGHT]
                                   </span>
                                 </div>
@@ -717,11 +717,11 @@ export default function BattlesPage() {
                                     PARITY // EVENLY MATCHED
                                   </span>
                                 ) : pAdvantage.winnerSlot === 1 ? (
-                                  <span className="text-gold font-semibold border border-gold/40 px-2.5 py-1 bg-warm-white">
+                                  <span className="text-ink font-semibold border border-ink/40 px-2.5 py-1 bg-warm-white">
                                     {watch1.brand} ADVANTAGE (+{pAdvantage.delta.toFixed(1)} PTS)
                                   </span>
                                 ) : (
-                                  <span className="text-gold font-semibold border border-gold/40 px-2.5 py-1 bg-warm-white">
+                                  <span className="text-ink font-semibold border border-ink/40 px-2.5 py-1 bg-warm-white">
                                     {watch2.brand} ADVANTAGE (+{pAdvantage.delta.toFixed(1)} PTS)
                                   </span>
                                 )}
@@ -731,7 +731,7 @@ export default function BattlesPage() {
                             {/* Side-by-Side Pillar Comparison */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               {/* Contender 1 Pillar Box */}
-                              <div className={`p-4 border ${pAdvantage.winnerSlot === 1 ? 'border-gold/40 bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
+                              <div className={`p-4 border ${pAdvantage.winnerSlot === 1 ? 'border-ink bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
                                 <div className="flex items-center justify-between text-xs font-mono mb-2">
                                   <span className="text-ink-muted tracking-wider uppercase">{watch1.brand}</span>
                                   <span className="font-display text-xl font-normal text-ink">{s1.toFixed(1)} <span className="text-[10px] font-mono text-ink-muted">/ 100</span></span>
@@ -739,7 +739,7 @@ export default function BattlesPage() {
                                 {/* Visual score bar */}
                                 <div className="w-full bg-warm-surface/80 h-1 mb-3 overflow-hidden">
                                   <div
-                                    className={`h-full ${pAdvantage.winnerSlot === 1 ? 'bg-gold' : 'bg-ink/40'}`}
+                                    className={`h-full ${pAdvantage.winnerSlot === 1 ? 'bg-steel' : 'bg-ink/30'}`}
                                     style={{ width: `${s1}%` }}
                                   />
                                 </div>
@@ -754,7 +754,7 @@ export default function BattlesPage() {
                               </div>
 
                               {/* Contender 2 Pillar Box */}
-                              <div className={`p-4 border ${pAdvantage.winnerSlot === 2 ? 'border-gold/40 bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
+                              <div className={`p-4 border ${pAdvantage.winnerSlot === 2 ? 'border-ink bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
                                 <div className="flex items-center justify-between text-xs font-mono mb-2">
                                   <span className="text-ink-muted tracking-wider uppercase">{watch2.brand}</span>
                                   <span className="font-display text-xl font-normal text-ink">{s2.toFixed(1)} <span className="text-[10px] font-mono text-ink-muted">/ 100</span></span>
@@ -762,7 +762,7 @@ export default function BattlesPage() {
                                 {/* Visual score bar */}
                                 <div className="w-full bg-warm-surface/80 h-1 mb-3 overflow-hidden">
                                   <div
-                                    className={`h-full ${pAdvantage.winnerSlot === 2 ? 'bg-gold' : 'bg-ink/40'}`}
+                                    className={`h-full ${pAdvantage.winnerSlot === 2 ? 'bg-steel' : 'bg-ink/30'}`}
                                     style={{ width: `${s2}%` }}
                                   />
                                 </div>
@@ -787,8 +787,8 @@ export default function BattlesPage() {
                 {/* SECTION 2: COLLECTOR'S VERDICT (YOUR VERDICT)            */}
                 {/* -------------------------------------------------------- */}
                 <div className="border-b border-hairline pb-6 mb-10">
-                  <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                  <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                     <span>COLLECTOR'S VERDICT // INTERACTIVE SHOWDOWN</span>
                   </div>
                   <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
@@ -801,11 +801,11 @@ export default function BattlesPage() {
 
                 {/* Scorecard Summary Top Banner */}
                 <div className="border border-hairline bg-ink text-warm-white p-8 sm:p-10 mb-16 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-steel/5 rounded-full blur-3xl pointer-events-none" />
 
                   <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-warm-white/15 pb-8 mb-8">
                     <div>
-                      <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gold mb-1">
+                      <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-warm-white/70 mb-1">
                         COLLECTOR'S VERDICT // SESSION SCORECARD
                       </div>
                       <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight uppercase">
@@ -843,12 +843,12 @@ export default function BattlesPage() {
                       {totalVotesCast === 0 ? (
                         <span>AWAITING JUDGMENT &bull; CAST VOTES IN THE 5 CATEGORIES BELOW</span>
                       ) : watch1Score > watch2Score ? (
-                        <span className="text-gold font-semibold">
+                        <span className="text-warm-white font-semibold">
                           VERDICT: {watch1.brand} {watch1.model.toUpperCase()} LEADS ({watch1Score} &mdash; {watch2Score})
                           {undecidedCount > 0 ? ` [${undecidedCount} REMAINING]` : ' [DECISIVE WIN]'}
                         </span>
                       ) : watch2Score > watch1Score ? (
-                        <span className="text-gold font-semibold">
+                        <span className="text-warm-white font-semibold">
                           VERDICT: {watch2.brand} {watch2.model.toUpperCase()} LEADS ({watch2Score} &mdash; {watch1Score})
                           {undecidedCount > 0 ? ` [${undecidedCount} REMAINING]` : ' [DECISIVE WIN]'}
                         </span>
@@ -873,7 +873,7 @@ export default function BattlesPage() {
                       <button
                         type="button"
                         onClick={handleResetBattle}
-                        className="text-[10px] font-mono uppercase tracking-widest text-gold hover:underline cursor-pointer"
+                        className="text-[10px] font-mono uppercase tracking-widest text-warm-white/80 hover:text-warm-white hover:underline cursor-pointer"
                       >
                         RESET BATTLE &bull; CHOOSE NEW CONTENDERS
                       </button>
@@ -884,8 +884,8 @@ export default function BattlesPage() {
                 {/* Section: 5-Category Interactive Voting */}
                 <div className="mb-20">
                   <div className="border-b border-hairline pb-6 mb-10">
-                    <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                    <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                       <span>THE 5 PILLARS // INTERACTIVE JUDGING</span>
                     </div>
                     <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
@@ -933,11 +933,11 @@ export default function BattlesPage() {
                                 }`}
                               >
                                 <div className="flex items-center justify-between text-[9px] font-mono tracking-[0.2em] uppercase mb-1">
-                                  <span className={currentVote === 1 ? 'text-gold font-semibold' : 'text-ink-muted'}>
+                                  <span className={currentVote === 1 ? 'text-steel font-semibold' : 'text-ink-muted'}>
                                     CONTENDER 01
                                   </span>
                                   {currentVote === 1 && (
-                                    <span className="text-gold font-bold tracking-widest">&#10003; WINNER</span>
+                                    <span className="text-steel font-bold tracking-widest">&#10003; WINNER</span>
                                   )}
                                 </div>
                                 <div className="font-display text-base sm:text-lg uppercase">
@@ -968,11 +968,11 @@ export default function BattlesPage() {
                                 }`}
                               >
                                 <div className="flex items-center justify-between text-[9px] font-mono tracking-[0.2em] uppercase mb-1">
-                                  <span className={currentVote === 2 ? 'text-gold font-semibold' : 'text-ink-muted'}>
+                                  <span className={currentVote === 2 ? 'text-steel font-semibold' : 'text-ink-muted'}>
                                     CONTENDER 02
                                   </span>
                                   {currentVote === 2 && (
-                                    <span className="text-gold font-bold tracking-widest">&#10003; WINNER</span>
+                                    <span className="text-steel font-bold tracking-widest">&#10003; WINNER</span>
                                   )}
                                 </div>
                                 <div className="font-display text-base sm:text-lg uppercase">
@@ -1009,8 +1009,8 @@ export default function BattlesPage() {
                 {/* Section: Side-by-Side 17-Spec Technical Dossier */}
                 <div className="mb-20">
                   <div className="border-b border-hairline pb-6 mb-10">
-                    <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                    <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                       <span>ENGINEERING ARCHITECTURE // SPEC MATRIX</span>
                     </div>
                     <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">

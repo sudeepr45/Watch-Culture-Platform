@@ -12,10 +12,10 @@ interface FeatureModule {
 const FUTURE_MODULES: FeatureModule[] = [
   {
     tag: 'CATALOG // ARCHIVE',
-    title: 'WATCH DATABASE',
+    title: 'WATCH ARCHIVE',
     description:
       'Curated technical specifications, reference history, calibre architecture, and case dimensions.',
-    status: 'DATABASE CONNECTING SOON',
+    status: 'CENTRAL ARCHIVE',
     to: '/watches',
   },
   {
@@ -66,8 +66,8 @@ export default function ExplorePage() {
       <Container>
         {/* Page Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>DISCOVERY ARENA</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -100,7 +100,7 @@ export default function ExplorePage() {
 
                 <div className="mt-8 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase">
                   <span className="text-ink-muted">{mod.status}</span>
-                  <span className="text-gold font-semibold group-hover:translate-x-1 transition-transform">
+                  <span className="text-ink-secondary group-hover:text-ink group-hover:translate-x-1 transition-all duration-200">
                     &rarr;
                   </span>
                 </div>
@@ -108,7 +108,7 @@ export default function ExplorePage() {
             )
 
             const className =
-              'relative group border border-hairline bg-warm-surface/30 p-7 sm:p-8 flex flex-col justify-between transition-colors duration-300 hover:border-ink hover:bg-warm-surface/60 cursor-pointer block'
+              'relative group border border-hairline bg-warm-surface/30 p-7 sm:p-8 flex flex-col justify-between transition-colors duration-200 hover:border-ink hover:bg-warm-surface/60 cursor-pointer block'
 
             if (mod.to) {
               return (

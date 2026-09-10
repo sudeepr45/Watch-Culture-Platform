@@ -109,8 +109,8 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
       <Container>
         {/* Page Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>COLLECTOR GATEWAY &bull; SUPABASE AUTH</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -153,8 +153,8 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
 
           {/* Success / Email Confirmation Banner */}
           {confirmationNotice && (
-            <div className="mb-6 p-4 border border-gold/40 bg-gold/10 text-xs font-mono text-ink leading-relaxed">
-              <div className="text-[10px] uppercase tracking-widest text-gold font-bold mb-1">
+            <div className="mb-6 p-4 border border-hairline bg-warm-surface/60 text-xs font-mono text-ink leading-relaxed">
+              <div className="text-[10px] uppercase tracking-widest text-ink font-bold mb-1">
                 CONFIRMATION DISPATCHED
               </div>
               {confirmationNotice}
@@ -197,7 +197,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
                     htmlFor="username"
                     className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
                   >
-                    Username <span className="text-gold">*</span>
+                    Username <span className="text-steel">*</span>
                   </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-mono text-ink-muted pointer-events-none">
@@ -226,7 +226,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
                 htmlFor="email"
                 className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
               >
-                Email Address <span className="text-gold">*</span>
+                Email Address <span className="text-steel">*</span>
               </label>
               <input
                 id="email"
@@ -245,7 +245,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
                 htmlFor="password"
                 className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
               >
-                Password <span className="text-gold">*</span>
+                Password <span className="text-steel">*</span>
               </label>
               <input
                 id="password"
@@ -265,7 +265,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
                   htmlFor="confirmPassword"
                   className="block text-xs font-mono uppercase tracking-[0.18em] text-ink font-medium mb-1.5"
                 >
-                  Confirm Password <span className="text-gold">*</span>
+                  Confirm Password <span className="text-steel">*</span>
                 </label>
                 <input
                   id="confirmPassword"
@@ -305,7 +305,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
             <button
               type="button"
               onClick={() => toggleMode(mode === 'signup' ? 'login' : 'signup')}
-              className="text-ink font-semibold hover:text-gold uppercase tracking-wider underline cursor-pointer"
+              className="text-ink font-semibold hover:text-neutral-700 uppercase tracking-wider underline cursor-pointer"
             >
               {mode === 'signup' ? 'Sign in instead' : 'Create profile'}
             </button>

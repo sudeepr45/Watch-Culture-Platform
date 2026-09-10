@@ -25,7 +25,7 @@ export default function Hero() {
             {/* Editorial Header / Category Badge */}
             <div className="flex items-center gap-3 mb-5 sm:mb-6">
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-warm-surface border border-hairline text-[11px] font-mono uppercase tracking-[0.2em] text-ink font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" aria-hidden="true" />
+                <span className="w-1.5 h-1.5 rounded-full bg-steel animate-pulse" aria-hidden="true" />
                 WATCH CULTURE PLATFORM
               </span>
               <span className="text-[11px] font-mono tracking-[0.18em] text-ink-muted uppercase">
@@ -39,7 +39,7 @@ export default function Hero() {
               className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[64px] xl:text-[76px] font-normal leading-[1.02] tracking-tight text-ink uppercase text-balance"
             >
               The new era of watch culture &{' '}
-              <span className="italic font-light underline decoration-gold/50 decoration-1 underline-offset-8">
+              <span className="italic font-light underline decoration-steel/50 decoration-1 underline-offset-8">
                 exploration.
               </span>
             </h1>
@@ -59,7 +59,7 @@ export default function Hero() {
                 className="group"
                 iconRight={
                   <span
-                    className="inline-block transition-transform duration-300 group-hover:translate-x-1.5"
+                    className="inline-block transition-transform duration-200 group-hover:translate-x-1.5"
                     aria-hidden="true"
                   >
                     &rarr;
@@ -96,7 +96,7 @@ export default function Hero() {
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
                   COMMUNITY
                 </span>
-                <span className="mt-0.5 block text-xs font-semibold tracking-wider text-gold uppercase">
+                <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
                   Watch Lovers
                 </span>
               </div>
@@ -108,7 +108,7 @@ export default function Hero() {
             <div className="relative group mx-auto max-w-[460px] lg:max-w-none">
               {/* Architectural framing line */}
               <div
-                className="absolute -inset-2 sm:-inset-3 border border-hairline pointer-events-none transition-colors duration-500 group-hover:border-gold/40"
+                className="absolute -inset-2 sm:-inset-3 border border-hairline pointer-events-none transition-colors duration-200 group-hover:border-ink/40"
                 aria-hidden="true"
               />
 
@@ -129,7 +129,7 @@ export default function Hero() {
                   /* Elegant Fallback Graphic if offline */
                   <div className="h-full w-full flex flex-col items-center justify-center p-8 text-center bg-[#181817] text-warm-white">
                     <svg
-                      className="w-16 h-16 text-gold/80 mb-4"
+                      className="w-16 h-16 text-steel/80 mb-4"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -152,7 +152,7 @@ export default function Hero() {
                 {/* Floating Technical Plate */}
                 <div className="absolute bottom-4 left-4 right-4 p-3 bg-warm-white/90 backdrop-blur-sm border border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase text-ink">
                   <span>SPECIMEN // STUDY</span>
-                  <span className="text-gold font-semibold">HOROLOGY LAB</span>
+                  <span className="text-steel font-semibold">HOROLOGY LAB</span>
                 </div>
               </div>
             </div>

@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { label: 'HOME', to: '/' },
   { label: 'STORIES', to: '/stories' },
   { label: 'WATCHES', to: '/watches' },
+  { label: 'THE CASE', to: '/case' },
   { label: 'BATTLES', to: '/battles' },
   { label: 'EXPLORE', to: '/explore' },
 ]
@@ -38,7 +39,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full transition-colors duration-200 ${
         scrolled
           ? 'bg-warm-white/95 backdrop-blur-md border-b border-hairline shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]'
           : 'bg-warm-white border-b border-hairline'
@@ -89,7 +90,7 @@ export default function Navbar() {
                   )}
                   {!isActive && (
                     <span
-                      className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-steel transition-all duration-300 group-hover:w-full"
+                      className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-steel transition-all duration-200 group-hover:w-full"
                       aria-hidden="true"
                     />
                   )}

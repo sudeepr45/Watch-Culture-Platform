@@ -54,7 +54,7 @@ export default function ChronographWidget() {
   return (
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
-        <div className="text-[10px] font-mono tracking-[0.25em] text-gold uppercase mb-1">
+        <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
           INTERACTIVE LAB // MECHANICAL STOPWATCH
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
@@ -91,7 +91,7 @@ export default function ChronographWidget() {
             <div className="text-[9px] font-mono uppercase tracking-widest text-ink-muted">
               1/100 SEC
             </div>
-            <div className="font-display text-2xl font-normal text-gold mt-0.5">
+            <div className="font-display text-2xl font-normal text-steel mt-0.5">
               {hundredths.toString().padStart(2, '0')}
             </div>
           </div>

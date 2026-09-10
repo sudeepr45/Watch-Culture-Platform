@@ -185,7 +185,7 @@ export default function ProfilePage() {
           <div className="border border-hairline bg-warm-surface/30 p-16 text-center max-w-xl mx-auto">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -214,8 +214,8 @@ export default function ProfilePage() {
         <Container>
           {/* Profile Header */}
           <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-            <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+            <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
               <span>COLLECTOR VAULT &bull; NOT SIGNED IN</span>
             </div>
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -320,8 +320,8 @@ export default function ProfilePage() {
       <Container>
         {/* Profile Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>COLLECTOR DOSSIER &bull; AUTHENTICATED</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -478,7 +478,7 @@ export default function ProfilePage() {
                         : 'W'}
                     </div>
                   )}
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-gold border border-warm-white" />
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-steel border border-warm-white" />
                 </div>
 
                 {/* Identity Information */}
@@ -488,7 +488,7 @@ export default function ProfilePage() {
                   </h2>
 
                   <div className="mt-1 flex items-center gap-3 text-xs font-mono">
-                    <span className="text-gold font-semibold">
+                    <span className="text-ink font-semibold">
                       @{profile?.username || 'collector'}
                     </span>
                     <span className="text-ink-muted">&bull;</span>
@@ -555,7 +555,7 @@ export default function ProfilePage() {
             <div className="border border-hairline bg-warm-surface/20 p-12 sm:p-16 text-center">
               <div className="w-8 h-8 mx-auto mb-4 flex items-center justify-center border border-hairline bg-warm-white">
                 <svg
-                  className="w-4 h-4 text-gold animate-spin"
+                  className="w-4 h-4 text-steel animate-spin"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -672,7 +672,7 @@ export default function ProfilePage() {
                     <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[11px] font-mono">
                       <Link
                         to={`/watches/${watch.slug}`}
-                        className="text-ink font-semibold hover:text-gold transition-colors flex items-center gap-1"
+                        className="text-ink font-semibold hover:text-neutral-700 transition-colors duration-200 flex items-center gap-1"
                       >
                         VIEW DOSSIER &rarr;
                       </Link>
@@ -722,12 +722,12 @@ export default function ProfilePage() {
               <div className="font-mono text-[10px] tracking-[0.2em] text-ink-muted uppercase mb-2">
                 COLLECTOR BOOKMARKS // EMPTY ARCHIVE
               </div>
-              <p className="text-sm font-serif text-ink-secondary italic max-w-md mx-auto mb-4">
+              <p className="text-sm font-sans font-light text-ink-secondary italic max-w-md mx-auto mb-4">
                 No saved dispatches yet. Bookmark compelling collector accounts, provenance records, and technical narratives to reference anytime.
               </p>
               <Link
                 to="/stories"
-                className="inline-flex items-center text-xs font-mono text-ink font-semibold hover:text-gold uppercase tracking-wider transition-colors"
+                className="inline-flex items-center text-xs font-mono text-ink font-semibold hover:text-neutral-700 uppercase tracking-wider transition-colors duration-200"
               >
                 DISCOVER COMMUNITY STORIES &rarr;
               </Link>
@@ -769,7 +769,7 @@ export default function ProfilePage() {
                         </div>
                         <Link
                           to={`/stories/${story.slug}`}
-                          className="font-display text-lg uppercase text-ink tracking-tight line-clamp-2 group-hover:text-gold transition-colors"
+                          className="font-display text-lg uppercase text-ink tracking-tight line-clamp-2 group-hover:text-neutral-700 transition-colors duration-200"
                         >
                           {story.title}
                         </Link>
@@ -782,7 +782,7 @@ export default function ProfilePage() {
                     <div className="p-5 pt-0 border-t border-hairline/50 mt-4 flex items-center justify-between text-[11px] font-mono">
                       <Link
                         to={`/stories/${story.slug}`}
-                        className="text-ink font-semibold hover:text-gold transition-colors flex items-center gap-1 text-[10px] tracking-wider uppercase"
+                        className="text-ink font-semibold hover:text-neutral-700 transition-colors duration-200 flex items-center gap-1 text-[10px] tracking-wider uppercase"
                       >
                         READ DISPATCH &rarr;
                       </Link>

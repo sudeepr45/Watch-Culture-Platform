@@ -77,7 +77,7 @@ export default function WaterResistanceWidget() {
   return (
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
-        <div className="text-[10px] font-mono tracking-[0.25em] text-gold uppercase mb-1">
+        <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
           INTERACTIVE LAB // WATERPROOFING MYTHBUSTER
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
@@ -106,7 +106,7 @@ export default function WaterResistanceWidget() {
             </div>
             <div
               className={`text-[9px] font-mono uppercase tracking-wider mt-0.5 ${
-                selectedMeters === tier.meters ? 'text-gold' : 'text-ink-muted'
+                selectedMeters === tier.meters ? 'text-warm-white/80' : 'text-ink-muted'
               }`}
             >
               {tier.atm} ATM / BAR
@@ -166,8 +166,8 @@ export default function WaterResistanceWidget() {
         </div>
 
         {/* Mythbuster Callout Box */}
-        <div className="border border-gold/40 bg-gold/5 p-4 sm:p-5 mb-6">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-gold font-semibold mb-1">
+        <div className="border border-hairline bg-warm-surface/40 p-4 sm:p-5 mb-6">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-ink font-semibold mb-1">
             HOROLOGICAL REALITY CHECK
           </div>
           <p className="text-xs sm:text-sm font-mono text-ink leading-relaxed">

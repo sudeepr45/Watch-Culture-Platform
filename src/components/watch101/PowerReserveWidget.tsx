@@ -31,7 +31,7 @@ export default function PowerReserveWidget() {
   return (
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
-        <div className="text-[10px] font-mono tracking-[0.25em] text-gold uppercase mb-1">
+        <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
           INTERACTIVE LAB // MAINSPRING TENSION GAUGE
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">

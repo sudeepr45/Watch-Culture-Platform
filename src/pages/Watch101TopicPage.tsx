@@ -82,8 +82,8 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
 
         {/* Topic Editorial Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex flex-wrap items-center gap-3 mb-3 text-[11px] font-mono uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex flex-wrap items-center gap-3 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span className="text-ink font-semibold">{topic.category}</span>
             <span>&bull;</span>
             <span>{topic.readTimeMinutes} MIN READ</span>
@@ -101,8 +101,8 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
         </div>
 
         {/* 1. THE 10-SECOND ANSWER (Hero callout) */}
-        <div className="border-l-4 border-gold bg-warm-surface/40 p-6 sm:p-8 mb-12 border-y border-r border-hairline">
-          <div className="text-[10px] font-mono tracking-[0.25em] text-gold uppercase mb-2 font-semibold">
+        <div className="border-l-4 border-ink bg-warm-surface/40 p-6 sm:p-8 mb-12 border-y border-r border-hairline">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-ink uppercase mb-2 font-semibold">
             THE 10-SECOND ANSWER
           </div>
           <p className="font-display text-xl sm:text-2xl text-ink font-normal leading-snug">
@@ -152,7 +152,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                 <ul className="space-y-2 text-xs sm:text-sm font-mono text-ink">
                   {topic.deeperExplanation.keyTakeaways.map((point, idx) => (
                     <li key={idx} className="flex items-start gap-2.5">
-                      <span className="text-gold font-bold">&bull;</span>
+                      <span className="text-steel font-bold">&bull;</span>
                       <span>{point}</span>
                     </li>
                   ))}
@@ -164,7 +164,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
           {/* Right Column: WHY IT MATTERS (4 cols) */}
           <div className="lg:col-span-4">
             <div className="border border-hairline bg-warm-surface/20 p-6 sm:p-7 sticky top-24">
-              <div className="text-[10px] font-mono tracking-[0.2em] text-gold uppercase font-semibold mb-2">
+              <div className="text-[10px] font-mono tracking-[0.2em] text-ink uppercase font-semibold mb-2">
                 BUYER &amp; COLLECTOR DOSSIER
               </div>
               <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase mb-3">
@@ -197,8 +197,8 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
         {/* 4. WATCH CONNECTIONS / RABBIT HOLES */}
         <div className="border-t border-hairline pt-12 sm:pt-16 mb-16">
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+            <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
               <span>THE WATCH CONNECTIONS // REAL-WORLD EXAMPLES</span>
             </div>
             <h2 className="font-display text-2xl sm:text-3xl font-normal text-ink uppercase">
@@ -260,7 +260,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                           ? `$${watch.price.toLocaleString()} ${watch.currency}`
                           : 'PRICE ON REQUEST'}
                       </span>
-                      <span className="text-gold tracking-widest uppercase text-[9px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-ink tracking-widest uppercase text-[9px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                         VIEW DOSSIER &rarr;
                       </span>
                     </div>
@@ -278,7 +278,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
           {topic.battleSuggestion && (
             <div className="border border-hairline bg-warm-surface/40 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
               <div>
-                <div className="text-[10px] font-mono tracking-[0.2em] text-gold uppercase mb-1">
+                <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
                   PUT THIS KNOWLEDGE TO THE TEST // WATCH BATTLE
                 </div>
                 <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
@@ -321,7 +321,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                       className="group border border-hairline bg-warm-white p-4 hover:border-ink hover:bg-warm-surface/30 transition-all flex flex-col justify-between"
                     >
                       <div>
-                        <div className="text-[9px] font-mono uppercase tracking-widest text-gold mb-1">
+                        <div className="text-[9px] font-mono uppercase tracking-widest text-ink-secondary mb-1">
                           {relTopic.category} &bull; {relTopic.readTimeMinutes} MIN
                         </div>
                         <h4 className="font-display text-base font-normal uppercase text-ink group-hover:text-neutral-800">
@@ -360,7 +360,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
           {next ? (
             <Link
               to={`/watch-101/${next.slug}`}
-              className="inline-flex items-center gap-2 text-ink font-semibold hover:text-gold transition-colors uppercase tracking-wider"
+              className="inline-flex items-center gap-2 text-ink font-semibold hover:text-neutral-700 transition-colors uppercase tracking-wider"
             >
               <span>NEXT: {next.title}</span> &rarr;
             </Link>

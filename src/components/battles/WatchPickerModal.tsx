@@ -70,8 +70,8 @@ export default function WatchPickerModal({
         {/* Modal Header */}
         <div className="p-6 sm:p-8 border-b border-hairline flex items-start justify-between bg-warm-surface/20">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+            <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
               <span>CENTRAL DATABASE // CONTENDER 0{slotNumber} SELECTION</span>
             </div>
             <h2
@@ -236,7 +236,7 @@ export default function WatchPickerModal({
                             : 'PRICE ON REQUEST'}
                         </span>
                         {!isOpposingSelection && (
-                          <span className="text-gold tracking-[0.15em] uppercase text-[9px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="text-ink font-semibold tracking-[0.15em] uppercase text-[9px] opacity-0 group-hover:opacity-100 transition-opacity">
                             SELECT &rarr;
                           </span>
                         )}

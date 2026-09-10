@@ -234,7 +234,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
           <div className="border border-hairline bg-warm-surface/30 p-16 text-center max-w-xl mx-auto">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -245,10 +245,10 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
               </svg>
             </div>
             <h2 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
-              Verifying Collector Session
+              Authenticating Dossier
             </h2>
             <p className="mt-2 text-xs font-mono tracking-widest text-ink-muted uppercase">
-              QUERYING SUPABASE CREDENTIALS...
+              CHECKING COLLECTOR PROFILE...
             </p>
           </div>
         </Container>
@@ -262,8 +262,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
       <div className="py-12 sm:py-16 lg:py-20">
         <Container>
           <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-            <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+            <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
               <span>COMMUNITY DISPATCHES &bull; AUTHENTICATION REQUIRED</span>
             </div>
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -321,7 +321,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
           <div className="border border-hairline bg-warm-surface/30 p-16 text-center max-w-xl mx-auto">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -349,7 +349,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
       <div className="py-16 sm:py-24">
         <Container>
           <div className="border border-hairline bg-warm-surface/40 p-8 sm:p-12 max-w-xl mx-auto text-center">
-            <div className="w-12 h-12 mx-auto mb-5 flex items-center justify-center border border-hairline bg-warm-white text-gold">
+            <div className="w-12 h-12 mx-auto mb-5 flex items-center justify-center border border-hairline bg-warm-white text-ink-secondary">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
@@ -385,7 +385,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
               </svg>
             </div>
             <div className="flex items-center justify-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              <span className="w-1.5 h-1.5 rounded-full bg-steel" />
               <span>PERMISSION DENIED // ACCESS RESTRICTED</span>
             </div>
             <h2 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
@@ -616,8 +616,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
         <div className="border-b border-hairline pb-8 mb-10 sm:mb-12">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
-              <div className="flex items-center gap-2.5 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+              <div className="flex items-center gap-2.5 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                 <span>
                   {editSlug
                     ? 'EDIT YOUR STORY // MANAGE DISPATCH'
@@ -666,7 +666,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
         {formError && (
           <div className="mb-8 p-4 border border-hairline bg-warm-surface/60 flex items-start gap-3">
             <svg
-              className="w-4 h-4 text-gold shrink-0 mt-0.5"
+              className="w-4 h-4 text-ink-secondary shrink-0 mt-0.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -690,8 +690,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
             {/* STEP 1: YOUR PERSONAL WATCH */}
             <section className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 space-y-6">
               <div className="flex items-center justify-between pb-4 border-b border-hairline">
-                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                   <span>STEP 01 // YOUR WATCH</span>
                 </div>
                 <span className="text-[10px] font-mono tracking-wider text-ink-muted uppercase">
@@ -770,8 +770,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
             {/* OPTIONAL ARCHIVE CONNECTION */}
             <section className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 space-y-6">
               <div className="flex items-center justify-between pb-4 border-b border-hairline">
-                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                   <span>OPTIONAL // VERIFIED ARCHIVE CONNECTION</span>
                 </div>
                 <span className="text-[10px] font-mono tracking-wider text-ink-muted uppercase">
@@ -806,8 +806,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                       )}
 
                       <div className="space-y-1.5 min-w-0">
-                        <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-gold font-semibold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                        <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-steel font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                           <span>VERIFIED ARCHIVE RECORD LINKED</span>
                         </div>
                         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase tracking-tight truncate">
@@ -869,8 +869,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
             {/* STEP 2: REAL COLLECTOR PHOTOGRAPH */}
             <section className="border border-hairline bg-warm-surface/20 p-6 sm:p-8">
               <div className="flex items-center justify-between pb-4 mb-6 border-b border-hairline">
-                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                   <span>STEP 02 // REAL PHOTOGRAPH</span>
                 </div>
                 <span className="text-[10px] font-mono tracking-wider text-ink-muted uppercase">
@@ -890,7 +890,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                     </div>
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-ink-secondary">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                         <span>
                           {uploadStatus === 'uploaded'
                             ? 'STORED IN SUPABASE STORAGE'
@@ -979,8 +979,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
             {/* STEP 3: TITLE & PERSONAL STORY */}
             <section className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 space-y-6">
               <div className="flex items-center justify-between pb-4 border-b border-hairline">
-                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                   <span>STEP 03 // STORY NARRATIVE</span>
                 </div>
                 <span className="text-[10px] font-mono tracking-wider text-ink-muted uppercase">
@@ -1094,7 +1094,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
               <button
                 type="button"
                 onClick={() => setActiveTab('compose')}
-                className="text-ink underline hover:text-gold cursor-pointer"
+                className="text-ink underline hover:text-neutral-700 cursor-pointer duration-200 transition-colors"
               >
                 RETURN TO EDITOR &rarr;
               </button>
@@ -1142,8 +1142,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                       </div>
                     )}
                     {selectedArchiveWatch && (
-                      <div className="mt-1 flex items-center justify-end gap-1.5 text-[9px] font-mono text-gold uppercase tracking-wider">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                      <div className="mt-1 flex items-center justify-end gap-1.5 text-[9px] font-mono text-steel uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                         <span>ARCHIVE DOSSIER: {selectedArchiveWatch.brand} {selectedArchiveWatch.model}</span>
                       </div>
                     )}
@@ -1179,11 +1179,11 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
               {/* Story Narrative */}
               <div className="max-w-2xl mx-auto">
                 {storyText.trim() ? (
-                  <div className="prose prose-neutral text-ink text-sm sm:text-base font-serif leading-relaxed whitespace-pre-line">
+                  <div className="prose prose-neutral text-ink text-sm sm:text-base font-sans font-light leading-relaxed whitespace-pre-line">
                     {storyText}
                   </div>
                 ) : (
-                  <p className="text-sm font-serif italic text-ink-muted text-center py-8">
+                  <p className="text-sm font-sans font-light italic text-ink-muted text-center py-8">
                     Your personal narrative will appear here as you write.
                   </p>
                 )}
@@ -1206,7 +1206,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                     )}
                   </div>
                   <div className="flex flex-col sm:items-end gap-1">
-                    <div className="text-[10px] tracking-widest uppercase text-gold">
+                    <div className="text-[10px] tracking-widest uppercase text-steel">
                       AUTHENTICATED COMMUNITY RECORD
                     </div>
                     {selectedArchiveWatch ? (
@@ -1285,8 +1285,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
               {/* Modal Header */}
               <div className="p-6 sm:p-8 border-b border-hairline flex items-start justify-between bg-warm-surface/20">
                 <div>
-                  <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-secondary uppercase">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                  <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                     <span>VERIFIED WATCH ARCHIVE // SELECT SPECIMEN</span>
                   </div>
                   <h2
@@ -1366,7 +1366,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
               <div className="overflow-y-auto p-4 sm:p-6 flex-1 space-y-3 sm:space-y-4">
                 {archiveWatchesLoading ? (
                   <div className="py-16 text-center">
-                    <div className="w-8 h-8 mx-auto mb-4 border-2 border-gold border-t-transparent animate-spin rounded-full" />
+                    <div className="w-8 h-8 mx-auto mb-4 border-2 border-steel border-t-transparent animate-spin rounded-full" />
                     <p className="text-xs font-mono text-ink-muted uppercase tracking-widest">
                       QUERYING WATCH ARCHIVE...
                     </p>
@@ -1400,7 +1400,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                           }}
                           className={`relative border text-left transition-all duration-200 flex flex-col justify-between overflow-hidden cursor-pointer group ${
                             isSelected
-                              ? 'border-gold bg-warm-surface/60 ring-1 ring-gold'
+                              ? 'border-ink bg-warm-surface/60 ring-1 ring-ink'
                               : 'border-hairline bg-warm-surface/20 hover:border-ink hover:bg-warm-surface/60'
                           }`}
                         >
@@ -1421,7 +1421,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                               <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted">
                                 {watch.brand}
                               </div>
-                              <div className="text-xs font-serif font-medium text-ink uppercase tracking-tight truncate">
+                              <div className="text-xs font-sans font-medium text-ink uppercase tracking-tight truncate">
                                 {watch.model}
                               </div>
                               <div className="text-[10px] font-mono text-ink-secondary truncate">
@@ -1432,7 +1432,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
 
                           <div className="px-4 py-2 border-t border-hairline bg-warm-surface/40 flex items-center justify-between text-[9px] font-mono tracking-wider uppercase text-ink-muted group-hover:text-ink">
                             <span>{watch.category || 'TIMEPIECE'}</span>
-                            <span className={isSelected ? 'text-gold font-bold' : ''}>
+                            <span className={isSelected ? 'text-ink font-bold' : ''}>
                               {isSelected ? '\u2713 SELECTED' : 'LINK SPECIMEN \u2192'}
                             </span>
                           </div>

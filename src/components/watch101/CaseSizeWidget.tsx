@@ -77,7 +77,7 @@ export default function CaseSizeWidget() {
   return (
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
-        <div className="text-[10px] font-mono tracking-[0.25em] text-gold uppercase mb-1">
+        <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
           INTERACTIVE LAB // PROPORTIONS &amp; WRIST PRESENCE
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
@@ -144,7 +144,7 @@ export default function CaseSizeWidget() {
                 </div>
 
                 {/* Vertical Lug-to-Lug Indicator */}
-                <div className="absolute -right-7 top-0 bottom-0 flex flex-col justify-between items-center text-[9px] font-mono text-gold font-semibold">
+                <div className="absolute -right-7 top-0 bottom-0 flex flex-col justify-between items-center text-[9px] font-mono text-steel font-semibold">
                   <span>&uarr;</span>
                   <span className="rotate-90 whitespace-nowrap">{currentPreset.lugToLug}mm</span>
                   <span>&darr;</span>
@@ -183,7 +183,7 @@ export default function CaseSizeWidget() {
 
               <div className="border-t border-hairline/60 pt-2 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1">
                 <span className="text-ink-muted uppercase">Database Representative:</span>
-                <span className="text-gold font-semibold">{currentPreset.databaseExample}</span>
+                <span className="text-ink font-semibold">{currentPreset.databaseExample}</span>
               </div>
             </div>
           </div>

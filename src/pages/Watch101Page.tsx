@@ -50,8 +50,8 @@ export default function Watch101Page() {
       <Container>
         {/* Editorial Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-muted">
+            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span>ACADEMY &bull; HOROLOGICAL ESSENTIALS</span>
           </div>
 
@@ -73,8 +73,8 @@ export default function Watch101Page() {
           <div className="mb-14 border border-hairline bg-warm-surface/30 relative overflow-hidden group">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 sm:p-10 lg:p-12 items-center">
               <div className="lg:col-span-8">
-                <div className="flex items-center gap-2.5 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-gold font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+                <div className="flex items-center gap-2.5 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted font-medium">
+                  <span className="w-2 h-2 rounded-full bg-steel animate-pulse" />
                   <span>FEATURED SPOTLIGHT &bull; ESSENTIAL PILLAR</span>
                 </div>
 
@@ -86,7 +86,7 @@ export default function Watch101Page() {
                   {spotlightTopic.shortDescription}
                 </p>
 
-                <div className="mt-6 border-l-2 border-gold pl-4 py-1 text-xs font-mono text-ink italic">
+                <div className="mt-6 border-l-2 border-ink pl-4 py-1 text-xs font-mono text-ink italic">
                   &ldquo;{spotlightTopic.tenSecondAnswer}&rdquo;
                 </div>
               </div>
@@ -208,7 +208,7 @@ export default function Watch101Page() {
                 <div>
                   {/* Topic Metadata & Badge */}
                   <div className="flex items-center justify-between gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3">
-                    <span className="font-semibold text-gold">{topic.category}</span>
+                    <span className="font-semibold text-ink">{topic.category}</span>
                     <span>{topic.readTimeMinutes} MIN</span>
                   </div>
 
@@ -223,7 +223,7 @@ export default function Watch101Page() {
                   {/* Interactive Badge indicator */}
                   {topic.interactiveType && (
                     <div className="mt-4 inline-flex items-center gap-1.5 px-2 py-0.5 border border-hairline bg-warm-white text-[8px] font-mono tracking-widest uppercase text-ink font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                       <span>INTERACTIVE LAB</span>
                     </div>
                   )}
@@ -232,7 +232,7 @@ export default function Watch101Page() {
                 {/* Footer Link Callout */}
                 <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono uppercase text-ink-muted group-hover:text-ink transition-colors">
                   <span className="tracking-wider">EXPLORE LESSON</span>
-                  <span className="text-gold font-semibold transition-transform duration-300 group-hover:translate-x-1">
+                  <span className="text-ink font-semibold transition-transform duration-200 group-hover:translate-x-1">
                     &rarr;
                   </span>
                 </div>

@@ -11,7 +11,7 @@ export default function PhilosophyStrip() {
           {/* Subtle Dial Marker Accents */}
           <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-8 border-b border-hairline/80 pb-4">
             <span className="flex items-center gap-2">
-              <span className="w-1 h-1 bg-gold rounded-full" aria-hidden="true" />
+              <span className="w-1 h-1 bg-steel rounded-full" aria-hidden="true" />
               MANIFESTO // 001
             </span>
             <span>HOROLOGICAL CULTURE &bull; DIGITAL ARENA</span>
@@ -22,7 +22,7 @@ export default function PhilosophyStrip() {
           <div className="text-center sm:text-left">
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal leading-[1.08] tracking-tight text-ink uppercase">
               Don't just read about watches.{' '}
-              <span className="italic block sm:inline text-gold">
+              <span className="italic block sm:inline text-ink">
                 Explore them.
               </span>
             </h2>

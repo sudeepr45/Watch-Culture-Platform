@@ -134,7 +134,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
           <div className="border border-hairline bg-warm-surface/30 p-16 text-center max-w-2xl mx-auto">
             <div className="w-10 h-10 mx-auto mb-6 flex items-center justify-center border border-hairline bg-warm-white">
               <svg
-                className="w-5 h-5 text-gold animate-spin"
+                className="w-5 h-5 text-steel animate-spin"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -208,8 +208,8 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
         {/* Editorial Profile Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16 grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
           <div className="lg:col-span-8">
-            <div className="flex items-center gap-3 mb-3 text-[11px] font-mono uppercase tracking-[0.25em] text-ink-secondary">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+            <div className="flex items-center gap-3 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
               <span>{watch.brand}</span>
               <span>&bull;</span>
               <span>REF. {watch.reference_number}</span>
@@ -264,7 +264,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
               {/* Technical Specimen Plate */}
               <div className="p-4 border-t border-hairline bg-warm-white flex items-center justify-between text-[10px] font-mono tracking-[0.18em] uppercase text-ink">
                 <span>SPECIMEN ID // {watch.slug}</span>
-                <span className="text-gold font-semibold">DATABASE SOURCE RECORD</span>
+                <span className="text-steel font-semibold">DATABASE SOURCE RECORD</span>
               </div>
             </div>
 
@@ -399,7 +399,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                   <div className="flex flex-col gap-2">
                     <div className="w-full py-2.5 px-4 bg-warm-surface border border-hairline flex items-center justify-between text-xs font-mono text-ink">
                       <span className="flex items-center gap-2 text-ink font-semibold">
-                        <span className="text-gold font-bold">&#10003;</span> IN MY WRIST
+                        <span className="text-steel font-bold">&#10003;</span> IN MY WRIST
                       </span>
                       <span className="text-[10px] text-ink-muted uppercase tracking-widest">
                         CATALOGED
@@ -450,7 +450,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
           <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mb-8">
             <div>
               <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
+                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                 <span>COMMUNITY STORIES // FIELD REPORTS</span>
               </div>
               <h2 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
@@ -479,7 +479,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
               <div className="font-mono text-[10px] tracking-[0.2em] text-ink-muted uppercase mb-2">
                 COLLECTOR ARCHIVE // UNANNOTATED REFERENCE
               </div>
-              <p className="text-base font-serif text-ink-secondary italic max-w-md mx-auto mb-4">
+              <p className="text-base font-sans font-light text-ink-secondary italic max-w-md mx-auto mb-4">
                 No collector stories have been linked to this watch yet.
               </p>
               <p className="text-xs font-mono text-ink-muted max-w-md mx-auto mb-6">
@@ -487,7 +487,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
               </p>
               <Link
                 to="/stories/new"
-                className="inline-flex items-center text-xs font-mono text-ink font-semibold hover:text-gold uppercase tracking-wider transition-colors"
+                className="inline-flex items-center text-xs font-mono text-ink font-semibold hover:text-neutral-700 uppercase tracking-wider transition-colors"
               >
                 RECORD YOUR STORY &rarr;
               </Link>
@@ -534,7 +534,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                           <span>{formattedDate}</span>
                         </div>
 
-                        <h3 className="font-display text-xl uppercase tracking-tight text-ink group-hover:text-gold transition-colors line-clamp-2 leading-snug">
+                        <h3 className="font-display text-xl uppercase tracking-tight text-ink group-hover:text-neutral-700 transition-colors duration-200 line-clamp-2 leading-snug">
                           {story.title}
                         </h3>
 
@@ -554,8 +554,8 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                     </div>
 
                     <div className="p-5 sm:p-6 pt-0 mt-auto">
-                      <span className="text-[11px] font-mono font-semibold text-ink group-hover:text-gold transition-colors flex items-center gap-1 uppercase tracking-wider">
-                        READ DISPATCH <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>
+                      <span className="text-[11px] font-mono font-semibold text-ink group-hover:text-neutral-700 transition-colors duration-200 flex items-center gap-1 uppercase tracking-wider">
+                        READ DISPATCH <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">&rarr;</span>
                       </span>
                     </div>
                   </Link>

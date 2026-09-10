@@ -29,7 +29,7 @@ export default function GmtWidget() {
   return (
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
-        <div className="text-[10px] font-mono tracking-[0.25em] text-gold uppercase mb-1">
+        <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
           INTERACTIVE LAB // DUAL TIME ZONE ENGINE
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
@@ -137,7 +137,7 @@ export default function GmtWidget() {
             }`}
           />
 
-          <div className="text-[10px] font-mono uppercase tracking-widest text-gold mb-2">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted mb-2">
             24-HOUR GMT BEZEL READING
           </div>
           <div className="font-display text-4xl sm:text-5xl font-normal text-ink">

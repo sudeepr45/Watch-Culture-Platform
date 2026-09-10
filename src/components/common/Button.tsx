@@ -17,7 +17,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-all duration-300 tracking-[0.12em] uppercase text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+    'inline-flex items-center justify-center font-medium transition-all duration-200 tracking-[0.12em] uppercase text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
 
   const sizeStyles = {
     sm: 'py-2.5 px-5 gap-2',
@@ -27,11 +27,11 @@ export default function Button({
 
   const variantStyles = {
     primary:
-      'bg-ink text-warm-white hover:bg-neutral-800 active:scale-[0.99] shadow-sm',
+      'bg-ink text-warm-white hover:bg-neutral-800 active:bg-black shadow-sm',
     secondary:
-      'bg-transparent text-ink border border-hairline hover:border-ink hover:bg-warm-surface active:scale-[0.99]',
+      'bg-transparent text-ink border border-hairline hover:border-ink hover:bg-warm-surface active:bg-neutral-200',
     text:
-      'bg-transparent text-ink p-0 hover:text-gold active:scale-[0.99] tracking-[0.15em] border-b border-ink/40 hover:border-gold pb-1',
+      'bg-transparent text-ink p-0 hover:text-ink/70 active:text-ink tracking-[0.15em] border-b border-ink/30 hover:border-ink pb-1',
   }
 
   const combinedClass =
@@ -43,7 +43,7 @@ export default function Button({
     <button className={combinedClass} {...props}>
       <span>{children}</span>
       {iconRight && (
-        <span className="transition-transform duration-300 group-hover:translate-x-1">
+        <span className="transition-transform duration-200 group-hover:translate-x-1">
           {iconRight}
         </span>
       )}
