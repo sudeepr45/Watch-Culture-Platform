@@ -18,6 +18,7 @@ export interface AuthContextType {
   isCurator: boolean
   signIn: (data: SignInData) => Promise<AuthResult>
   signUp: (data: SignUpData) => Promise<AuthResult>
+  signInWithGoogle: () => Promise<AuthResult>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
   updateProfile: (data: UpdateProfileData) => Promise<{ success: boolean; error?: string }>
