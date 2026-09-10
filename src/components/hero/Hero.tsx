@@ -2,13 +2,13 @@ import Container from '../common/Container'
 import Button from '../common/Button'
 import WatchImage from '../common/WatchImage'
 import { useRouter } from '../../router/useRouter'
+import heroWatchImage from '../../assets/hero-watch.png'
 
 export default function Hero() {
   const { navigate } = useRouter()
 
   // Editorial watch photograph reference
-  const watchImageUrl =
-    'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=85'
+  const watchImageUrl = heroWatchImage
 
   return (
     <section
