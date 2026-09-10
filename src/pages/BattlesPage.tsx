@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import WatchImage from '../components/common/WatchImage'
 import WatchPickerModal from '../components/battles/WatchPickerModal'
 import { fetchWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
@@ -39,7 +40,7 @@ const CATEGORIES: CategoryDefinition[] = [
   },
   {
     key: 'flex',
-    name: 'Flex & Street Clout',
+    name: 'Presence & Distinction',
     description: 'Collector recognition, exclusivity, wrist presence, and unmistakable horological status.',
   },
 ]
@@ -281,13 +282,13 @@ export default function BattlesPage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>INTERACTIVE ARENA &bull; HEAD-TO-HEAD SHOWDOWN</span>
+            <span>HEAD-TO-HEAD SPECIFICATION AUDIT // WATCH COMPARISON</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            Watch Battle
+            Analytical Comparison
           </h1>
-          <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl">
-            Select two timepieces from the verified watch index, examine the engineering dossier, and cast your votes.
+          <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-light leading-relaxed">
+            Select two timepieces from the verified archive to examine the comparative engineering dossier, evaluate five horological dimensions, and review the deterministic benchmark.
           </p>
         </div>
 
@@ -310,7 +311,7 @@ export default function BattlesPage() {
               Loading Watch Database
             </h2>
             <p className="mt-3 text-xs sm:text-sm font-mono tracking-widest text-ink-muted uppercase">
-              PREPARING BATTLE MATRIX...
+              RETRIEVING SPECIFICATIONS...
             </p>
           </div>
         )}
@@ -319,7 +320,7 @@ export default function BattlesPage() {
         {!loading && error && (
           <div className="border border-hairline bg-warm-surface/40 p-8 sm:p-14 text-center max-w-3xl mx-auto mb-12">
             <h2 className="font-display text-2xl font-normal tracking-tight text-ink uppercase mb-2">
-              Battle Engine Offline
+              Database Connection Error
             </h2>
             <p className="text-sm text-ink-secondary max-w-md mx-auto mb-6">
               {isConfigured ? `Query error: ${error}` : 'Supabase credentials missing.'}
@@ -342,16 +343,16 @@ export default function BattlesPage() {
           </div>
         )}
 
-        {/* 4. Dual Contender Slots Selection Arena */}
+        {/* 4. Dual Contender Slots Selection */}
         {!loading && !error && watches && watches.length > 0 && (
           <div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto mb-12">
               {/* Contender 01 Slot */}
               <div className="border border-hairline bg-warm-surface/20 flex flex-col justify-between overflow-hidden">
                 <div className="p-4 border-b border-hairline bg-warm-surface/40 flex items-center justify-between text-[10px] font-mono tracking-[0.2em] uppercase">
-                  <span className="text-ink font-semibold">CONTENDER 01</span>
+                  <span className="text-ink font-semibold">SPECIMEN A</span>
                   <span className="text-ink-muted">
-                    {watch1 ? 'LOCKED IN MATRIX' : 'SLOT VACANT'}
+                    {watch1 ? 'SPECIMEN SELECTED' : 'SLOT VACANT'}
                   </span>
                 </div>
 
@@ -359,19 +360,13 @@ export default function BattlesPage() {
                   <div>
                     {/* Selected Watch Image */}
                     <div className="relative aspect-[16/10] w-full bg-warm-surface border-b border-hairline overflow-hidden">
-                      {watch1.image_url ? (
-                        <img
-                          src={watch1.image_url}
-                          alt={`${watch1.brand} ${watch1.model}`}
-                          className="h-full w-full object-cover object-center"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest">
-                          PHOTOGRAPHY PENDING
-                        </div>
-                      )}
+                      <WatchImage
+                        src={watch1.image_url}
+                        alt={`${watch1.brand} ${watch1.model}`}
+                        aspectRatio="aspect-[16/10]"
+                      />
                       {watch1.category && (
-                        <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white/90 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium">
+                        <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium z-10">
                           {watch1.category}
                         </div>
                       )}
@@ -404,18 +399,18 @@ export default function BattlesPage() {
                 ) : (
                   <div className="p-12 sm:p-16 text-center flex flex-col items-center justify-center flex-grow">
                     <div className="w-12 h-12 border border-dashed border-hairline flex items-center justify-center mb-4 text-ink-muted">
-                      <span className="font-mono text-xs">01</span>
+                      <span className="font-mono text-xs">A</span>
                     </div>
                     <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-                      Select First Contender
+                      Select Specimen A
                     </h3>
                     <p className="mt-2 text-xs font-mono text-ink-secondary">
-                      CHOOSE FROM 12 VERIFIED TIMEPIECES
+                      CHOOSE FROM VERIFIED ARCHIVE
                     </p>
                   </div>
                 )}
 
-                {/* Contender 01 Action */}
+                {/* Specimen A Action */}
                 <div className="p-4 sm:p-6 border-t border-hairline bg-warm-white flex items-center justify-between">
                   <Button
                     variant="secondary"
@@ -423,7 +418,7 @@ export default function BattlesPage() {
                     onClick={() => setActivePickerSlot(1)}
                     className="w-full"
                   >
-                    {watch1 ? 'CHANGE WATCH 1 \u2192' : 'CHOOSE WATCH 1 \u2192'}
+                    {watch1 ? 'CHANGE SPECIMEN A \u2192' : 'CHOOSE SPECIMEN A \u2192'}
                   </Button>
                 </div>
               </div>
@@ -431,9 +426,9 @@ export default function BattlesPage() {
               {/* Contender 02 Slot */}
               <div className="border border-hairline bg-warm-surface/20 flex flex-col justify-between overflow-hidden">
                 <div className="p-4 border-b border-hairline bg-warm-surface/40 flex items-center justify-between text-[10px] font-mono tracking-[0.2em] uppercase">
-                  <span className="text-ink font-semibold">CONTENDER 02</span>
+                  <span className="text-ink font-semibold">SPECIMEN B</span>
                   <span className="text-ink-muted">
-                    {watch2 ? 'LOCKED IN MATRIX' : 'SLOT VACANT'}
+                    {watch2 ? 'SPECIMEN SELECTED' : 'SLOT VACANT'}
                   </span>
                 </div>
 
@@ -441,19 +436,13 @@ export default function BattlesPage() {
                   <div>
                     {/* Selected Watch Image */}
                     <div className="relative aspect-[16/10] w-full bg-warm-surface border-b border-hairline overflow-hidden">
-                      {watch2.image_url ? (
-                        <img
-                          src={watch2.image_url}
-                          alt={`${watch2.brand} ${watch2.model}`}
-                          className="h-full w-full object-cover object-center"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest">
-                          PHOTOGRAPHY PENDING
-                        </div>
-                      )}
+                      <WatchImage
+                        src={watch2.image_url}
+                        alt={`${watch2.brand} ${watch2.model}`}
+                        aspectRatio="aspect-[16/10]"
+                      />
                       {watch2.category && (
-                        <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white/90 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium">
+                        <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium z-10">
                           {watch2.category}
                         </div>
                       )}
@@ -486,18 +475,18 @@ export default function BattlesPage() {
                 ) : (
                   <div className="p-12 sm:p-16 text-center flex flex-col items-center justify-center flex-grow">
                     <div className="w-12 h-12 border border-dashed border-hairline flex items-center justify-center mb-4 text-ink-muted">
-                      <span className="font-mono text-xs">02</span>
+                      <span className="font-mono text-xs">B</span>
                     </div>
                     <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-                      Select Second Contender
+                      Select Specimen B
                     </h3>
                     <p className="mt-2 text-xs font-mono text-ink-secondary">
-                      CHOOSE FROM 12 VERIFIED TIMEPIECES
+                      CHOOSE FROM VERIFIED ARCHIVE
                     </p>
                   </div>
                 )}
 
-                {/* Contender 02 Action */}
+                {/* Specimen B Action */}
                 <div className="p-4 sm:p-6 border-t border-hairline bg-warm-white flex items-center justify-between">
                   <Button
                     variant="secondary"
@@ -505,7 +494,7 @@ export default function BattlesPage() {
                     onClick={() => setActivePickerSlot(2)}
                     className="w-full"
                   >
-                    {watch2 ? 'CHANGE WATCH 2 \u2192' : 'CHOOSE WATCH 2 \u2192'}
+                    {watch2 ? 'CHANGE SPECIMEN B \u2192' : 'CHOOSE SPECIMEN B \u2192'}
                   </Button>
                 </div>
               </div>
@@ -515,14 +504,14 @@ export default function BattlesPage() {
             <div className="max-w-xl mx-auto text-center border border-hairline bg-warm-surface/40 p-8 sm:p-10 mb-16">
               <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-3">
                 {watch1 && watch2
-                  ? 'BATTLE MATRIX READY // CONTENDERS LOCKED'
-                  : 'SELECTION REQUIRED // VACANT CONTENDER SLOTS'}
+                  ? 'COMPARATIVE DOSSIER READY // SPECIMENS LOCKED'
+                  : 'SELECTION REQUIRED // VACANT SPECIMEN SLOTS'}
               </div>
 
               {watch1 && watch2 ? (
                 <div>
                   <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase mb-2">
-                    {watch1.brand} vs {watch2.brand}
+                    {watch1.brand} &bull; {watch2.brand}
                   </h2>
                   <p className="text-xs font-mono text-ink-secondary mb-6">
                     {watch1.model} against {watch2.model}
@@ -533,16 +522,16 @@ export default function BattlesPage() {
                     onClick={handleEngageBattle}
                     className="w-full sm:w-auto"
                   >
-                    ENGAGE BATTLE &bull; FIGHT! &rarr;
+                    GENERATE COMPARATIVE ANALYSIS &rarr;
                   </Button>
                 </div>
               ) : (
                 <div>
                   <p className="text-xs sm:text-sm font-mono text-ink-secondary mb-4 leading-relaxed">
-                    Select two distinct timepieces above to unlock the technical comparison matrix and five-category showdown judging.
+                    Select two distinct timepieces above to unlock the side-by-side specification ledger, deterministic evaluation, and dimensional assessment.
                   </p>
                   <Button variant="secondary" size="md" disabled className="w-full sm:w-auto">
-                    SELECT TWO CONTENDERS TO ENGAGE
+                    SELECT TWO SPECIMENS TO COMPARE
                   </Button>
                 </div>
               )}
@@ -552,27 +541,104 @@ export default function BattlesPage() {
             {isBattleEngaged && watch1 && watch2 && (
               <div ref={arenaRef} id="battle-arena" className="pt-8 scroll-mt-24">
                 {/* -------------------------------------------------------- */}
-                {/* SECTION 1: DETERMINISTIC ENGINE BENCHMARK                */}
+                {/* SECTION 1: FACTUAL EVIDENCE // SPECIFICATION MATRIX       */}
+                {/* -------------------------------------------------------- */}
+                <div className="mb-20">
+                  <div className="border-b border-hairline pb-6 mb-10">
+                    <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
+                      <span>FACTUAL EVIDENCE // TECHNICAL SPECIFICATION MATRIX</span>
+                    </div>
+                    <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
+                      Dimensional &amp; Mechanical Evidence
+                    </h2>
+                    <p className="mt-2 text-xs sm:text-sm font-mono text-ink-secondary">
+                      VERIFIED SPECIFICATIONS EXTRACTED DIRECTLY FROM THE ARCHIVAL DOSSIER.
+                    </p>
+                  </div>
+
+                  {/* Spec Table */}
+                  <div className="border border-hairline bg-warm-white overflow-hidden">
+                    {/* Table Header: Specimen Names */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 border-b border-hairline bg-warm-surface/40 text-xs font-mono">
+                      <div className="md:col-span-5 p-4 sm:p-6 text-left border-b md:border-b-0 md:border-r border-hairline">
+                        <div className="text-[10px] text-ink-muted tracking-[0.2em] uppercase">
+                          SPECIMEN A
+                        </div>
+                        <div className="font-display text-xl uppercase font-normal text-ink mt-1">
+                          {watch1.brand}
+                        </div>
+                        <div className="text-xs text-ink-secondary">{watch1.model}</div>
+                      </div>
+
+                      <div className="md:col-span-2 hidden md:flex items-center justify-center p-4 text-[10px] text-ink-muted uppercase tracking-[0.2em] border-r border-hairline bg-warm-surface/60">
+                        DIMENSION
+                      </div>
+
+                      <div className="md:col-span-5 p-4 sm:p-6 text-left md:text-right">
+                        <div className="text-[10px] text-ink-muted tracking-[0.2em] uppercase">
+                          SPECIMEN B
+                        </div>
+                        <div className="font-display text-xl uppercase font-normal text-ink mt-1">
+                          {watch2.brand}
+                        </div>
+                        <div className="text-xs text-ink-secondary">{watch2.model}</div>
+                      </div>
+                    </div>
+
+                    {/* Spec Rows */}
+                    <div className="divide-y divide-hairline">
+                      {specList.map((row) => (
+                        <div
+                          key={row.label}
+                          className="grid grid-cols-1 md:grid-cols-12 transition-colors hover:bg-warm-surface/20"
+                        >
+                          {/* Specimen A Value */}
+                          <div className="md:col-span-5 p-3.5 sm:p-4 text-xs font-mono text-ink flex items-center justify-between md:justify-start md:border-r border-hairline">
+                            <span className="md:hidden text-[10px] text-ink-muted uppercase tracking-wider">
+                              {row.label} (A):
+                            </span>
+                            <span className="font-medium">{row.val1}</span>
+                          </div>
+
+                          {/* Center Spec Label (Desktop) */}
+                          <div className="md:col-span-2 hidden md:flex items-center justify-center p-3 text-[10px] font-mono text-ink-muted uppercase tracking-wider text-center bg-warm-surface/10 md:border-r border-hairline">
+                            {row.label}
+                          </div>
+
+                          {/* Specimen B Value */}
+                          <div className="md:col-span-5 p-3.5 sm:p-4 text-xs font-mono text-ink flex items-center justify-between md:justify-end">
+                            <span className="md:hidden text-[10px] text-ink-muted uppercase tracking-wider">
+                              {row.label} (B):
+                            </span>
+                            <span className="font-medium text-right">{row.val2}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* -------------------------------------------------------- */}
+                {/* SECTION 2: DETERMINISTIC ENGINE BENCHMARK                */}
                 {/* -------------------------------------------------------- */}
                 {deterministicEvaluation && (
                   <div className="mb-20">
                     <div className="border-b border-hairline pb-6 mb-10">
                       <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
                         <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                        <span>DETERMINISTIC BENCHMARK // 5-PILLAR EVALUATION ENGINE</span>
+                        <span>DETERMINISTIC EVALUATION // 5-PILLAR BENCHMARK</span>
                       </div>
                       <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
-                        Engine Benchmark
+                        Deterministic Benchmark
                       </h2>
                       <p className="mt-2 text-xs sm:text-sm font-mono text-ink-secondary max-w-2xl">
-                        Algorithmic 0–100 composite evaluation derived from verified database specifications across 5 core pillars.
+                        Algorithmic composite evaluation derived strictly from verified database specifications across five horological pillars.
                       </p>
                     </div>
 
                     {/* Benchmark Composite Score Card */}
                     <div className="border border-hairline bg-ink text-warm-white p-8 sm:p-10 mb-10 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-80 h-80 bg-steel/5 rounded-full blur-3xl pointer-events-none" />
-
                       {/* Top Bar: Verdict Meta */}
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-warm-white/15 pb-6 mb-8">
                         <div>
@@ -588,28 +654,28 @@ export default function BattlesPage() {
                         <div className="flex items-center gap-2">
                           {deterministicEvaluation.verdictType === 'DEAD HEAT' && (
                             <span className="border border-warm-white/30 bg-warm-white/10 text-warm-white px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-semibold">
-                              DEAD HEAT (&plusmn;{deterministicEvaluation.margin.toFixed(1)} PTS)
+                              PARITY (&plusmn;{deterministicEvaluation.margin.toFixed(1)} PTS)
                             </span>
                           )}
                           {deterministicEvaluation.verdictType === 'SLIGHT EDGE' && (
                             <span className="border border-warm-white/40 bg-warm-white/10 text-warm-white px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-semibold">
-                              SLIGHT EDGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
+                              MARGINAL ADVANTAGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
                             </span>
                           )}
                           {deterministicEvaluation.verdictType === 'CLEAR ADVANTAGE' && (
                             <span className="border border-warm-white bg-warm-white text-ink px-3 py-1 font-mono text-[10px] tracking-widest uppercase font-bold">
-                              CLEAR ADVANTAGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
+                              DISTINCT ADVANTAGE (+{deterministicEvaluation.margin.toFixed(1)} PTS)
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Dual Contender Composite Scores */}
+                      {/* Dual Specimen Composite Scores */}
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b border-warm-white/15 pb-8 mb-8">
-                        {/* Contender 1 Composite */}
+                        {/* Specimen A Composite */}
                         <div className="md:col-span-5 flex flex-col">
                           <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-warm-white/60 mb-1">
-                            CONTENDER 01 &bull; {watch1.brand}
+                            SPECIMEN A &bull; {watch1.brand}
                           </div>
                           <div className="font-display text-xl sm:text-2xl uppercase tracking-tight text-warm-white truncate">
                             {watch1.model}
@@ -620,31 +686,23 @@ export default function BattlesPage() {
                             </span>
                             <span className="font-mono text-xs text-warm-white/50 uppercase">/ 100 PTS</span>
                           </div>
-                          {/* Progress Bar */}
-                          <div className="w-full bg-warm-white/10 h-1.5 mt-3 overflow-hidden">
-                            <div
-                              className={`h-full transition-all duration-500 ${
-                                deterministicEvaluation.winnerSlot === 1
-                                  ? 'bg-warm-white'
-                                  : 'bg-warm-white/60'
-                              }`}
-                              style={{ width: `${deterministicEvaluation.contender1.overallScore}%` }}
-                            />
+                          <div className="text-[10px] font-mono uppercase tracking-widest text-warm-white/50 mt-2">
+                            REF. {watch1.reference_number} &bull; CALIBRE {watch1.calibre || watch1.movement_name || 'N/A'}
                           </div>
                         </div>
 
-                        {/* Center Versus Divider */}
+                        {/* Center Differential */}
                         <div className="md:col-span-2 flex flex-col items-center justify-center text-center py-2">
-                          <span className="font-mono text-xs tracking-widest text-warm-white/30 uppercase font-light">VS</span>
-                          <span className="font-mono text-[10px] text-warm-white/80 tracking-widest uppercase mt-1">
-                            &Delta; {deterministicEvaluation.margin.toFixed(1)}
+                          <span className="font-mono text-xs tracking-widest text-warm-white/40 uppercase font-light">DIFFERENTIAL</span>
+                          <span className="font-mono text-[11px] text-warm-white/80 tracking-widest uppercase mt-1">
+                            &Delta; {deterministicEvaluation.margin.toFixed(1)} PTS
                           </span>
                         </div>
 
-                        {/* Contender 2 Composite */}
+                        {/* Specimen B Composite */}
                         <div className="md:col-span-5 flex flex-col md:text-right">
                           <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-warm-white/60 mb-1">
-                            CONTENDER 02 &bull; {watch2.brand}
+                            SPECIMEN B &bull; {watch2.brand}
                           </div>
                           <div className="font-display text-xl sm:text-2xl uppercase tracking-tight text-warm-white truncate">
                             {watch2.model}
@@ -655,24 +713,16 @@ export default function BattlesPage() {
                             </span>
                             <span className="font-mono text-xs text-warm-white/50 uppercase">/ 100 PTS</span>
                           </div>
-                          {/* Progress Bar */}
-                          <div className="w-full bg-warm-white/10 h-1.5 mt-3 overflow-hidden">
-                            <div
-                              className={`h-full transition-all duration-500 ml-auto ${
-                                deterministicEvaluation.winnerSlot === 2
-                                  ? 'bg-warm-white'
-                                  : 'bg-warm-white/60'
-                              }`}
-                              style={{ width: `${deterministicEvaluation.contender2.overallScore}%` }}
-                            />
+                          <div className="text-[10px] font-mono uppercase tracking-widest text-warm-white/50 mt-2">
+                            REF. {watch2.reference_number} &bull; CALIBRE {watch2.calibre || watch2.movement_name || 'N/A'}
                           </div>
                         </div>
                       </div>
 
-                      {/* Editorial Benchmark Verdict Callout */}
+                      {/* Editorial Benchmark Written Interpretation */}
                       <div>
                         <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-warm-white/80 mb-2">
-                          {deterministicEvaluation.headline}
+                          WRITTEN SYNTHESIS // {deterministicEvaluation.headline}
                         </div>
                         <p className="text-xs sm:text-sm text-warm-white/90 font-mono leading-relaxed max-w-4xl">
                           {deterministicEvaluation.summaryRationale}
@@ -718,11 +768,11 @@ export default function BattlesPage() {
                                   </span>
                                 ) : pAdvantage.winnerSlot === 1 ? (
                                   <span className="text-ink font-semibold border border-ink/40 px-2.5 py-1 bg-warm-white">
-                                    {watch1.brand} ADVANTAGE (+{pAdvantage.delta.toFixed(1)} PTS)
+                                    FAVORS {watch1.brand} (+{pAdvantage.delta.toFixed(1)} PTS)
                                   </span>
                                 ) : (
                                   <span className="text-ink font-semibold border border-ink/40 px-2.5 py-1 bg-warm-white">
-                                    {watch2.brand} ADVANTAGE (+{pAdvantage.delta.toFixed(1)} PTS)
+                                    FAVORS {watch2.brand} (+{pAdvantage.delta.toFixed(1)} PTS)
                                   </span>
                                 )}
                               </div>
@@ -730,21 +780,14 @@ export default function BattlesPage() {
 
                             {/* Side-by-Side Pillar Comparison */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {/* Contender 1 Pillar Box */}
-                              <div className={`p-4 border ${pAdvantage.winnerSlot === 1 ? 'border-ink bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
-                                <div className="flex items-center justify-between text-xs font-mono mb-2">
+                              {/* Specimen A Pillar Box */}
+                              <div className={`p-5 border ${pAdvantage.winnerSlot === 1 ? 'border-ink bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
+                                <div className="flex items-center justify-between text-xs font-mono mb-3 pb-2 border-b border-hairline/60">
                                   <span className="text-ink-muted tracking-wider uppercase">{watch1.brand}</span>
                                   <span className="font-display text-xl font-normal text-ink">{s1.toFixed(1)} <span className="text-[10px] font-mono text-ink-muted">/ 100</span></span>
                                 </div>
-                                {/* Visual score bar */}
-                                <div className="w-full bg-warm-surface/80 h-1 mb-3 overflow-hidden">
-                                  <div
-                                    className={`h-full ${pAdvantage.winnerSlot === 1 ? 'bg-steel' : 'bg-ink/30'}`}
-                                    style={{ width: `${s1}%` }}
-                                  />
-                                </div>
                                 {/* Subscore breakdowns */}
-                                <div className="space-y-1.5 pt-2 border-t border-hairline/60">
+                                <div className="space-y-1.5">
                                   {b1.subScores.map((sub) => (
                                     <div key={sub.label} className="text-[11px] font-mono text-ink-secondary">
                                       <span className="font-medium text-ink">{sub.label} ({sub.score}/{sub.max}):</span> {sub.rationale}
@@ -753,21 +796,14 @@ export default function BattlesPage() {
                                 </div>
                               </div>
 
-                              {/* Contender 2 Pillar Box */}
-                              <div className={`p-4 border ${pAdvantage.winnerSlot === 2 ? 'border-ink bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
-                                <div className="flex items-center justify-between text-xs font-mono mb-2">
+                              {/* Specimen B Pillar Box */}
+                              <div className={`p-5 border ${pAdvantage.winnerSlot === 2 ? 'border-ink bg-warm-white' : 'border-hairline bg-warm-surface/10'}`}>
+                                <div className="flex items-center justify-between text-xs font-mono mb-3 pb-2 border-b border-hairline/60">
                                   <span className="text-ink-muted tracking-wider uppercase">{watch2.brand}</span>
                                   <span className="font-display text-xl font-normal text-ink">{s2.toFixed(1)} <span className="text-[10px] font-mono text-ink-muted">/ 100</span></span>
                                 </div>
-                                {/* Visual score bar */}
-                                <div className="w-full bg-warm-surface/80 h-1 mb-3 overflow-hidden">
-                                  <div
-                                    className={`h-full ${pAdvantage.winnerSlot === 2 ? 'bg-steel' : 'bg-ink/30'}`}
-                                    style={{ width: `${s2}%` }}
-                                  />
-                                </div>
                                 {/* Subscore breakdowns */}
-                                <div className="space-y-1.5 pt-2 border-t border-hairline/60">
+                                <div className="space-y-1.5">
                                   {b2.subScores.map((sub) => (
                                     <div key={sub.label} className="text-[11px] font-mono text-ink-secondary">
                                       <span className="font-medium text-ink">{sub.label} ({sub.score}/{sub.max}):</span> {sub.rationale}
@@ -784,32 +820,30 @@ export default function BattlesPage() {
                 )}
 
                 {/* -------------------------------------------------------- */}
-                {/* SECTION 2: COLLECTOR'S VERDICT (YOUR VERDICT)            */}
+                {/* SECTION 3: DIMENSIONAL ASSESSMENT (COLLECTOR'S RECORD)   */}
                 {/* -------------------------------------------------------- */}
                 <div className="border-b border-hairline pb-6 mb-10">
                   <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
                     <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                    <span>COLLECTOR'S VERDICT // INTERACTIVE SHOWDOWN</span>
+                    <span>DIMENSIONAL CRITERIA // EDITORIAL ASSESSMENT</span>
                   </div>
                   <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
-                    Your Verdict
+                    Dimensional Assessment
                   </h2>
                   <p className="mt-2 text-xs sm:text-sm font-mono text-ink-secondary">
-                    SESSION VOTING &bull; CAST YOUR PERSONAL JUDGMENT ACROSS 5 CATEGORIES TO CHALLENGE THE BENCHMARK.
+                    SESSION EVALUATION &bull; RECORD YOUR COMPARATIVE PREFERENCE ACROSS 5 CORE HOROLOGICAL CRITERIA.
                   </p>
                 </div>
 
                 {/* Scorecard Summary Top Banner */}
                 <div className="border border-hairline bg-ink text-warm-white p-8 sm:p-10 mb-16 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-steel/5 rounded-full blur-3xl pointer-events-none" />
-
                   <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-warm-white/15 pb-8 mb-8">
                     <div>
                       <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-warm-white/70 mb-1">
-                        COLLECTOR'S VERDICT // SESSION SCORECARD
+                        DIMENSIONAL SUMMARY // ASSESSMENT RECORD
                       </div>
                       <h2 className="font-display text-2xl sm:text-3xl font-normal tracking-tight uppercase">
-                        Round Score
+                        Assessment Tally
                       </h2>
                     </div>
 
@@ -837,24 +871,24 @@ export default function BattlesPage() {
                     </div>
                   </div>
 
-                  {/* Dynamic Verdict Banner */}
+                  {/* Dynamic Assessment Banner */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="text-xs sm:text-sm font-mono tracking-wider text-warm-white/80">
                       {totalVotesCast === 0 ? (
-                        <span>AWAITING JUDGMENT &bull; CAST VOTES IN THE 5 CATEGORIES BELOW</span>
+                        <span>AWAITING EVALUATION &bull; SELECT PREFERENCES ACROSS THE 5 CRITERIA BELOW</span>
                       ) : watch1Score > watch2Score ? (
                         <span className="text-warm-white font-semibold">
-                          VERDICT: {watch1.brand} {watch1.model.toUpperCase()} LEADS ({watch1Score} &mdash; {watch2Score})
-                          {undecidedCount > 0 ? ` [${undecidedCount} REMAINING]` : ' [DECISIVE WIN]'}
+                          ASSESSMENT: {watch1.brand} {watch1.model.toUpperCase()} FAVORED ({watch1Score} &mdash; {watch2Score})
+                          {undecidedCount > 0 ? ` [${undecidedCount} REMAINING]` : ' [DISTINCT PREFERENCE]'}
                         </span>
                       ) : watch2Score > watch1Score ? (
                         <span className="text-warm-white font-semibold">
-                          VERDICT: {watch2.brand} {watch2.model.toUpperCase()} LEADS ({watch2Score} &mdash; {watch1Score})
-                          {undecidedCount > 0 ? ` [${undecidedCount} REMAINING]` : ' [DECISIVE WIN]'}
+                          ASSESSMENT: {watch2.brand} {watch2.model.toUpperCase()} FAVORED ({watch2Score} &mdash; {watch1Score})
+                          {undecidedCount > 0 ? ` [${undecidedCount} REMAINING]` : ' [DISTINCT PREFERENCE]'}
                         </span>
                       ) : (
                         <span className="text-warm-white font-semibold">
-                          VERDICT: DEAD HEAT &bull; TIED AT {watch1Score} &mdash; {watch2Score}
+                          ASSESSMENT: EVEN SPLIT &bull; TIED AT {watch1Score} &mdash; {watch2Score}
                           {undecidedCount > 0 ? ` [${undecidedCount} UNDECIDED]` : ''}
                         </span>
                       )}
@@ -867,7 +901,7 @@ export default function BattlesPage() {
                           onClick={handleResetVotes}
                           className="text-[10px] font-mono uppercase tracking-widest text-warm-white/60 hover:text-warm-white underline cursor-pointer"
                         >
-                          RESET VOTES
+                          RESET SELECTIONS
                         </button>
                       )}
                       <button
@@ -875,24 +909,24 @@ export default function BattlesPage() {
                         onClick={handleResetBattle}
                         className="text-[10px] font-mono uppercase tracking-widest text-warm-white/80 hover:text-warm-white hover:underline cursor-pointer"
                       >
-                        RESET BATTLE &bull; CHOOSE NEW CONTENDERS
+                        RESET &bull; CHOOSE NEW SPECIMENS
                       </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Section: 5-Category Interactive Voting */}
+                {/* Section: 5-Category Interactive Evaluation */}
                 <div className="mb-20">
                   <div className="border-b border-hairline pb-6 mb-10">
                     <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
                       <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                      <span>THE 5 PILLARS // INTERACTIVE JUDGING</span>
+                      <span>THE 5 DIMENSIONS // EDITORIAL CRITERIA</span>
                     </div>
                     <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
-                      Vote the Categories
+                      Evaluate Dimensions
                     </h2>
                     <p className="mt-2 text-xs sm:text-sm font-mono text-ink-secondary">
-                      SESSION VOTING &bull; LOCAL INTERACTIVE DECISION MATRIX (NO FABRICATED METRICS).
+                      LOCAL INTERACTIVE EVALUATION MATRIX (OBJECTIVE FACTUAL INPUTS).
                     </p>
                   </div>
 
@@ -920,24 +954,24 @@ export default function BattlesPage() {
                               </p>
                             </div>
 
-                            {/* Two-Way Voting Toggles */}
+                            {/* Two-Way Selection Toggles */}
                             <div className="lg:col-span-8 flex flex-col sm:flex-row items-stretch gap-4">
-                              {/* Vote Contender 01 */}
+                              {/* Select Specimen A */}
                               <button
                                 type="button"
                                 onClick={() => handleVote(cat.key, 1)}
                                 className={`flex-1 p-4 border text-left transition-all duration-200 cursor-pointer ${
                                   currentVote === 1
-                                    ? 'border-ink bg-ink text-warm-white shadow-md'
+                                    ? 'border-ink bg-ink text-warm-white'
                                     : 'border-hairline bg-warm-white text-ink hover:border-ink'
                                 }`}
                               >
                                 <div className="flex items-center justify-between text-[9px] font-mono tracking-[0.2em] uppercase mb-1">
                                   <span className={currentVote === 1 ? 'text-steel font-semibold' : 'text-ink-muted'}>
-                                    CONTENDER 01
+                                    SPECIMEN A
                                   </span>
                                   {currentVote === 1 && (
-                                    <span className="text-steel font-bold tracking-widest">&#10003; WINNER</span>
+                                    <span className="text-steel font-mono tracking-widest text-[9px] uppercase">SELECTED PREFERENCE</span>
                                   )}
                                 </div>
                                 <div className="font-display text-base sm:text-lg uppercase">
@@ -957,22 +991,22 @@ export default function BattlesPage() {
                                 VS
                               </div>
 
-                              {/* Vote Contender 02 */}
+                              {/* Select Specimen B */}
                               <button
                                 type="button"
                                 onClick={() => handleVote(cat.key, 2)}
                                 className={`flex-1 p-4 border text-left transition-all duration-200 cursor-pointer ${
                                   currentVote === 2
-                                    ? 'border-ink bg-ink text-warm-white shadow-md'
+                                    ? 'border-ink bg-ink text-warm-white'
                                     : 'border-hairline bg-warm-white text-ink hover:border-ink'
                                 }`}
                               >
                                 <div className="flex items-center justify-between text-[9px] font-mono tracking-[0.2em] uppercase mb-1">
                                   <span className={currentVote === 2 ? 'text-steel font-semibold' : 'text-ink-muted'}>
-                                    CONTENDER 02
+                                    SPECIMEN B
                                   </span>
                                   {currentVote === 2 && (
-                                    <span className="text-steel font-bold tracking-widest">&#10003; WINNER</span>
+                                    <span className="text-steel font-mono tracking-widest text-[9px] uppercase">SELECTED PREFERENCE</span>
                                   )}
                                 </div>
                                 <div className="font-display text-base sm:text-lg uppercase">
@@ -997,7 +1031,7 @@ export default function BattlesPage() {
                                 : 'NO DECISION RECORDED'}
                             </span>
                             <span className="text-ink-secondary">
-                              CLICK TO TOGGLE VOTE
+                              CLICK TO TOGGLE PREFERENCE
                             </span>
                           </div>
                         </div>
@@ -1006,100 +1040,23 @@ export default function BattlesPage() {
                   </div>
                 </div>
 
-                {/* Section: Side-by-Side 17-Spec Technical Dossier */}
-                <div className="mb-20">
-                  <div className="border-b border-hairline pb-6 mb-10">
-                    <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-                      <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                      <span>ENGINEERING ARCHITECTURE // SPEC MATRIX</span>
-                    </div>
-                    <h2 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-ink uppercase">
-                      Technical Breakdown
-                    </h2>
-                    <p className="mt-2 text-xs sm:text-sm font-mono text-ink-secondary">
-                      VERIFIED SPECIFICATIONS EXTRACTED DIRECTLY FROM THE DATABASE DOSSIER.
-                    </p>
-                  </div>
-
-                  {/* Spec Table */}
-                  <div className="border border-hairline bg-warm-white overflow-hidden">
-                    {/* Table Header: Contender Names */}
-                    <div className="grid grid-cols-1 md:grid-cols-12 border-b border-hairline bg-warm-surface/40 text-xs font-mono">
-                      <div className="md:col-span-5 p-4 sm:p-6 text-left border-b md:border-b-0 md:border-r border-hairline">
-                        <div className="text-[10px] text-ink-muted tracking-[0.2em] uppercase">
-                          CONTENDER 01
-                        </div>
-                        <div className="font-display text-xl uppercase font-normal text-ink mt-1">
-                          {watch1.brand}
-                        </div>
-                        <div className="text-xs text-ink-secondary">{watch1.model}</div>
-                      </div>
-
-                      <div className="md:col-span-2 hidden md:flex items-center justify-center p-4 text-[10px] text-ink-muted uppercase tracking-[0.2em] border-r border-hairline bg-warm-surface/60">
-                        SPECIFICATION
-                      </div>
-
-                      <div className="md:col-span-5 p-4 sm:p-6 text-left md:text-right">
-                        <div className="text-[10px] text-ink-muted tracking-[0.2em] uppercase">
-                          CONTENDER 02
-                        </div>
-                        <div className="font-display text-xl uppercase font-normal text-ink mt-1">
-                          {watch2.brand}
-                        </div>
-                        <div className="text-xs text-ink-secondary">{watch2.model}</div>
-                      </div>
-                    </div>
-
-                    {/* Spec Rows */}
-                    <div className="divide-y divide-hairline">
-                      {specList.map((row) => (
-                        <div
-                          key={row.label}
-                          className="grid grid-cols-1 md:grid-cols-12 transition-colors hover:bg-warm-surface/20"
-                        >
-                          {/* Contender 1 Value */}
-                          <div className="md:col-span-5 p-3.5 sm:p-4 text-xs font-mono text-ink flex items-center justify-between md:justify-start md:border-r border-hairline">
-                            <span className="md:hidden text-[10px] text-ink-muted uppercase tracking-wider">
-                              {row.label} (01):
-                            </span>
-                            <span className="font-medium">{row.val1}</span>
-                          </div>
-
-                          {/* Center Spec Label (Desktop) */}
-                          <div className="md:col-span-2 hidden md:flex items-center justify-center p-3 text-[10px] font-mono text-ink-muted uppercase tracking-wider text-center bg-warm-surface/10 md:border-r border-hairline">
-                            {row.label}
-                          </div>
-
-                          {/* Contender 2 Value */}
-                          <div className="md:col-span-5 p-3.5 sm:p-4 text-xs font-mono text-ink flex items-center justify-between md:justify-end">
-                            <span className="md:hidden text-[10px] text-ink-muted uppercase tracking-wider">
-                              {row.label} (02):
-                            </span>
-                            <span className="font-medium text-right">{row.val2}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Final Arena Callout & Reset Footer */}
+                {/* Final Callout & Reset Footer */}
                 <div className="border border-hairline bg-warm-surface/30 p-8 sm:p-12 text-center max-w-2xl mx-auto">
                   <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-3">
-                    SHOWDOWN COMPLETE
+                    COMPARATIVE AUDIT COMPLETE
                   </div>
                   <h3 className="font-display text-2xl sm:text-3xl font-normal text-ink uppercase mb-3">
-                    Conclude or Re-engage
+                    Conclude or Compare New Specimens
                   </h3>
                   <p className="text-xs sm:text-sm font-mono text-ink-secondary max-w-md mx-auto mb-8 leading-relaxed">
-                    Compare another matchup from the central database archive or reset the current judging round.
+                    Compare another pair of timepieces from the central archive or reset the current assessment.
                   </p>
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Button variant="secondary" size="sm" onClick={handleResetVotes}>
-                      CLEAR VOTES ONLY
+                      CLEAR SELECTIONS ONLY
                     </Button>
                     <Button variant="primary" size="sm" onClick={handleResetBattle}>
-                      RESET &bull; CHOOSE NEW CONTENDERS &rarr;
+                      RESET &bull; CHOOSE NEW SPECIMENS &rarr;
                     </Button>
                   </div>
                 </div>

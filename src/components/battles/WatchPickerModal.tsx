@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import WatchImage from '../common/WatchImage'
 import type { Watch } from '../../types/watch'
 
 interface WatchPickerModalProps {
@@ -57,14 +58,14 @@ export default function WatchPickerModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-ink/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-ink/60 animate-fadeIn"
       role="dialog"
       aria-modal="true"
       aria-labelledby="watch-picker-title"
       onClick={handleClose}
     >
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] bg-warm-white border border-hairline shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-4xl max-h-[90vh] bg-warm-white border border-hairline flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -72,13 +73,13 @@ export default function WatchPickerModal({
           <div>
             <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span>CENTRAL DATABASE // CONTENDER 0{slotNumber} SELECTION</span>
+              <span>CENTRAL ARCHIVE // SPECIMEN {slotNumber === 1 ? 'A' : 'B'} SELECTION</span>
             </div>
             <h2
               id="watch-picker-title"
               className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase"
             >
-              Choose Contender 0{slotNumber}
+              Select Specimen {slotNumber === 1 ? 'A' : 'B'}
             </h2>
           </div>
 
@@ -182,22 +183,16 @@ export default function WatchPickerModal({
                   >
                     {/* Watch Image */}
                     <div className="relative aspect-[4/3] w-full bg-warm-surface border-b border-hairline overflow-hidden">
-                      {watch.image_url ? (
-                        <img
-                          src={watch.image_url}
-                          alt={`${watch.brand} ${watch.model}`}
-                          loading="lazy"
-                          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center text-[10px] font-mono text-ink-muted uppercase tracking-widest">
-                          PHOTO PENDING
-                        </div>
-                      )}
+                      <WatchImage
+                        src={watch.image_url}
+                        alt={`${watch.brand} ${watch.model}`}
+                        aspectRatio="aspect-[4/3]"
+                        imageClassName="group-hover:opacity-90"
+                      />
 
                       {/* Opposing Selection Overlay Tag */}
                       {isOpposingSelection && (
-                        <div className="absolute inset-0 bg-ink/70 backdrop-blur-[2px] flex flex-col items-center justify-center p-3 text-center">
+                        <div className="absolute inset-0 bg-ink/80 flex flex-col items-center justify-center p-3 text-center">
                           <span className="text-[10px] font-mono tracking-[0.2em] uppercase font-semibold text-warm-white">
                             SELECTED IN OPPOSING SLOT
                           </span>
@@ -209,7 +204,7 @@ export default function WatchPickerModal({
 
                       {/* Category Badge */}
                       {!isOpposingSelection && watch.category && (
-                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-warm-white/90 backdrop-blur-sm border border-hairline text-[8px] font-mono tracking-[0.2em] uppercase text-ink font-medium">
+                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-warm-white border border-hairline text-[8px] font-mono tracking-[0.2em] uppercase text-ink font-medium">
                           {watch.category}
                         </div>
                       )}

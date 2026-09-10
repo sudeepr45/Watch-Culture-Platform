@@ -78,13 +78,13 @@ export default function CaseSizeWidget() {
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
         <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-          INTERACTIVE LAB // PROPORTIONS &amp; WRIST PRESENCE
+          LABORATORY INSTRUMENT // PROPORTIONS &amp; DIMENSIONAL ARCHITECTURE
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-          Case Diameter &amp; Lug-to-Lug Comparator
+          Case Diameter &amp; Lug-to-Lug Geometry
         </h3>
         <p className="mt-1 text-xs font-mono text-ink-secondary">
-          Toggle case sizes to see how case diameter interacts with lug-to-lug distance to define true wrist fit.
+          Toggle case sizes to examine how case diameter interacts with lug-to-lug distance to define true wrist presence.
         </p>
       </div>
 
@@ -97,7 +97,7 @@ export default function CaseSizeWidget() {
             onClick={() => setSelectedDiameter(preset.diameter)}
             className={`px-3.5 py-2.5 border text-xs font-mono transition-all cursor-pointer ${
               selectedDiameter === preset.diameter
-                ? 'border-ink bg-ink text-warm-white font-semibold shadow-sm'
+                ? 'border-ink bg-ink text-warm-white font-semibold'
                 : 'border-hairline bg-warm-white text-ink hover:border-ink'
             }`}
           >
@@ -127,7 +127,7 @@ export default function CaseSizeWidget() {
               >
                 {/* Round Bezel Inside */}
                 <div
-                  className="rounded-full border-2 border-ink bg-warm-surface flex items-center justify-center shadow-inner transition-all duration-300"
+                  className="rounded-full border-2 border-ink bg-warm-surface flex items-center justify-center transition-all duration-300"
                   style={{
                     width: `${currentPreset.diameter * 3.6}px`,
                     height: `${currentPreset.diameter * 3.6}px`,

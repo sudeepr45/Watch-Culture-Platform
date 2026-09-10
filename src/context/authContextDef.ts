@@ -14,6 +14,8 @@ export interface AuthContextType {
   session: Session | null
   loading: boolean
   isAuthenticated: boolean
+  /** UX-only curator flag. Real authorization boundary is database RLS via public.is_curator(). */
+  isCurator: boolean
   signIn: (data: SignInData) => Promise<AuthResult>
   signUp: (data: SignUpData) => Promise<AuthResult>
   signOut: () => Promise<void>

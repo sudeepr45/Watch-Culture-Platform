@@ -26,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(() => isSupabaseConfigured)
+  const [isCurator, setIsCurator] = useState(false)
 
   // Fetch or safely auto-provision profile for an authenticated user
   const loadProfile = useCallback(async (authUser: User) => {
@@ -58,6 +59,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // Check whether the current authenticated user is a curator.
+  // Calls the public.is_curator() SECURITY DEFINER RPC on the database.
+  // This result is UX-only; the real authorization boundary is database RLS.
+  const checkCuratorStatus = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setIsCurator(false)
+      return
+    }
+    try {
+      const { data, error } = await supabase.rpc('is_curator')
+      if (!error && data === true) {
+        setIsCurator(true)
+      } else {
+        setIsCurator(false)
+      }
+    } catch {
+      setIsCurator(false)
+    }
+  }, [])
+
   // Initialize active session on mount
   useEffect(() => {
     let isMounted = true
@@ -76,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setSession(initialSession)
           setUser(initialSession.user)
           await loadProfile(initialSession.user)
+          await checkCuratorStatus()
         }
         setLoading(false)
       })
@@ -95,8 +117,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (newSession?.user) {
         await loadProfile(newSession.user)
+        await checkCuratorStatus()
       } else {
         setProfile(null)
+        setIsCurator(false)
       }
       setLoading(false)
     })
@@ -105,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isMounted = false
       subscription.unsubscribe()
     }
-  }, [loadProfile])
+  }, [loadProfile, checkCuratorStatus])
 
   // Sign In with email & password
   const signIn = async ({ email, password }: SignInData): Promise<AuthResult> => {
@@ -282,6 +306,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         loading,
         isAuthenticated: Boolean(user),
+        isCurator,
         signIn,
         signUp,
         signOut,

@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import WatchImage from '../components/common/WatchImage'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { useAuth } from '../context/useAuth'
-import { fetchWatchBySlug } from '../services/watchService'
+import { fetchWatchBySlug, fetchWatches } from '../services/watchService'
 import {
   isWatchInCollection,
   addWatchToCollection,
@@ -20,6 +21,7 @@ interface WatchDetailPageProps {
 
 export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
   const [watch, setWatch] = useState<Watch | null>(null)
+  const [relatedWatches, setRelatedWatches] = useState<Watch[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [inCollection, setInCollection] = useState(false)
@@ -49,6 +51,8 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
         setWatch(result.data)
         setStoriesLoading(true)
         setStoriesError(null)
+
+        // Query genuine community dispatches referencing this specimen
         fetchStoriesByWatchId(result.data.id).then((storiesResult) => {
           if (!isMounted) return
           if (storiesResult.error) {
@@ -62,6 +66,12 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
           setStoriesError('Unable to load community stories for this timepiece.')
           setStoriesLoading(false)
         })
+
+        // Query all watches from repository for genuine archival cross-references
+        fetchWatches().then((allWatchesResult) => {
+          if (!isMounted || !allWatchesResult.data) return
+          setRelatedWatches(allWatchesResult.data)
+        })
       }
       setLoading(false)
     }
@@ -72,6 +82,39 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
       isMounted = false
     }
   }, [slug])
+
+  // Genuine Archival Cross-References derived strictly from real repository data
+  const sameBrandWatches = useMemo(() => {
+    if (!watch || !relatedWatches.length) return []
+    return relatedWatches.filter(
+      (w) => w.id !== watch.id && w.brand.toLowerCase() === watch.brand.toLowerCase()
+    )
+  }, [watch, relatedWatches])
+
+  const sameCategoryWatches = useMemo(() => {
+    const currentCategory = watch?.category
+    if (!watch || !currentCategory || !relatedWatches.length) return []
+    return relatedWatches.filter(
+      (w) =>
+        w.id !== watch.id &&
+        w.brand.toLowerCase() !== watch.brand.toLowerCase() &&
+        w.category &&
+        w.category.toLowerCase() === currentCategory.toLowerCase()
+    )
+  }, [watch, relatedWatches])
+
+  const sameEraWatches = useMemo(() => {
+    const currentYear = watch?.release_year
+    if (!watch || !currentYear || !relatedWatches.length) return []
+    return relatedWatches.filter(
+      (w) =>
+        w.id !== watch.id &&
+        w.brand.toLowerCase() !== watch.brand.toLowerCase() &&
+        w.category !== watch.category &&
+        w.release_year &&
+        Math.abs(w.release_year - currentYear) <= 2
+    )
+  }, [watch, relatedWatches])
 
   // Check if current watch is in the collector's wrist collection
   useEffect(() => {
@@ -196,49 +239,105 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
     <div className="py-12 sm:py-16 lg:py-20">
       <Container>
         {/* Navigation Breadcrumb */}
-        <div className="mb-8 sm:mb-12">
+        <div className="mb-8 sm:mb-12 flex items-center justify-between">
           <Link
             to="/watches"
             className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-ink-secondary hover:text-ink transition-colors"
           >
-            &larr; <span>BACK TO WATCH INDEX</span>
+            &larr; <span>BACK TO ARCHIVE INDEX</span>
           </Link>
+          <span className="text-[10px] font-mono tracking-widest text-ink-muted uppercase hidden sm:inline-block">
+            SPECIMEN RECORD // {watch.slug}
+          </span>
         </div>
 
-        {/* Editorial Profile Header */}
-        <div className="border-b border-hairline pb-8 mb-12 sm:mb-16 grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
-          <div className="lg:col-span-8">
-            <div className="flex items-center gap-3 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
-              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span>{watch.brand}</span>
-              <span>&bull;</span>
-              <span>REF. {watch.reference_number}</span>
-              {watch.release_year && (
-                <>
-                  <span>&bull;</span>
-                  <span>{watch.release_year}</span>
-                </>
+        {/* Archival Specimen Dossier Masthead */}
+        <div className="border-b border-hairline pb-8 mb-10 sm:mb-14">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-hairline/60">
+            <div>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
+                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
+                <span>ARCHIVAL DOSSIER</span>
+                <span>&bull;</span>
+                <span className="text-ink font-semibold">{watch.brand}</span>
+                <span>&bull;</span>
+                <span>REF. {watch.reference_number}</span>
+                {watch.release_year && (
+                  <>
+                    <span>&bull;</span>
+                    <span>CIRCA {watch.release_year}</span>
+                  </>
+                )}
+              </div>
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
+                {watch.model}
+              </h1>
+            </div>
+
+            {/* Archival Ledger Metadata (No leading price) */}
+            <div className="lg:text-right flex flex-col items-start lg:items-end gap-1.5 font-mono text-[10px] tracking-wider uppercase text-ink-muted">
+              <div className="text-ink font-semibold">
+                CATALOG ENTRY // {watch.slug}
+              </div>
+              <div>
+                CLASSIFICATION: <span className="text-ink-secondary font-medium">{watch.category || 'ARCHIVE SPECIMEN'}</span>
+              </div>
+              {communityStories.length > 0 ? (
+                <a
+                  href="#owner-dispatches"
+                  className="text-ink hover:text-neutral-700 underline tracking-wider cursor-pointer"
+                >
+                  APPEARS IN {communityStories.length} {communityStories.length === 1 ? 'COMMUNITY DISPATCH' : 'COMMUNITY DISPATCHES'} &darr;
+                </a>
+              ) : (
+                <div>0 DISPATCH CITATIONS</div>
+              )}
+              {watch.updated_at && (
+                <div className="text-[9px] text-ink-muted">
+                  RECORD UPDATED: {new Date(watch.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </div>
               )}
             </div>
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-              {watch.model}
-            </h1>
           </div>
 
-          <div className="lg:col-span-4 lg:text-right">
-            <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-              MSRP ESTIMATE
+          {/* Essential Specification Telemetry Strip */}
+          <div className="pt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+            <div className="border-r last:border-r-0 border-hairline/60 pr-4">
+              <span className="text-[9px] uppercase tracking-[0.2em] text-ink-muted block mb-1">
+                CALIBRE
+              </span>
+              <span className="text-ink font-medium tracking-wide block truncate" title={watch.calibre || watch.movement_name || watch.movement_type || '—'}>
+                {watch.calibre || watch.movement_name || watch.movement_type || '—'}
+              </span>
             </div>
-            <div className="mt-1 font-display text-2xl sm:text-3xl font-normal text-ink">
-              {watch.price !== null
-                ? `$${watch.price.toLocaleString()} ${watch.currency}`
-                : 'PRICE UPON REQUEST'}
+
+            <div className="border-r last:border-r-0 border-hairline/60 pr-4">
+              <span className="text-[9px] uppercase tracking-[0.2em] text-ink-muted block mb-1">
+                CASE ARCHITECTURE
+              </span>
+              <span className="text-ink font-medium tracking-wide block">
+                {watch.case_diameter_mm ? `${watch.case_diameter_mm}mm` : '—'}
+                {watch.case_thickness_mm ? ` × ${watch.case_thickness_mm}mm` : ''}
+              </span>
             </div>
-            {watch.category && (
-              <div className="mt-2 text-xs font-mono tracking-wider text-ink-secondary uppercase">
-                CATEGORY // {watch.category}
-              </div>
-            )}
+
+            <div className="border-r last:border-r-0 border-hairline/60 pr-4">
+              <span className="text-[9px] uppercase tracking-[0.2em] text-ink-muted block mb-1">
+                CASE MATERIAL
+              </span>
+              <span className="text-ink font-medium tracking-wide block truncate" title={watch.case_material || '—'}>
+                {watch.case_material || '—'}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-[9px] uppercase tracking-[0.2em] text-ink-muted block mb-1">
+                WATER DEPTH
+              </span>
+              <span className="text-ink font-medium tracking-wide block">
+                {watch.water_resistance_m ? `${watch.water_resistance_m}m (${Math.round(watch.water_resistance_m / 10)} bar)` : '—'}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -247,24 +346,19 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
           {/* Left Column: Dominant Watch Photography (7 cols) */}
           <div className="lg:col-span-7">
             <div className="relative border border-hairline bg-warm-surface overflow-hidden">
-              <div className="aspect-[4/3] sm:aspect-[16/11] w-full">
-                {watch.image_url ? (
-                  <img
-                    src={watch.image_url}
-                    alt={`${watch.brand} ${watch.model}`}
-                    className="h-full w-full object-cover object-center"
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest">
-                    ARCHIVAL PHOTOGRAPHY PENDING
-                  </div>
-                )}
+              <div className="w-full">
+                <WatchImage
+                  src={watch.image_url}
+                  alt={`${watch.brand} ${watch.model}`}
+                  aspectRatio="aspect-[4/3] sm:aspect-[16/11]"
+                  loading="eager"
+                />
               </div>
 
               {/* Technical Specimen Plate */}
               <div className="p-4 border-t border-hairline bg-warm-white flex items-center justify-between text-[10px] font-mono tracking-[0.18em] uppercase text-ink">
-                <span>SPECIMEN ID // {watch.slug}</span>
-                <span className="text-steel font-semibold">DATABASE SOURCE RECORD</span>
+                <span>SPECIMEN ARCHIVE // {watch.slug}</span>
+                <span className="text-steel font-semibold">RECORD ID: {watch.id.substring(0, 8)}</span>
               </div>
             </div>
 
@@ -272,7 +366,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
             {watch.description && (
               <div className="mt-8 sm:mt-10 p-6 sm:p-8 border border-hairline bg-warm-surface/20">
                 <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-3">
-                  EDITORIAL OVERVIEW
+                  ARCHIVAL COMMENTARY & HISTORICAL SIGNIFICANCE
                 </div>
                 <p className="text-base sm:text-lg text-ink-secondary font-light leading-relaxed">
                   {watch.description}
@@ -375,15 +469,33 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 </div>
 
                 {/* Style */}
-                <div className="flex items-baseline justify-between pt-1">
+                <div className="flex items-baseline justify-between border-b border-hairline/60 pb-2">
                   <dt className="text-ink-muted uppercase tracking-wider">Style</dt>
                   <dd className="text-ink font-medium tracking-wide">
                     {watch.style || '—'}
                   </dd>
                 </div>
+
+                {/* Published Retail */}
+                <div className="flex items-baseline justify-between border-b border-hairline/60 pb-2">
+                  <dt className="text-ink-muted uppercase tracking-wider">Published Retail</dt>
+                  <dd className="text-ink font-medium tracking-wide">
+                    {watch.price !== null
+                      ? `$${watch.price.toLocaleString()} ${watch.currency}`
+                      : 'Price Upon Request'}
+                  </dd>
+                </div>
+
+                {/* Database Record ID */}
+                <div className="flex items-baseline justify-between pt-1 text-[10px]">
+                  <dt className="text-ink-muted uppercase tracking-wider">Record UID</dt>
+                  <dd className="text-ink-muted font-mono tracking-widest">
+                    {watch.id.substring(0, 13)}...
+                  </dd>
+                </div>
               </dl>
 
-              {/* Action Triggers: My Wrist Collection & Watch Battle */}
+              {/* Action Triggers: My Wrist Collection, Watch Battle, & Worth It */}
               <div className="mt-8 pt-6 border-t border-hairline flex flex-col gap-3">
                 {/* Collection Action */}
                 {!isAuthenticated ? (
@@ -438,15 +550,163 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                   onClick={() => navigate(`/battles?w1=${watch.slug}`)}
                   className="w-full"
                 >
-                  COMPARE IN WATCH BATTLE &rarr;
+                  AUDIT IN WATCH BATTLE &rarr;
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => navigate(`/case?slug=${watch.slug}`)}
+                  className="w-full"
+                >
+                  EXAMINE IN WORTH IT? &rarr;
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Genuine Archival Cross-References */}
+        {(sameBrandWatches.length > 0 || sameCategoryWatches.length > 0 || sameEraWatches.length > 0) && (
+          <div className="border-t border-hairline mt-14 sm:mt-20 pt-10 sm:pt-14">
+            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mb-8">
+              <div>
+                <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
+                  <span>ARCHIVAL CROSS-REFERENCES // CONTEXTUAL SPECIMENS</span>
+                </div>
+                <h2 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
+                  Related Archive Records
+                </h2>
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted hidden sm:inline-block">
+                VERIFIED ARCHIVAL AFFINITIES
+              </span>
+            </div>
+
+            <div className="space-y-8">
+              {/* Same Maison / Brand */}
+              {sameBrandWatches.length > 0 && (
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3 pb-1 border-b border-hairline/60 flex items-center justify-between">
+                    <span>SAME MAISON // {watch.brand.toUpperCase()}</span>
+                    <span>{sameBrandWatches.length} {sameBrandWatches.length === 1 ? 'SPECIMEN' : 'SPECIMENS'}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sameBrandWatches.slice(0, 3).map((rel) => (
+                      <Link
+                        key={rel.id}
+                        to={`/watches/${rel.slug}`}
+                        className="group border border-hairline bg-warm-surface/20 p-4 hover:border-ink hover:bg-warm-surface/50 transition-colors flex items-center gap-4"
+                      >
+                        <div className="w-16 h-16 bg-warm-surface border border-hairline flex-shrink-0 overflow-hidden">
+                          <WatchImage
+                            src={rel.image_url}
+                            alt={`${rel.brand} ${rel.model}`}
+                            aspectRatio="aspect-square"
+                            compact
+                          />
+                        </div>
+                        <div className="min-w-0 flex-grow">
+                          <div className="text-[9px] font-mono uppercase tracking-wider text-ink-secondary">
+                            REF. {rel.reference_number}
+                          </div>
+                          <div className="font-display text-sm uppercase text-ink group-hover:text-neutral-700 truncate">
+                            {rel.model}
+                          </div>
+                          <div className="text-[10px] font-mono text-ink-muted truncate mt-0.5">
+                            {rel.calibre || rel.movement_type || '—'}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Same Archive Category */}
+              {sameCategoryWatches.length > 0 && (
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3 pb-1 border-b border-hairline/60 flex items-center justify-between">
+                    <span>SEE ALSO // {watch.category ? watch.category.toUpperCase() : 'ARCHIVE'} CLASSIFICATION</span>
+                    <span>{sameCategoryWatches.length} {sameCategoryWatches.length === 1 ? 'SPECIMEN' : 'SPECIMENS'}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sameCategoryWatches.slice(0, 3).map((rel) => (
+                      <Link
+                        key={rel.id}
+                        to={`/watches/${rel.slug}`}
+                        className="group border border-hairline bg-warm-surface/20 p-4 hover:border-ink hover:bg-warm-surface/50 transition-colors flex items-center gap-4"
+                      >
+                        <div className="w-16 h-16 bg-warm-surface border border-hairline flex-shrink-0 overflow-hidden">
+                          <WatchImage
+                            src={rel.image_url}
+                            alt={`${rel.brand} ${rel.model}`}
+                            aspectRatio="aspect-square"
+                            compact
+                          />
+                        </div>
+                        <div className="min-w-0 flex-grow">
+                          <div className="text-[9px] font-mono uppercase tracking-wider text-ink-secondary">
+                            {rel.brand} &bull; REF. {rel.reference_number}
+                          </div>
+                          <div className="font-display text-sm uppercase text-ink group-hover:text-neutral-700 truncate">
+                            {rel.model}
+                          </div>
+                          <div className="text-[10px] font-mono text-ink-muted truncate mt-0.5">
+                            {rel.case_diameter_mm ? `${rel.case_diameter_mm}mm` : ''} &bull; {rel.movement_type || '—'}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Same Era */}
+              {sameEraWatches.length > 0 && (
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3 pb-1 border-b border-hairline/60 flex items-center justify-between">
+                    <span>CONTEMPORARY SPECIMENS // CIRCA {watch.release_year}</span>
+                    <span>{sameEraWatches.length} {sameEraWatches.length === 1 ? 'SPECIMEN' : 'SPECIMENS'}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sameEraWatches.slice(0, 3).map((rel) => (
+                      <Link
+                        key={rel.id}
+                        to={`/watches/${rel.slug}`}
+                        className="group border border-hairline bg-warm-surface/20 p-4 hover:border-ink hover:bg-warm-surface/50 transition-colors flex items-center gap-4"
+                      >
+                        <div className="w-16 h-16 bg-warm-surface border border-hairline flex-shrink-0 overflow-hidden">
+                          <WatchImage
+                            src={rel.image_url}
+                            alt={`${rel.brand} ${rel.model}`}
+                            aspectRatio="aspect-square"
+                            compact
+                          />
+                        </div>
+                        <div className="min-w-0 flex-grow">
+                          <div className="text-[9px] font-mono uppercase tracking-wider text-ink-secondary">
+                            {rel.brand} &bull; CIRCA {rel.release_year}
+                          </div>
+                          <div className="font-display text-sm uppercase text-ink group-hover:text-neutral-700 truncate">
+                            {rel.model}
+                          </div>
+                          <div className="text-[10px] font-mono text-ink-muted truncate mt-0.5">
+                            REF. {rel.reference_number}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Community Stories / Field Reports Section */}
-        <div className="border-t border-hairline mt-16 sm:mt-24 pt-12 sm:pt-16">
+        <div id="owner-dispatches" className="border-t border-hairline mt-16 sm:mt-24 pt-12 sm:pt-16">
           <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mb-8">
             <div>
               <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
@@ -479,7 +739,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
               <div className="font-mono text-[10px] tracking-[0.2em] text-ink-muted uppercase mb-2">
                 COLLECTOR ARCHIVE // UNANNOTATED REFERENCE
               </div>
-              <p className="text-base font-sans font-light text-ink-secondary italic max-w-md mx-auto mb-4">
+              <p className="text-base font-sans font-light text-ink-secondary max-w-md mx-auto mb-4">
                 No collector stories have been linked to this watch yet.
               </p>
               <p className="text-xs font-mono text-ink-muted max-w-md mx-auto mb-6">
@@ -517,7 +777,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                             src={story.photo_url}
                             alt={story.title}
                             loading="lazy"
-                            className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                            className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-300"
                           />
                         </div>
                       ) : (

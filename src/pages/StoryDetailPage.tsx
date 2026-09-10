@@ -487,7 +487,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
                 onClick={() => navigate(`/stories/${story.slug}/edit`)}
                 className="group inline-flex items-center gap-2 px-3.5 py-1.5 border border-hairline bg-warm-white hover:border-ink hover:bg-warm-surface/60 text-[10px] font-mono tracking-[0.22em] uppercase text-ink transition-all duration-200 cursor-pointer"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-steel transition-transform duration-200 group-hover:scale-125" aria-hidden="true" />
+                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                 <span>EDIT DISPATCH</span>
                 <span className="text-ink-muted group-hover:text-ink group-hover:translate-x-0.5 transition-all duration-200" aria-hidden="true">&rarr;</span>
               </button>
@@ -514,7 +514,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
           {/* Section Indicator */}
           <div className="flex items-center gap-2 mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>COMMUNITY DISPATCH // WRIST STORY</span>
+            <span>HUMAN EDITORIAL // WRIST RECORD</span>
           </div>
 
           {/* Story Title */}
@@ -594,7 +594,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
         <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
           <div className="mb-6 flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>THE COLLECTOR&rsquo;S NOTE</span>
+            <span>THE OWNER&rsquo;S NOTE</span>
           </div>
 
           <div className="space-y-6 text-base sm:text-lg text-ink font-light leading-relaxed">
@@ -717,7 +717,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
         {/* Featured Timepiece Card */}
         <div className="max-w-4xl mx-auto mb-16 sm:mb-20 border-t border-hairline pt-12">
           <div className="mb-4 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-            {story.watch ? 'VERIFIED WATCH ARCHIVE' : 'PERSONAL TIMEPIECE // COLLECTOR SPECIMEN'}
+            ABOUT THE WATCH
           </div>
 
           <div className="border border-hairline bg-warm-surface/20 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-ink transition-colors">
@@ -753,7 +753,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
             <div>
               <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                <span>COMMUNITY NOTES // DISCUSSIONS</span>
+                <span>COLLECTOR NOTES</span>
               </div>
               <h2 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
                 Collector Notes
@@ -964,7 +964,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
           </Button>
 
           <span className="text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase hidden sm:inline-block">
-            COMMUNITY ARCHIVE &bull; WATCH CULTURE PLATFORM
+            COMMUNITY ARCHIVE &bull; MOERI & JEANNERET
           </span>
         </div>
       </Container>
@@ -972,14 +972,14 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
       {/* Delete Confirmation Modal Dialog */}
       {deleteDialogOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-ink/75 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-ink/75 animate-fadeIn"
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-dialog-title"
           onClick={handleCloseDeleteDialog}
         >
           <div
-            className="w-full max-w-lg border border-hairline bg-warm-white p-7 sm:p-10 shadow-2xl relative"
+            className="w-full max-w-lg border border-hairline bg-warm-white p-7 sm:p-10 relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Editorial Folio Header Bar */}

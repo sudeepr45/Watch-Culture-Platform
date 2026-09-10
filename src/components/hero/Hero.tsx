@@ -1,14 +1,12 @@
-import { useState } from 'react'
 import Container from '../common/Container'
 import Button from '../common/Button'
+import WatchImage from '../common/WatchImage'
 import { useRouter } from '../../router/useRouter'
 
 export default function Hero() {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [imageError, setImageError] = useState(false)
   const { navigate } = useRouter()
 
-  // High-resolution editorial watch photograph
+  // Editorial watch photograph reference
   const watchImageUrl =
     'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=85'
 
@@ -25,8 +23,8 @@ export default function Hero() {
             {/* Editorial Header / Category Badge */}
             <div className="flex items-center gap-3 mb-5 sm:mb-6">
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-warm-surface border border-hairline text-[11px] font-mono uppercase tracking-[0.2em] text-ink font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-steel animate-pulse" aria-hidden="true" />
-                WATCH CULTURE PLATFORM
+                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
+                HOROLOGICAL JOURNAL &bull; ARCHIVE
               </span>
               <span className="text-[11px] font-mono tracking-[0.18em] text-ink-muted uppercase">
                 VOL. I &bull; FOUNDATION
@@ -38,16 +36,15 @@ export default function Hero() {
               id="hero-headline"
               className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[64px] xl:text-[76px] font-normal leading-[1.02] tracking-tight text-ink uppercase text-balance"
             >
-              The new era of watch culture &{' '}
-              <span className="italic font-light underline decoration-steel/50 decoration-1 underline-offset-8">
-                exploration.
-              </span>
+              The culture of time.
+              <br />
+              Archived &amp; examined.
             </h1>
 
             {/* Supporting Copy */}
             <p className="mt-6 sm:mt-7 text-base sm:text-lg md:text-xl text-ink-secondary font-normal leading-relaxed max-w-xl">
-              Independent stories, technical breakdowns, community collections,
-              and the culture of time.
+              Independent criticism, technical breakdowns, community archives,
+              and mechanical substance.
             </p>
 
             {/* Call to Action */}
@@ -55,26 +52,26 @@ export default function Hero() {
               <Button
                 variant="primary"
                 size="lg"
-                onClick={() => navigate('/explore')}
+                onClick={() => navigate('/watches')}
                 className="group"
                 iconRight={
                   <span
-                    className="inline-block transition-transform duration-200 group-hover:translate-x-1.5"
+                    className="inline-block transition-transform duration-200 group-hover:translate-x-1"
                     aria-hidden="true"
                   >
                     &rarr;
                   </span>
                 }
               >
-                EXPLORE THE PLATFORM
+                ENTER THE ARCHIVE
               </Button>
 
               <span className="text-xs font-mono tracking-[0.18em] text-ink-muted uppercase">
-                CURATED FOR ENTHUSIASTS
+                INDEPENDENT HOROLOGICAL REVIEW
               </span>
             </div>
 
-            {/* Platform Pillars */}
+            {/* Editorial Pillars */}
             <div className="mt-12 pt-6 border-t border-hairline grid grid-cols-3 gap-4 max-w-lg">
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
@@ -86,18 +83,18 @@ export default function Hero() {
               </div>
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  DISCOVERY
+                  ARCHIVE
                 </span>
                 <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  Interactive
+                  Verified Data
                 </span>
               </div>
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  COMMUNITY
+                  INSTRUMENTS
                 </span>
                 <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  Watch Lovers
+                  Deterministic
                 </span>
               </div>
             </div>
@@ -112,47 +109,19 @@ export default function Hero() {
                 aria-hidden="true"
               />
 
-              {/* Image Container with Subtle Zoom/Hover Motion */}
+              {/* Image Container with Restrained Motion */}
               <div className="relative aspect-[4/5] w-full overflow-hidden bg-warm-surface border border-hairline">
-                {!imageError ? (
-                  <img
-                    src={watchImageUrl}
-                    alt="Precision horological luxury timepiece detail showcasing dial craft and steel finish"
-                    className={`h-full w-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-105 ${
-                      imageLoaded ? 'opacity-100' : 'opacity-0 scale-95'
-                    }`}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageError(true)}
-                    loading="eager"
-                  />
-                ) : (
-                  /* Elegant Fallback Graphic if offline */
-                  <div className="h-full w-full flex flex-col items-center justify-center p-8 text-center bg-[#181817] text-warm-white">
-                    <svg
-                      className="w-16 h-16 text-steel/80 mb-4"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={1}
-                      aria-hidden="true"
-                    >
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M12 7v5l3 3" />
-                      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                    </svg>
-                    <span className="font-display text-2xl tracking-wide uppercase">
-                      Precision Specimen
-                    </span>
-                    <span className="mt-2 text-[11px] font-mono tracking-[0.2em] text-neutral-400 uppercase">
-                      Mechanical Masterpiece
-                    </span>
-                  </div>
-                )}
+                <WatchImage
+                  src={watchImageUrl}
+                  alt="Precision horological archival specimen detail"
+                  aspectRatio="h-full w-full"
+                  loading="eager"
+                />
 
                 {/* Floating Technical Plate */}
-                <div className="absolute bottom-4 left-4 right-4 p-3 bg-warm-white/90 backdrop-blur-sm border border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase text-ink">
+                <div className="absolute bottom-4 left-4 right-4 p-3 bg-warm-white border border-hairline flex items-center justify-between text-[10px] font-mono tracking-[0.16em] uppercase text-ink">
                   <span>SPECIMEN // STUDY</span>
-                  <span className="text-steel font-semibold">HOROLOGY LAB</span>
+                  <span className="text-steel font-semibold">HOROLOGY ARCHIVE</span>
                 </div>
               </div>
             </div>

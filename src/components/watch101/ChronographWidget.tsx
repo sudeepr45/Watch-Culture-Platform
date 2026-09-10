@@ -55,13 +55,13 @@ export default function ChronographWidget() {
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
         <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-          INTERACTIVE LAB // MECHANICAL STOPWATCH
+          LABORATORY INSTRUMENT // CHRONOGRAPH COMPLICATION
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-          Chronograph Pusher Simulator
+          Dual-Pusher Chronograph Operation
         </h3>
         <p className="mt-1 text-xs font-mono text-ink-secondary">
-          Operate the top (Start/Stop) and bottom (Reset) pushers to see how mechanical timing operates independently from regular timekeeping.
+          Operate the top (Start/Stop) and bottom (Reset) pushers to observe how mechanical interval measurement functions independently from core timekeeping.
         </p>
       </div>
 
@@ -112,7 +112,7 @@ export default function ChronographWidget() {
             onClick={handleStartStop}
             className={`px-6 py-3.5 border text-xs font-mono uppercase tracking-widest font-semibold transition-all cursor-pointer ${
               isRunning
-                ? 'border-rose-900 bg-rose-800 text-warm-white shadow-md'
+                ? 'border-rose-900 bg-rose-800 text-warm-white'
                 : 'border-ink bg-ink text-warm-white hover:bg-neutral-800'
             }`}
           >

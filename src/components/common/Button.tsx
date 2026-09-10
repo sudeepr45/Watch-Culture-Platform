@@ -27,7 +27,7 @@ export default function Button({
 
   const variantStyles = {
     primary:
-      'bg-ink text-warm-white hover:bg-neutral-800 active:bg-black shadow-sm',
+      'bg-ink text-warm-white hover:bg-neutral-800 active:bg-black',
     secondary:
       'bg-transparent text-ink border border-hairline hover:border-ink hover:bg-warm-surface active:bg-neutral-200',
     text:

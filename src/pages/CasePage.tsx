@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import WatchImage from '../components/common/WatchImage'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { useAuth } from '../context/useAuth'
@@ -666,21 +667,15 @@ export default function CasePage({ initialSlug }: CasePageProps) {
                       >
                         {/* Specimen Photography */}
                         <div className="relative aspect-[16/10] w-full bg-warm-surface border-b border-hairline overflow-hidden">
-                          {watch.image_url ? (
-                            <img
-                              src={watch.image_url}
-                              alt={`${watch.brand} ${watch.model}`}
-                              loading="lazy"
-                              className="h-full w-full object-cover object-center grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500"
-                            />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center text-[10px] font-mono text-ink-muted uppercase tracking-widest">
-                              SPECIMEN PHOTO PENDING
-                            </div>
-                          )}
+                          <WatchImage
+                            src={watch.image_url}
+                            alt={`${watch.brand} ${watch.model}`}
+                            aspectRatio="aspect-[16/10]"
+                            imageClassName="grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500"
+                          />
 
                           {watch.category && (
-                            <div className="absolute top-2.5 left-2.5 px-2 py-0.5 bg-warm-white/90 border border-hairline text-[9px] font-mono tracking-widest uppercase text-ink">
+                            <div className="absolute top-2.5 left-2.5 px-2 py-0.5 bg-warm-white/90 border border-hairline text-[9px] font-mono tracking-widest uppercase text-ink z-10">
                               {watch.category}
                             </div>
                           )}
@@ -738,19 +733,11 @@ export default function CasePage({ initialSlug }: CasePageProps) {
               {/* Specimen Photography (5 cols) */}
               <div className="lg:col-span-5">
                 <div className="border border-hairline bg-warm-white overflow-hidden">
-                  <div className="aspect-[4/3] w-full bg-warm-surface">
-                    {selectedWatch.image_url ? (
-                      <img
-                        src={selectedWatch.image_url}
-                        alt={`${selectedWatch.brand} ${selectedWatch.model}`}
-                        className="h-full w-full object-cover object-center"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest">
-                        SPECIMEN PHOTO PENDING
-                      </div>
-                    )}
-                  </div>
+                  <WatchImage
+                    src={selectedWatch.image_url}
+                    alt={`${selectedWatch.brand} ${selectedWatch.model}`}
+                    aspectRatio="aspect-[4/3]"
+                  />
                   <div className="p-3 border-t border-hairline bg-warm-surface/40 flex items-center justify-between text-[10px] font-mono tracking-widest uppercase text-ink-muted">
                     <span>SPECIMEN ID // {selectedWatch.slug}</span>
                     <span>SOURCE RECORD</span>
@@ -893,7 +880,7 @@ export default function CasePage({ initialSlug }: CasePageProps) {
                           onClick={() => handleTogglePriority(opt.key)}
                           className={`text-left p-3.5 border transition-all cursor-pointer ${
                             isSelected
-                              ? 'border-ink bg-warm-white text-ink shadow-sm'
+                              ? 'border-ink bg-warm-white text-ink'
                               : 'border-hairline bg-warm-surface/20 text-ink-secondary hover:border-ink/60'
                           }`}
                         >
@@ -926,7 +913,7 @@ export default function CasePage({ initialSlug }: CasePageProps) {
                           onClick={() => setCompromiseTolerance(comp.key)}
                           className={`w-full text-left p-3.5 border transition-all cursor-pointer ${
                             isSelected
-                              ? 'border-ink bg-warm-white text-ink shadow-sm'
+                              ? 'border-ink bg-warm-white text-ink'
                               : 'border-hairline bg-warm-surface/20 text-ink-secondary hover:border-ink/60'
                           }`}
                         >

@@ -7,6 +7,7 @@ import { getTopicBySlug, getAdjacentTopics } from '../data/watch101'
 import { fetchWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
 import InteractiveTopicWidget from '../components/watch101/InteractiveTopicWidget'
+import WatchImage from '../components/common/WatchImage'
 
 interface Watch101TopicPageProps {
   slug: string
@@ -50,16 +51,16 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
         <Container>
           <div className="border border-hairline bg-warm-surface/40 p-12 sm:p-16 text-center max-w-2xl mx-auto">
             <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-3">
-              ERROR 404 // TOPIC NOT FOUND
+              ERROR 404 // SPECIFICATION NOT FOUND
             </div>
             <h2 className="font-display text-3xl sm:text-4xl font-normal text-ink uppercase mb-3">
-              Lesson Unavailable
+              Record Unavailable
             </h2>
             <p className="text-sm font-mono text-ink-secondary mb-8">
-              The requested lesson &ldquo;{slug}&rdquo; is not part of the current Watch 101 curriculum.
+              The requested specification &ldquo;{slug}&rdquo; is not cataloged in the technical compendium.
             </p>
             <Button variant="secondary" size="sm" onClick={() => navigate('/watch-101')}>
-              &larr; RETURN TO WATCH 101 INDEX
+              &larr; RETURN TO TECHNICAL NOTEBOOK
             </Button>
           </div>
         </Container>
@@ -76,7 +77,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
             to="/watch-101"
             className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-ink-secondary hover:text-ink transition-colors"
           >
-            &larr; <span>BACK TO WATCH 101 CURRICULUM</span>
+            &larr; <span>BACK TO TECHNICAL NOTEBOOK</span>
           </Link>
         </div>
 
@@ -86,9 +87,9 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
             <span className="text-ink font-semibold">{topic.category}</span>
             <span>&bull;</span>
-            <span>{topic.readTimeMinutes} MIN READ</span>
+            <span>{topic.readTimeMinutes} MIN STUDY</span>
             <span>&bull;</span>
-            <span>TOPIC // {topic.slug}</span>
+            <span>SPECIFICATION REF. {topic.slug}</span>
           </div>
 
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
@@ -100,10 +101,10 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
           </p>
         </div>
 
-        {/* 1. THE 10-SECOND ANSWER (Hero callout) */}
+        {/* 1. CORE TECHNICAL AXIOM (Hero callout) */}
         <div className="border-l-4 border-ink bg-warm-surface/40 p-6 sm:p-8 mb-12 border-y border-r border-hairline">
           <div className="text-[10px] font-mono tracking-[0.25em] text-ink uppercase mb-2 font-semibold">
-            THE 10-SECOND ANSWER
+            CORE TECHNICAL AXIOM
           </div>
           <p className="font-display text-xl sm:text-2xl text-ink font-normal leading-snug">
             &ldquo;{topic.tenSecondAnswer}&rdquo;
@@ -117,16 +118,16 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
           </div>
         )}
 
-        {/* 3. THEN GO DEEPER (Main Editorial Content) */}
+        {/* 3. TECHNICAL ANATOMY & ARCHITECTURE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-16">
           {/* Main Body (8 cols) */}
           <div className="lg:col-span-8 space-y-6">
             <div className="border-b border-hairline pb-4 mb-6">
               <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-                EXPLANATION &bull; DEEP DIVE
+                TECHNICAL ANATOMY // SYSTEM ARCHITECTURE
               </div>
               <h2 className="font-display text-2xl sm:text-3xl font-normal text-ink uppercase mt-1">
-                Then Go Deeper
+                Detailed Examination
               </h2>
             </div>
 
@@ -143,11 +144,11 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
               </p>
             ))}
 
-            {/* Key Takeaways Box */}
+            {/* Key Engineering Principles Box */}
             {topic.deeperExplanation.keyTakeaways && (
               <div className="mt-8 p-6 border border-hairline bg-warm-surface/30">
                 <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-3 font-semibold">
-                  KEY HOROLOGICAL TAKEAWAYS
+                  ENGINEERING PRINCIPLES // KEY CRITERIA
                 </div>
                 <ul className="space-y-2 text-xs sm:text-sm font-mono text-ink">
                   {topic.deeperExplanation.keyTakeaways.map((point, idx) => (
@@ -165,7 +166,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
           <div className="lg:col-span-4">
             <div className="border border-hairline bg-warm-surface/20 p-6 sm:p-7 sticky top-24">
               <div className="text-[10px] font-mono tracking-[0.2em] text-ink uppercase font-semibold mb-2">
-                BUYER &amp; COLLECTOR DOSSIER
+                PRACTICAL IMPLICATIONS // WEARER CONSIDERATIONS
               </div>
               <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase mb-3">
                 Why It Matters
@@ -177,7 +178,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
               {/* Keywords Tag Cloud */}
               <div className="mt-6 pt-4 border-t border-hairline">
                 <div className="text-[9px] font-mono uppercase tracking-widest text-ink-muted mb-2">
-                  INDEXED TERMS
+                  INDEXED TECHNICAL TERMS
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {topic.keywords.map((kw) => (
@@ -194,18 +195,18 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
           </div>
         </div>
 
-        {/* 4. WATCH CONNECTIONS / RABBIT HOLES */}
+        {/* 4. ARCHIVAL EVIDENCE / REFERENCED SPECIMENS */}
         <div className="border-t border-hairline pt-12 sm:pt-16 mb-16">
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span>THE WATCH CONNECTIONS // REAL-WORLD EXAMPLES</span>
+              <span>ARCHIVAL EVIDENCE // REFERENCED SPECIMENS</span>
             </div>
             <h2 className="font-display text-2xl sm:text-3xl font-normal text-ink uppercase">
-              Watches That Embody This
+              Timepieces That Embody This
             </h2>
             <p className="text-xs font-mono text-ink-secondary mt-1">
-              Timepieces from the central database demonstrating this specific horological engineering.
+              Cataloged specimens from the central archive illustrating this specific mechanical architecture.
             </p>
           </div>
 
@@ -222,20 +223,13 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                   className="group border border-hairline bg-warm-surface/20 flex flex-col justify-between overflow-hidden hover:border-ink hover:bg-warm-surface/50 transition-all"
                 >
                   <div className="relative aspect-[4/3] w-full bg-warm-surface border-b border-hairline overflow-hidden">
-                    {watch.image_url ? (
-                      <img
-                        src={watch.image_url}
-                        alt={`${watch.brand} ${watch.model}`}
-                        loading="lazy"
-                        className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center text-[10px] font-mono text-ink-muted uppercase">
-                        PHOTO PENDING
-                      </div>
-                    )}
+                    <WatchImage
+                      src={watch.image_url}
+                      alt={`${watch.brand} ${watch.model}`}
+                      className="transition-opacity duration-300 group-hover:opacity-90"
+                    />
                     {watch.category && (
-                      <div className="absolute top-2 left-2 px-2 py-0.5 bg-warm-white/90 backdrop-blur-sm border border-hairline text-[8px] font-mono tracking-widest uppercase font-medium text-ink">
+                      <div className="absolute top-2 left-2 px-2 py-0.5 bg-warm-white border border-hairline text-[8px] font-mono tracking-widest uppercase font-medium text-ink">
                         {watch.category}
                       </div>
                     )}
@@ -279,7 +273,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
             <div className="border border-hairline bg-warm-surface/40 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
               <div>
                 <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
-                  PUT THIS KNOWLEDGE TO THE TEST // WATCH BATTLE
+                  SPECIFICATION COMPARISON // HEAD-TO-HEAD AUDIT
                 </div>
                 <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
                   {topic.battleSuggestion.label}
@@ -298,16 +292,16 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                   )
                 }
               >
-                BATTLE THIS CONCEPT &rarr;
+                COMPARE IN WATCH BATTLE &rarr;
               </Button>
             </div>
           )}
 
-          {/* Related Topics / Deeper Rabbit Holes */}
+          {/* Related Technical Records / Cross-References */}
           {topic.relatedTopicSlugs.length > 0 && (
             <div>
               <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-4">
-                RELATED WATCH 101 LESSONS
+                CORRELATED SPECIFICATIONS // CROSS-REFERENCES
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {topic.relatedTopicSlugs.map((relSlug) => {
@@ -322,7 +316,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                     >
                       <div>
                         <div className="text-[9px] font-mono uppercase tracking-widest text-ink-secondary mb-1">
-                          {relTopic.category} &bull; {relTopic.readTimeMinutes} MIN
+                          {relTopic.category} &bull; {relTopic.readTimeMinutes} MIN STUDY
                         </div>
                         <h4 className="font-display text-base font-normal uppercase text-ink group-hover:text-neutral-800">
                           {relTopic.title}
@@ -333,7 +327,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                       </div>
 
                       <div className="mt-4 pt-2 border-t border-hairline/60 flex items-center justify-between text-[9px] font-mono uppercase text-ink-muted group-hover:text-ink">
-                        <span>EXPLORE LESSON</span>
+                        <span>EXAMINE RECORD</span>
                         <span>&rarr;</span>
                       </div>
                     </Link>

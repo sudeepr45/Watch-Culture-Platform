@@ -16,13 +16,13 @@ export default function PowerReserveWidget() {
 
   // Status message
   let statusText = 'Fully Charged (Weekend-Proof)'
-  let statusColor = 'text-emerald-700'
+  let statusColor = 'text-ink font-semibold'
   if (currentHours === 0) {
     statusText = 'Dead Stop (Mainspring Completely Unwound)'
-    statusColor = 'text-rose-800'
+    statusColor = 'text-ink-muted'
   } else if (currentHours < 20) {
     statusText = 'Low Reserve (Amplitude Dropping, Wind Soon)'
-    statusColor = 'text-amber-800'
+    statusColor = 'text-ink font-semibold'
   } else if (currentHours < 50) {
     statusText = 'Moderate Reserve (Operating Optimally)'
     statusColor = 'text-ink'
@@ -32,10 +32,10 @@ export default function PowerReserveWidget() {
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
         <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-          INTERACTIVE LAB // MAINSPRING TENSION GAUGE
+          LABORATORY INSTRUMENT // MAINSPRING TENSION GAUGE
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-          Power Reserve Indicator Simulator
+          Power Reserve &amp; Mainspring Tension
         </h3>
         <p className="mt-1 text-xs font-mono text-ink-secondary">
           Simulate how hours deplete when a watch rests on a nightstand, and test whether an 80-hour calibre survives the weekend.
@@ -72,7 +72,7 @@ export default function PowerReserveWidget() {
               currentHours === 0
                 ? 'bg-transparent'
                 : currentHours < 20
-                ? 'bg-amber-600'
+                ? 'bg-ink/40'
                 : 'bg-ink'
             }`}
             style={{ width: `${percentage}%` }}

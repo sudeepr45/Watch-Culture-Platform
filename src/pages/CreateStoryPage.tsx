@@ -7,6 +7,7 @@ import { uploadStoryPhoto, createStory, updateStory, fetchStoryBySlug } from '..
 import { fetchWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
 import type { StoryWithAuthorAndWatch } from '../types/story'
+import WatchImage from '../components/common/WatchImage'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
@@ -791,19 +792,14 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                 <div className="border border-hairline bg-warm-white p-5 sm:p-6">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4 sm:gap-6 min-w-0">
-                      {selectedArchiveWatch.image_url ? (
-                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-warm-surface border border-hairline shrink-0 overflow-hidden relative flex items-center justify-center">
-                          <img
-                            src={selectedArchiveWatch.image_url}
-                            alt={`${selectedArchiveWatch.brand} ${selectedArchiveWatch.model}`}
-                            className="w-full h-full object-contain p-1"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-warm-surface border border-hairline shrink-0 flex items-center justify-center text-[10px] font-mono text-ink-muted">
-                          NO SPECIMEN IMAGE
-                        </div>
-                      )}
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-warm-surface border border-hairline shrink-0 overflow-hidden relative flex items-center justify-center">
+                        <WatchImage
+                          src={selectedArchiveWatch.image_url}
+                          alt={`${selectedArchiveWatch.brand} ${selectedArchiveWatch.model}`}
+                          aspectRatio="h-full w-full"
+                          compact
+                        />
+                      </div>
 
                       <div className="space-y-1.5 min-w-0">
                         <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-steel font-semibold">
@@ -1183,7 +1179,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                     {storyText}
                   </div>
                 ) : (
-                  <p className="text-sm font-sans font-light italic text-ink-muted text-center py-8">
+                  <p className="text-sm font-sans font-light text-ink-muted text-center py-8">
                     Your personal narrative will appear here as you write.
                   </p>
                 )}
@@ -1272,14 +1268,14 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
         {/* Archive Watch Picker Modal */}
         {isArchivePickerOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-ink/60 backdrop-blur-sm animate-fadeIn"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-ink/60 animate-fadeIn"
             role="dialog"
             aria-modal="true"
             aria-labelledby="archive-picker-title"
             onClick={handleCloseArchivePicker}
           >
             <div
-              className="relative w-full max-w-4xl max-h-[90vh] bg-warm-white border border-hairline shadow-2xl flex flex-col overflow-hidden"
+              className="relative w-full max-w-4xl max-h-[90vh] bg-warm-white border border-hairline flex flex-col overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
@@ -1406,15 +1402,12 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                         >
                           <div className="p-4 flex gap-4 items-center">
                             <div className="w-16 h-16 bg-warm-surface border border-hairline shrink-0 overflow-hidden flex items-center justify-center">
-                              {watch.image_url ? (
-                                <img
-                                  src={watch.image_url}
-                                  alt={`${watch.brand} ${watch.model}`}
-                                  className="w-full h-full object-contain p-1"
-                                />
-                              ) : (
-                                <span className="text-[9px] font-mono text-ink-muted">NO IMAGE</span>
-                              )}
+                              <WatchImage
+                                src={watch.image_url}
+                                alt={`${watch.brand} ${watch.model}`}
+                                aspectRatio="h-full w-full"
+                                compact
+                              />
                             </div>
 
                             <div className="min-w-0 flex-1">

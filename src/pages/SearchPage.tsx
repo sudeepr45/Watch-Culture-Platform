@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import WatchImage from '../components/common/WatchImage'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { searchAll } from '../services/searchService'
@@ -160,6 +161,7 @@ export default function SearchPage() {
             </span>
             <input
               type="text"
+              autoFocus
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
               placeholder="Search watches, references, calibres, topics..."
@@ -230,7 +232,7 @@ export default function SearchPage() {
                       : 'bg-warm-surface/40 text-ink-secondary border-hairline hover:border-ink hover:text-ink'
                   }`}
                 >
-                  ACADEMY TOPICS ({topicCount})
+                  TECHNICAL TOPICS ({topicCount})
                 </button>
               </div>
 
@@ -260,7 +262,7 @@ export default function SearchPage() {
               Searching Repository
             </h2>
             <p className="mt-2 text-xs font-mono tracking-widest text-ink-muted uppercase">
-              QUERYING WATCHES &amp; ACADEMY SPECIMENS...
+              QUERYING ARCHIVE &amp; TECHNICAL SPECIFICATIONS...
             </p>
           </div>
         )}
@@ -296,7 +298,7 @@ export default function SearchPage() {
               No Specimens Found
             </h3>
             <p className="mt-3 text-xs sm:text-sm font-light text-ink-secondary leading-relaxed max-w-md mx-auto">
-              No timepieces or academy lessons matched &ldquo;{query.trim()}&rdquo;. Try another search term, or browse the complete Watch Index.
+              No timepieces or technical specifications matched &ldquo;{query.trim()}&rdquo;. Try another search term, or browse the complete Watch Index.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button variant="primary" size="sm" onClick={() => navigate('/watches')}>
@@ -319,7 +321,7 @@ export default function SearchPage() {
               Explore the Watch Index
             </h3>
             <p className="mt-3 text-xs sm:text-sm font-light text-ink-secondary leading-relaxed max-w-lg mx-auto">
-              Type a brand name, reference code, movement calibre, case material, or horological concept to query the platform.
+              Type a brand name, reference code, movement calibre, case material, or horological concept to query the central archive.
             </p>
           </div>
         )}
@@ -351,20 +353,14 @@ export default function SearchPage() {
                     >
                       {/* Watch Photography */}
                       <div className="relative aspect-[4/3] w-full bg-warm-surface border-b border-hairline overflow-hidden">
-                        {watch.image_url ? (
-                          <img
-                            src={watch.image_url}
-                            alt={`${watch.brand} ${watch.model}`}
-                            loading="lazy"
-                            className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest">
-                            SPECIMEN PHOTO PENDING
-                          </div>
-                        )}
+                        <WatchImage
+                          src={watch.image_url}
+                          alt={`${watch.brand} ${watch.model}`}
+                          aspectRatio="aspect-[4/3]"
+                          imageClassName="group-hover:opacity-90"
+                        />
                         {watch.category && (
-                          <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white/90 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium">
+                          <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium z-10">
                             {watch.category}
                           </div>
                         )}
@@ -407,13 +403,13 @@ export default function SearchPage() {
               <div>
                 <div className="mb-6 flex items-center justify-between border-b border-hairline pb-3 text-[11px] font-mono tracking-[0.2em] uppercase">
                   <span className="text-ink font-semibold">
-                    WATCH 101 ACADEMY // {topicCount} {topicCount === 1 ? 'TOPIC' : 'TOPICS'}
+                    TECHNICAL NOTEBOOK // {topicCount} {topicCount === 1 ? 'RECORD' : 'RECORDS'}
                   </span>
                   <Link
                     to="/watch-101"
                     className="text-ink-muted hover:text-ink transition-colors"
                   >
-                    VIEW CURRICULUM &rarr;
+                    VIEW COMPENDIUM &rarr;
                   </Link>
                 </div>
 
@@ -443,14 +439,14 @@ export default function SearchPage() {
                         {topic.interactiveType && (
                           <div className="mt-4 inline-flex items-center gap-1.5 px-2 py-0.5 border border-hairline bg-warm-white text-[8px] font-mono tracking-widest uppercase text-ink font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-steel" />
-                            <span>INTERACTIVE LAB</span>
+                            <span>SIMULATION INSTRUMENT</span>
                           </div>
                         )}
                       </div>
 
                       {/* Footer Callout */}
                       <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono uppercase text-ink-muted group-hover:text-ink transition-colors">
-                        <span className="tracking-wider">EXPLORE LESSON</span>
+                        <span className="tracking-wider">EXAMINE SPECIFICATION</span>
                         <span className="text-ink font-semibold transition-transform duration-200 group-hover:translate-x-1">
                           &rarr;
                         </span>

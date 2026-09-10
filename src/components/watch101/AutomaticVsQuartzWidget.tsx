@@ -17,10 +17,10 @@ export default function AutomaticVsQuartzWidget() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hairline pb-4 mb-6">
         <div>
           <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-            INTERACTIVE LAB // MOVEMENT COMPARATOR
+            LABORATORY INSTRUMENT // ESCAPEMENT ARCHITECTURE
           </div>
           <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-            Automatic vs Quartz Playground
+            Escapement Architecture Comparator
           </h3>
         </div>
 
@@ -35,7 +35,7 @@ export default function AutomaticVsQuartzWidget() {
                 : 'text-ink-secondary hover:text-ink'
             }`}
           >
-            Technical Specs
+            Specification Matrix
           </button>
           <button
             type="button"
@@ -46,7 +46,7 @@ export default function AutomaticVsQuartzWidget() {
                 : 'text-ink-secondary hover:text-ink'
             }`}
           >
-            Decision Helper
+            Wearer Alignment Matrix
           </button>
         </div>
       </div>
@@ -149,7 +149,7 @@ export default function AutomaticVsQuartzWidget() {
         /* Decision Helper */
         <div>
           <p className="text-xs font-mono text-ink-secondary mb-6">
-            Answer 3 quick lifestyle questions to identify which movement philosophy aligns with your wrist habits.
+            Evaluate three usage criteria to determine which escapement architecture corresponds with your wear pattern.
           </p>
 
           <div className="space-y-6">
@@ -235,17 +235,17 @@ export default function AutomaticVsQuartzWidget() {
             {/* Recommendation Result Banner */}
             <div className="border border-ink bg-ink text-warm-white p-6 mt-6">
               <div className="text-[10px] font-mono tracking-[0.2em] text-warm-white/70 uppercase mb-1">
-                TAILORED RECOMMENDATION
+                ALIGNED ESCAPEMENT ARCHITECTURE
               </div>
               <h4 className="font-display text-2xl font-normal uppercase tracking-tight">
                 {isAutomaticRecommended
-                  ? 'Your Ideal Match: Automatic Mechanical'
-                  : 'Your Ideal Match: High-Precision Quartz'}
+                  ? 'Optimal Architecture: Automatic Mechanical'
+                  : 'Optimal Architecture: High-Precision Quartz'}
               </h4>
               <p className="text-xs font-mono text-warm-white/80 mt-2 leading-relaxed">
                 {isAutomaticRecommended
-                  ? 'You value the kinetic soul, sweeping aesthetic, and enduring micro-engineering of horology. Pair yourself with an automatic watch that stays charged as you go about your day.'
-                  : 'You prioritize ultimate grab-and-go readiness, shock resilience, and pinpoint precision. A quality quartz watch will keep running flawlessly even if left unworn for months.'}
+                  ? 'You prioritize kinetic mechanics, continuous sweeping motion, and enduring horological engineering. An automatic calibre wound by daily kinetic inertia maintains continuous mainspring tension.'
+                  : 'You prioritize grab-and-go readiness, shock resilience, and pinpoint precision. A quartz oscillator delivers multi-year autonomy without rotational winding.'}
               </p>
             </div>
           </div>

@@ -111,14 +111,14 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>COLLECTOR GATEWAY &bull; SUPABASE AUTH</span>
+            <span>COLLECTOR GATEWAY &bull; ARCHIVE LOGBOOK</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
             {mode === 'signup' ? 'Create Profile' : 'Welcome Back'}
           </h1>
           <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-light">
             {mode === 'signup'
-              ? 'Join the watch culture network. Curate your digital vault and participate in community showdowns.'
+              ? 'Register your collector profile to document your personal wrist archive and participate in head-to-head audits.'
               : 'Sign in to access your collector dossier, profile specifications, and saved bookmarks.'}
           </p>
         </div>
@@ -312,7 +312,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
           </div>
 
           <div className="mt-6 text-center text-[10px] font-mono text-ink-muted uppercase tracking-widest">
-            AUTHENTICATED VIA SUPABASE INFRASTRUCTURE
+            AUTHENTICATED ARCHIVE ACCESS
           </div>
         </div>
       </Container>

@@ -78,13 +78,13 @@ export default function WaterResistanceWidget() {
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
         <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-          INTERACTIVE LAB // WATERPROOFING MYTHBUSTER
+          LABORATORY INSTRUMENT // HYDROSTATIC PRESSURE &amp; SEALING INTEGRITY
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-          Water Resistance Reality Check
+          Hydrostatic Pressure &amp; Dynamic Depth Tolerance
         </h3>
         <p className="mt-1 text-xs font-mono text-ink-secondary">
-          Click a rating to see what it actually survives in real life versus laboratory static ratings.
+          Audit static barometric pressure ratings against real-world dynamic hydraulic tolerances.
         </p>
       </div>
 
@@ -97,7 +97,7 @@ export default function WaterResistanceWidget() {
             onClick={() => setSelectedMeters(tier.meters)}
             className={`p-3 border text-center transition-all cursor-pointer ${
               selectedMeters === tier.meters
-                ? 'border-ink bg-ink text-warm-white shadow-md'
+                ? 'border-ink bg-ink text-warm-white'
                 : 'border-hairline bg-warm-white text-ink hover:border-ink'
             }`}
           >

@@ -18,11 +18,28 @@ import LoginPage from './pages/LoginPage'
 import SearchPage from './pages/SearchPage'
 import RandomWatchPage from './pages/RandomWatchPage'
 import CasePage from './pages/CasePage'
+import CuratorPage from './pages/CuratorPage'
+import CuratorNewWatchPage from './pages/CuratorNewWatchPage'
+import CuratorEditWatchPage from './pages/CuratorEditWatchPage'
 
 function AppContent() {
   const { pathname } = useRouter()
 
   const renderPage = () => {
+    // Curator routes — private, checked before public dynamic routes
+    if (pathname === '/curator/new') {
+      return <CuratorNewWatchPage />
+    }
+
+    if (pathname.startsWith('/curator/edit/') && pathname !== '/curator/edit') {
+      const slug = pathname.replace('/curator/edit/', '')
+      return <CuratorEditWatchPage slug={slug} />
+    }
+
+    if (pathname === '/curator') {
+      return <CuratorPage />
+    }
+
     // Create Story route: /stories/new (must be checked before dynamic :slug)
     if (pathname === '/stories/new') {
       return <CreateStoryPage />

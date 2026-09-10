@@ -30,13 +30,13 @@ export default function GmtWidget() {
     <div className="border border-hairline bg-warm-surface/30 p-6 sm:p-8 my-8">
       <div className="border-b border-hairline pb-4 mb-6">
         <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-1">
-          INTERACTIVE LAB // DUAL TIME ZONE ENGINE
+          LABORATORY INSTRUMENT // DUAL TIME ZONE CALCULATION
         </div>
         <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-          GMT Dual-Time Simulator
+          GMT 24-Hour Bezel &amp; Dual-Time Differential
         </h3>
         <p className="mt-1 text-xs font-mono text-ink-secondary">
-          Simulate how a GMT 24-hour hand and two-tone bezel display home time while you adjust your local destination.
+          Simulate how a 24-hour hand and bidirectional bezel track reference time alongside local hours across time zones.
         </p>
       </div>
 

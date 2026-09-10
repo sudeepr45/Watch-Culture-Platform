@@ -5,13 +5,17 @@ import { Link } from '../../router'
 import { useRouter } from '../../router/useRouter'
 import { useAuth } from '../../context/useAuth'
 
-const NAV_ITEMS = [
-  { label: 'HOME', to: '/' },
+const EDITORIAL_ITEMS = [
+  { label: 'CULTURE', to: '/explore' },
   { label: 'STORIES', to: '/stories' },
-  { label: 'WATCHES', to: '/watches' },
+  { label: 'ARCHIVE', to: '/watches' },
+]
+
+const EXPERIENCE_ITEMS = [
   { label: 'WORTH IT?', to: '/case' },
+  { label: 'RANDOM ACCESS', to: '/random' },
+  { label: 'WATCH 101', to: '/watch-101' },
   { label: 'BATTLES', to: '/battles' },
-  { label: 'EXPLORE', to: '/explore' },
 ]
 
 export default function Navbar() {
@@ -39,9 +43,9 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-colors duration-200 ${
+      className={`sticky top-0 z-50 w-full transition-colors duration-150 ${
         scrolled
-          ? 'bg-warm-white/95 backdrop-blur-md border-b border-hairline shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]'
+          ? 'bg-warm-white border-b border-hairline'
           : 'bg-warm-white border-b border-hairline'
       }`}
     >
@@ -63,44 +67,88 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Center: Desktop Navigation */}
+          {/* Center: Desktop Navigation Hierarchy */}
           <nav
             aria-label="Main Navigation"
-            className="hidden md:flex items-center gap-6 lg:gap-8 xl:gap-10"
+            className="hidden lg:flex items-center gap-5 xl:gap-8"
           >
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.to
-              return (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={`relative text-xs tracking-[0.18em] font-medium transition-colors py-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
-                    isActive
-                      ? 'text-ink font-semibold'
-                      : 'text-ink-secondary hover:text-ink'
-                  }`}
-                >
-                  {item.label}
-                  {isActive && (
-                    <span
-                      className="absolute bottom-0 left-0 w-full h-[2px] bg-ink"
-                      aria-hidden="true"
-                    />
-                  )}
-                  {!isActive && (
-                    <span
-                      className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-steel transition-all duration-200 group-hover:w-full"
-                      aria-hidden="true"
-                    />
-                  )}
-                </Link>
-              )
-            })}
+            {/* EDITORIAL CLUSTER */}
+            <div className="flex items-center gap-4 xl:gap-6">
+              {EDITORIAL_ITEMS.map((item) => {
+                const isActive =
+                  item.to === '/explore'
+                    ? pathname === '/explore'
+                    : pathname.startsWith(item.to)
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`relative text-[11px] xl:text-xs tracking-[0.16em] font-medium transition-colors py-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                      isActive
+                        ? 'text-ink font-semibold'
+                        : 'text-ink-secondary hover:text-ink'
+                    }`}
+                  >
+                    {item.label}
+                    {isActive && (
+                      <span
+                        className="absolute bottom-0 left-0 w-full h-[2px] bg-ink"
+                        aria-hidden="true"
+                      />
+                    )}
+                    {!isActive && (
+                      <span
+                        className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-steel transition-all duration-200 group-hover:w-full"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+
+            <span className="w-px h-3.5 bg-hairline" aria-hidden="true" />
+
+            {/* EXPERIENCES CLUSTER */}
+            <div className="flex items-center gap-4 xl:gap-6">
+              {EXPERIENCE_ITEMS.map((item) => {
+                const isActive =
+                  item.to === '/random'
+                    ? pathname === '/random'
+                    : pathname.startsWith(item.to)
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`relative text-[11px] xl:text-xs tracking-[0.16em] font-medium transition-colors py-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
+                      isActive
+                        ? 'text-ink font-semibold'
+                        : 'text-ink-secondary hover:text-ink'
+                    }`}
+                  >
+                    {item.label}
+                    {isActive && (
+                      <span
+                        className="absolute bottom-0 left-0 w-full h-[2px] bg-ink"
+                        aria-hidden="true"
+                      />
+                    )}
+                    {!isActive && (
+                      <span
+                        className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-steel transition-all duration-200 group-hover:w-full"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
           </nav>
 
           {/* Right: Actions (Search, Profile) */}
-          <div className="hidden md:flex items-center gap-5 lg:gap-6">
+          <div className="hidden lg:flex items-center gap-5 lg:gap-6">
             <button
               type="button"
               onClick={() => navigate('/search')}
@@ -183,7 +231,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center md:hidden">
+          <div className="flex items-center lg:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -230,34 +278,76 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <nav
             aria-label="Mobile Navigation"
-            className="md:hidden border-t border-hairline py-6 px-2 animate-in fade-in slide-in-from-top-2 duration-200"
+            className="lg:hidden border-t border-hairline py-6 px-2 animate-in fade-in slide-in-from-top-2 duration-200"
           >
-            <div className="flex flex-col gap-4">
-              {NAV_ITEMS.map((item) => {
-                const isActive = pathname === item.to
-                return (
-                  <Link
-                    key={item.label}
-                    to={item.to}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`text-sm tracking-[0.2em] font-semibold py-2 px-2 transition-colors ${
-                      isActive
-                        ? 'text-ink bg-warm-surface'
-                        : 'text-ink-secondary hover:text-ink'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                )
-              })}
-              <div className="pt-4 mt-2 border-t border-hairline flex flex-col gap-3">
+            <div className="flex flex-col gap-6">
+              {/* EDITORIAL CLUSTER */}
+              <div>
+                <div className="text-[9px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-2 px-2">
+                  EDITORIAL
+                </div>
+                <div className="flex flex-col gap-1">
+                  {EDITORIAL_ITEMS.map((item) => {
+                    const isActive =
+                      item.to === '/explore'
+                        ? pathname === '/explore'
+                        : pathname.startsWith(item.to)
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.to}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`text-xs tracking-[0.18em] font-medium py-2.5 px-3 transition-colors ${
+                          isActive
+                            ? 'text-ink bg-warm-surface font-semibold'
+                            : 'text-ink-secondary hover:text-ink'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* EXPERIENCES CLUSTER */}
+              <div className="pt-4 border-t border-hairline">
+                <div className="text-[9px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-2 px-2">
+                  EXPERIENCES
+                </div>
+                <div className="flex flex-col gap-1">
+                  {EXPERIENCE_ITEMS.map((item) => {
+                    const isActive =
+                      item.to === '/random'
+                        ? pathname === '/random'
+                        : pathname.startsWith(item.to)
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.to}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`text-xs tracking-[0.18em] font-medium py-2.5 px-3 transition-colors ${
+                          isActive
+                            ? 'text-ink bg-warm-surface font-semibold'
+                            : 'text-ink-secondary hover:text-ink'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* SEARCH & AUTH ACTIONS */}
+              <div className="pt-4 border-t border-hairline flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false)
                     navigate('/search')
                   }}
-                  className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2 cursor-pointer"
+                  className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2.5 px-3 cursor-pointer"
                 >
                   <svg
                     className="w-4 h-4"
@@ -279,7 +369,7 @@ export default function Navbar() {
                   <Link
                     to="/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2"
+                    className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2.5 px-3"
                   >
                     {profile?.avatar_url ? (
                       <img
@@ -298,7 +388,7 @@ export default function Navbar() {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2 px-2"
+                    className="flex items-center gap-3 text-xs tracking-[0.18em] font-medium text-ink-secondary py-2.5 px-3"
                   >
                     <svg
                       className="w-4 h-4"

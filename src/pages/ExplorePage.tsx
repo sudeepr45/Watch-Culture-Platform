@@ -14,7 +14,7 @@ const FUTURE_MODULES: FeatureModule[] = [
     tag: 'CATALOG // ARCHIVE',
     title: 'WATCH ARCHIVE',
     description:
-      'Curated technical specifications, reference history, calibre architecture, and case dimensions.',
+      'Verified technical specifications, reference history, calibre architecture, and case dimensions.',
     status: 'CENTRAL ARCHIVE',
     to: '/watches',
   },
@@ -35,27 +35,27 @@ const FUTURE_MODULES: FeatureModule[] = [
     to: '/case',
   },
   {
-    tag: 'ACADEMY // FUNDAMENTALS',
+    tag: 'LABORATORY // TECHNICAL NOTEBOOK',
     title: 'WATCH 101',
     description:
       'The mechanics of mechanical time: escapements, balance springs, complications, and finishing.',
-    status: 'EDUCATIONAL SERIES',
+    status: 'TECHNICAL NOTEBOOK',
     to: '/watch-101',
   },
   {
     tag: 'DISCOVERY // DISPATCH',
-    title: 'RANDOM WATCH',
+    title: 'RANDOM ACCESS',
     description:
-      'Spontaneous exploration engine surfacing forgotten references, prototypes, and icons.',
-    status: 'DISCOVERY TOOL',
+      'Spontaneous archive discovery engine surfacing forgotten references, prototypes, and icons.',
+    status: 'ARCHIVE DISCOVERY',
     to: '/random',
   },
   {
     tag: 'COMMUNITY // VAULT',
-    title: 'MY COLLECTION',
+    title: 'MY WRIST',
     description:
-      'Personal digital watch boxes, provenance logs, wrist shots, and collection telemetry.',
-    status: 'COLLECTOR PROFILE',
+      'Personal wrist catalog, provenance logs, and watch dossier telemetry.',
+    status: 'WRIST CATALOG',
     to: '/profile',
   },
 ]
@@ -68,13 +68,13 @@ export default function ExplorePage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>DISCOVERY ARENA</span>
+            <span>SYSTEM INDEX // EXPERIENCES</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            Explore Watch Culture
+            Editorial Directory
           </h1>
           <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl">
-            Discover watches, stories, battles and rabbit holes.
+            An index of verified archives, interactive decision instruments, and collector dispatches.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function ExplorePage() {
                 <div>
                   <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-4">
                     <span>{mod.tag}</span>
-                    <span>MOD 0{index + 1}</span>
+                    <span>0{index + 1} // INDEX</span>
                   </div>
 
                   <h2 className="font-display text-xl sm:text-2xl font-normal tracking-tight text-ink uppercase group-hover:text-neutral-800 transition-colors">

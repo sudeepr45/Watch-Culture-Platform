@@ -165,7 +165,7 @@ export default function StoriesPage() {
         {!loading && !error && (!stories || stories.length === 0) && (
           <div className="relative border border-hairline bg-warm-surface/40 p-8 sm:p-14 lg:p-20 text-center max-w-3xl mx-auto">
             <div className="absolute top-3 left-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-              COMMUNITY // FEED
+              STORIES // ARCHIVE
             </div>
             <div className="absolute top-3 right-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
               STORIES: 0
@@ -208,9 +208,9 @@ export default function StoriesPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate('/explore')}
+                  onClick={() => navigate('/watches')}
                 >
-                  EXPLORE PLATFORM &rarr;
+                  OPEN ARCHIVE &rarr;
                 </Button>
               </div>
             </div>
@@ -228,16 +228,16 @@ export default function StoriesPage() {
 
           return (
             <div>
-              {/* Feed Telemetry Bar */}
+              {/* Stories Telemetry Bar */}
               <div className="mb-8 flex items-center justify-between text-[11px] font-mono tracking-[0.2em] text-ink-muted uppercase">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                  <span>COMMUNITY DISPATCHES // {stories.length} {stories.length === 1 ? 'ENTRY' : 'ENTRIES'}</span>
+                  <span>COMMUNITY STORIES // {stories.length} {stories.length === 1 ? 'RECORD' : 'RECORDS'}</span>
                 </div>
                 <span>ORDER: CHRONOLOGICAL // NEWEST</span>
               </div>
 
-              {/* Featured Lead Story Dispatch */}
+              {/* Featured Lead Story Profile */}
               <Link
                 to={`/stories/${leadStory.slug}`}
                 className="group mb-12 sm:mb-16 block border border-hairline bg-warm-surface/20 hover:border-ink hover:bg-warm-surface/40 transition-all duration-300 overflow-hidden"
@@ -250,7 +250,7 @@ export default function StoriesPage() {
                         src={leadStory.photo_url}
                         alt={leadStory.title}
                         loading="lazy"
-                        className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                        className="h-full w-full object-cover object-center transition-opacity duration-300 group-hover:opacity-90"
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest py-20">
@@ -259,13 +259,13 @@ export default function StoriesPage() {
                     )}
 
                     {/* Timepiece Badge */}
-                    <div className="absolute top-4 left-4 px-3 py-1.5 bg-warm-white/95 backdrop-blur-sm border border-hairline text-[10px] font-mono tracking-[0.2em] uppercase text-ink font-semibold shadow-sm">
+                    <div className="absolute top-4 left-4 px-3 py-1.5 bg-warm-white border border-hairline text-[10px] font-mono tracking-[0.2em] uppercase text-ink font-semibold">
                       {leadStory.personal_watch_brand} &bull; {leadStory.personal_watch_model}
                     </div>
 
                     {/* Reference Tag */}
                     {leadStory.personal_watch_reference && (
-                      <div className="absolute bottom-4 left-4 hidden sm:block px-2.5 py-1 bg-warm-surface/90 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink-secondary">
+                      <div className="absolute bottom-4 left-4 hidden sm:block px-2.5 py-1 bg-warm-surface border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink-secondary">
                         REF. {leadStory.personal_watch_reference}
                       </div>
                     )}
@@ -277,7 +277,7 @@ export default function StoriesPage() {
                       {/* Lead Section Marker */}
                       <div className="flex items-center gap-2 mb-4 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
                         <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                        <span>LEAD DISPATCH // SPOTLIGHT</span>
+                        <span>FEATURED STORY // PROFILE</span>
                       </div>
 
                       {/* Author Info */}
@@ -324,21 +324,20 @@ export default function StoriesPage() {
                                 day: 'numeric',
                                 year: 'numeric',
                               })
-                            : 'RECENT DISPATCH'}
+                            : 'RECENT STORY'}
                         </span>
                         {((leadStory.likes_count ?? 0) > 0 || (leadStory.comments_count ?? 0) > 0) && (
                           <>
                             <span>&bull;</span>
-                            <span className="text-ink font-medium tracking-wide">
-                              {leadStory.likes_count ?? 0} {(leadStory.likes_count ?? 0) === 1 ? 'LIKE' : 'LIKES'}
-                              {' '}&bull;{' '}
-                              {leadStory.comments_count ?? 0} {(leadStory.comments_count ?? 0) === 1 ? 'NOTE' : 'NOTES'}
+                            <span className="text-ink-muted">
+                              {leadStory.likes_count ?? 0} {(leadStory.likes_count ?? 0) === 1 ? 'like' : 'likes'}
+                              {(leadStory.comments_count ?? 0) > 0 && ` &bull; ${leadStory.comments_count} ${leadStory.comments_count === 1 ? 'note' : 'notes'}`}
                             </span>
                           </>
                         )}
                       </div>
                       <span className="text-ink font-semibold group-hover:text-neutral-700 transition-colors flex items-center gap-1">
-                        READ DISPATCH <span className="group-hover:translate-x-1.5 transition-transform inline-block">&rarr;</span>
+                        READ <span className="group-hover:translate-x-1.5 transition-transform inline-block">&rarr;</span>
                       </span>
                     </div>
                   </div>
@@ -349,7 +348,7 @@ export default function StoriesPage() {
               {otherStories.length > 0 && (
                 <div>
                   <div className="mb-6 flex items-center justify-between text-[11px] font-mono tracking-[0.2em] text-ink-muted uppercase pt-4 border-t border-hairline">
-                    <span>COMMUNITY ARCHIVE // MORE DISPATCHES</span>
+                    <span>COMMUNITY STORIES // CHRONOLOGICAL</span>
                     <span>{otherStories.length} {otherStories.length === 1 ? 'RECORD' : 'RECORDS'}</span>
                   </div>
 
@@ -367,7 +366,7 @@ export default function StoriesPage() {
                               src={story.photo_url}
                               alt={story.title}
                               loading="lazy"
-                              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              className="h-full w-full object-cover object-center transition-opacity duration-300 group-hover:opacity-90"
                             />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center text-xs font-mono text-ink-muted uppercase tracking-widest">
@@ -376,7 +375,7 @@ export default function StoriesPage() {
                           )}
 
                           {/* Associated Watch Pill Badge */}
-                          <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white/95 backdrop-blur-sm border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium max-w-[85%] truncate shadow-sm">
+                          <div className="absolute top-3 left-3 px-2.5 py-1 bg-warm-white border border-hairline text-[9px] font-mono tracking-[0.2em] uppercase text-ink font-medium max-w-[85%] truncate">
                             {story.personal_watch_brand} &bull; {story.personal_watch_model}
                           </div>
                         </div>
@@ -430,14 +429,14 @@ export default function StoriesPage() {
                               <span className="truncate">
                                 {story.personal_watch_reference ? `REF. ${story.personal_watch_reference}` : story.personal_watch_brand}
                               </span>
-                              {((story.likes_count ?? 0) > 0 || (story.comments_count ?? 0) > 0) && (
-                                <span className="text-ink font-medium flex-shrink-0">
-                                  &bull; {story.likes_count ?? 0}L &bull; {story.comments_count ?? 0}N
+                              {(story.likes_count ?? 0) > 0 && (
+                                <span className="text-ink-muted font-normal flex-shrink-0">
+                                  &bull; {story.likes_count}L
                                 </span>
                               )}
                             </div>
                             <span className="text-ink font-semibold group-hover:text-neutral-700 transition-colors flex items-center gap-1 flex-shrink-0">
-                              READ STORY <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>
+                              OPEN STORY <span className="group-hover:translate-x-1 transition-transform inline-block">&rarr;</span>
                             </span>
                           </div>
                         </div>

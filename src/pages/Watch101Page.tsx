@@ -50,32 +50,32 @@ export default function Watch101Page() {
       <Container>
         {/* Editorial Header */}
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
-          <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-muted">
+          <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>ACADEMY &bull; HOROLOGICAL ESSENTIALS</span>
+            <span>TECHNICAL NOTEBOOK // REFERENCE COMPENDIUM</span>
           </div>
 
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
             Watch 101
           </h1>
 
-          <p className="mt-3 text-lg sm:text-2xl font-display italic text-ink font-normal">
-            &ldquo;Learn the stuff watch people argue about.&rdquo;
+          <p className="mt-3 text-lg sm:text-2xl font-display text-ink font-normal uppercase tracking-tight">
+            Horological Mechanics &amp; Architecture
           </p>
 
           <p className="mt-3 text-sm sm:text-base text-ink-secondary max-w-3xl font-light leading-relaxed">
-            A beginner-friendly curriculum exploring internal movements, complications, case metallurgy, and collector terminology. Designed to make horology straightforward, tangible, and fun.
+            An intelligent laboratory and technical notebook on internal calibres, escapements, complications, and metallurgy. Grounded in physical horological engineering standards.
           </p>
         </div>
 
-        {/* Featured Editorial Spotlight (Only shown when no search is active) */}
+        {/* Featured Technical Record (Only shown when no search is active) */}
         {!searchQuery && selectedCategory === 'all' && spotlightTopic && (
           <div className="mb-14 border border-hairline bg-warm-surface/30 relative overflow-hidden group">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 sm:p-10 lg:p-12 items-center">
               <div className="lg:col-span-8">
-                <div className="flex items-center gap-2.5 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted font-medium">
-                  <span className="w-2 h-2 rounded-full bg-steel animate-pulse" />
-                  <span>FEATURED SPOTLIGHT &bull; ESSENTIAL PILLAR</span>
+                <div className="flex items-center gap-2.5 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-secondary font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
+                  <span>TECHNICAL SPOTLIGHT // FOUNDATIONAL RECORD</span>
                 </div>
 
                 <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-ink uppercase">
@@ -86,20 +86,20 @@ export default function Watch101Page() {
                   {spotlightTopic.shortDescription}
                 </p>
 
-                <div className="mt-6 border-l-2 border-ink pl-4 py-1 text-xs font-mono text-ink italic">
+                <div className="mt-6 border-l-2 border-ink pl-4 py-1 text-xs font-mono text-ink">
                   &ldquo;{spotlightTopic.tenSecondAnswer}&rdquo;
                 </div>
               </div>
 
               <div className="lg:col-span-4 flex flex-col items-start lg:items-end justify-center">
                 <div className="text-[10px] font-mono tracking-widest uppercase text-ink-muted mb-2">
-                  INCLUDES INTERACTIVE LAB &bull; {spotlightTopic.readTimeMinutes} MIN
+                  INCLUDES SIMULATION INSTRUMENT &bull; {spotlightTopic.readTimeMinutes} MIN STUDY
                 </div>
                 <Link
                   to={`/watch-101/${spotlightTopic.slug}`}
-                  className="inline-flex items-center justify-center font-medium tracking-[0.12em] uppercase text-xs px-6 py-3.5 bg-ink text-warm-white hover:bg-neutral-800 transition-colors shadow-sm cursor-pointer"
+                  className="inline-flex items-center justify-center font-medium tracking-[0.12em] uppercase text-xs px-6 py-3.5 bg-ink text-warm-white hover:bg-neutral-800 transition-colors cursor-pointer"
                 >
-                  START LESSON &rarr;
+                  EXAMINE RECORD &rarr;
                 </Link>
               </div>
             </div>
@@ -108,18 +108,18 @@ export default function Watch101Page() {
 
         {/* Search & Filter Controls */}
         <div className="mb-10 space-y-4">
-          {/* Category Pills */}
+          {/* Category Selector Chips */}
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 border text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+              className={`px-3.5 py-2 border text-[11px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
                 selectedCategory === 'all'
                   ? 'border-ink bg-ink text-warm-white font-semibold'
-                  : 'border-hairline bg-warm-white text-ink hover:border-ink'
+                  : 'border-hairline bg-warm-white text-ink-secondary hover:border-ink hover:text-ink'
               }`}
             >
-              ALL ({categoryCounts.all})
+              ALL [{categoryCounts.all}]
             </button>
 
             {categories.map((cat) => (
@@ -127,24 +127,24 @@ export default function Watch101Page() {
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 border text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                className={`px-3.5 py-2 border text-[11px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
                   selectedCategory === cat.id
                     ? 'border-ink bg-ink text-warm-white font-semibold'
-                    : 'border-hairline bg-warm-white text-ink hover:border-ink'
+                    : 'border-hairline bg-warm-white text-ink-secondary hover:border-ink hover:text-ink'
                 }`}
               >
-                {cat.shortLabel} ({categoryCounts[cat.id] || 0})
+                {cat.shortLabel.toUpperCase()} [{categoryCounts[cat.id] || 0}]
               </button>
             ))}
           </div>
 
-          {/* Search Input */}
+          {/* Technical Search Query Input */}
           <div className="relative max-w-2xl">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search terminology, calibres, materials, complications, keywords..."
+              placeholder="Query specifications, calibres, metallurgy, complications, or terminology..."
               className="w-full bg-warm-surface/40 border border-hairline px-4 py-3 pl-11 text-xs font-mono text-ink placeholder:text-ink-muted focus:outline-none focus:border-ink transition-colors"
             />
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ink-secondary">
@@ -174,17 +174,20 @@ export default function Watch101Page() {
 
           <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase pt-1">
             <span>
-              SHOWING {filteredTopics.length} OF {allTopics.length} LESSONS
+              INDEX // {filteredTopics.length} OF {allTopics.length} SPECIFICATIONS CATALOGED
             </span>
-            <span>VERIFIED HOROLOGICAL CURRICULUM</span>
+            <span>CENTRAL HOROLOGICAL REGISTRY</span>
           </div>
         </div>
 
-        {/* Dynamic Topic Grid */}
+        {/* Dynamic Technical Records Grid */}
         {filteredTopics.length === 0 ? (
-          <div className="border border-dashed border-hairline bg-warm-surface/20 p-12 text-center max-w-md mx-auto my-12">
+          <div className="border border-hairline bg-warm-surface/20 p-12 text-center max-w-md mx-auto my-12">
+            <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-2">
+              NOTEBOOK QUERY // NO RECORDS FOUND
+            </div>
             <p className="text-xs font-mono tracking-widest text-ink-muted uppercase">
-              NO TOPICS MATCH &ldquo;{searchQuery}&rdquo;
+              NO SPECIFICATIONS MATCH &ldquo;{searchQuery}&rdquo;
             </p>
             <button
               type="button"
@@ -192,9 +195,9 @@ export default function Watch101Page() {
                 setSearchQuery('')
                 setSelectedCategory('all')
               }}
-              className="mt-3 text-xs font-mono uppercase tracking-wider text-ink underline cursor-pointer"
+              className="mt-4 text-xs font-mono uppercase tracking-wider text-ink underline cursor-pointer"
             >
-              Reset Filters
+              Reset Query Parameters
             </button>
           </div>
         ) : (
@@ -206,10 +209,10 @@ export default function Watch101Page() {
                 className="group border border-hairline bg-warm-surface/20 p-6 sm:p-7 flex flex-col justify-between hover:border-ink hover:bg-warm-surface/50 transition-all duration-300"
               >
                 <div>
-                  {/* Topic Metadata & Badge */}
+                  {/* Topic Metadata */}
                   <div className="flex items-center justify-between gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3">
                     <span className="font-semibold text-ink">{topic.category}</span>
-                    <span>{topic.readTimeMinutes} MIN</span>
+                    <span>{topic.readTimeMinutes} MIN STUDY</span>
                   </div>
 
                   <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase tracking-tight group-hover:text-neutral-800 transition-colors">
@@ -220,18 +223,18 @@ export default function Watch101Page() {
                     {topic.shortDescription}
                   </p>
 
-                  {/* Interactive Badge indicator */}
+                  {/* Simulation Instrument Indicator */}
                   {topic.interactiveType && (
-                    <div className="mt-4 inline-flex items-center gap-1.5 px-2 py-0.5 border border-hairline bg-warm-white text-[8px] font-mono tracking-widest uppercase text-ink font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-steel" />
-                      <span>INTERACTIVE LAB</span>
+                    <div className="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 border border-hairline bg-warm-white text-[9px] font-mono tracking-wider uppercase text-ink font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
+                      <span>SIMULATION INSTRUMENT</span>
                     </div>
                   )}
                 </div>
 
                 {/* Footer Link Callout */}
                 <div className="mt-6 pt-4 border-t border-hairline flex items-center justify-between text-[10px] font-mono uppercase text-ink-muted group-hover:text-ink transition-colors">
-                  <span className="tracking-wider">EXPLORE LESSON</span>
+                  <span className="tracking-wider">EXAMINE SPECIFICATION</span>
                   <span className="text-ink font-semibold transition-transform duration-200 group-hover:translate-x-1">
                     &rarr;
                   </span>
@@ -241,13 +244,13 @@ export default function Watch101Page() {
           </div>
         )}
 
-        {/* Knowledge Base Colophon */}
+        {/* Technical Compendium Colophon */}
         <div className="mt-16 sm:mt-24 border border-hairline bg-warm-surface/30 p-8 text-center max-w-3xl mx-auto">
           <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-2">
-            WATCH 101 CURRICULUM ARCHITECTURE
+            TECHNICAL COMPENDIUM // ENGINEERING ARCHITECTURE
           </div>
           <p className="text-xs sm:text-sm font-mono text-ink-secondary leading-relaxed">
-            All educational definitions are grounded in verified horological engineering standards. New modules, quizzes, and calibre breakdowns are integrated continuously.
+            All technical definitions are grounded in verified horological engineering standards. Mechanical dossiers, escapement geometry, and calibre specifications are updated continuously.
           </p>
         </div>
       </Container>
