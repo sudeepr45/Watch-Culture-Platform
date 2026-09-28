@@ -16,7 +16,7 @@ export default function PhilosophyStrip() {
               MANIFESTO // 001
             </span>
             <span>HOROLOGICAL CRITICISM &bull; ARCHIVAL RECORD</span>
-            <span className="hidden sm:inline">COORDINATES 46°12′N 6°09′E</span>
+            <span className="hidden sm:inline">ARCHIVAL SPECIFICATION // VOL. I</span>
           </div>
 
           {/* Philosophy Statement */}

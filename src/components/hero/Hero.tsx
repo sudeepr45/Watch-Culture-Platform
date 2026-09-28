@@ -17,7 +17,7 @@ export default function Hero() {
           {/* Left Column: Editorial Content (7 cols on lg) */}
           <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1">
             {/* Editorial Header / Category Badge */}
-            <div className="flex items-center gap-3 mb-5 sm:mb-6">
+            <div className="flex flex-wrap items-center gap-3 mb-5 sm:mb-6">
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-warm-surface border border-hairline text-[11px] font-mono uppercase tracking-[0.2em] text-ink font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                 HOROLOGICAL JOURNAL &bull; ARCHIVE
@@ -30,21 +30,20 @@ export default function Hero() {
             {/* Main Headline */}
             <h1
               id="hero-headline"
-              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[64px] xl:text-[76px] font-normal leading-[1.02] tracking-tight text-ink uppercase text-balance"
+              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] font-normal leading-[1.02] tracking-tight text-ink uppercase text-balance"
             >
-              The culture of time.
+              Understand watches.
               <br />
-              Archived &amp; examined.
+              Decide about them.
             </h1>
 
             {/* Supporting Copy */}
             <p className="mt-6 sm:mt-7 text-base sm:text-lg md:text-xl text-ink-secondary font-normal leading-relaxed max-w-xl">
-              Independent criticism, technical breakdowns, community archives,
-              and mechanical substance.
+              MOJEAN is a verified archive of watches with guides, stories, and tools that help people find, understand, compare, and evaluate watches.
             </p>
 
             {/* Call to Action */}
-            <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-5 sm:gap-6">
+            <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-5">
               <Button
                 variant="primary"
                 size="lg"
@@ -59,38 +58,47 @@ export default function Hero() {
                   </span>
                 }
               >
-                ENTER THE ARCHIVE
+                EXPLORE WATCHES
               </Button>
 
-              <span className="text-xs font-mono tracking-[0.18em] text-ink-muted uppercase">
-                INDEPENDENT HOROLOGICAL REVIEW
-              </span>
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => navigate('/watch-101')}
+              >
+                START WITH WATCH 101
+              </Button>
             </div>
 
-            {/* Editorial Pillars */}
-            <div className="mt-12 pt-6 border-t border-hairline grid grid-cols-3 gap-4 max-w-lg">
+            {/* Secondary Brand Tagline */}
+            <div className="mt-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
+              A WATCH MAGAZINE YOU CAN ACTUALLY PLAY WITH.
+            </div>
+
+            {/* Editorial Pillars: FIND / LEARN / DECIDE */}
+            <div className="mt-10 pt-6 border-t border-hairline grid grid-cols-3 gap-4 max-w-lg">
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  EDITORIAL
+                  01 // FIND
                 </span>
                 <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  Independent
+                  Verified Archive
                 </span>
               </div>
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  ARCHIVE
+                  02 // LEARN
                 </span>
                 <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  Verified Data
+                  Watch 101 Lab
                 </span>
               </div>
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  INSTRUMENTS
+                  03 // DECIDE
                 </span>
                 <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  Deterministic
+                  WORTH IT? Tool
                 </span>
               </div>
             </div>

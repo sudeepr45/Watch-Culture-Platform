@@ -14,6 +14,55 @@ export interface FetchWatchResult {
 }
 
 /**
+ * Fetch published watches intended for public display.
+ * Explicitly filters for status = 'published' so draft or archived
+ * curator records are never surfaced in public feeds.
+ */
+export async function fetchPublishedWatches(limit?: number): Promise<FetchWatchesResult> {
+  if (!isSupabaseConfigured) {
+    return {
+      data: null,
+      error: new Error('Supabase project credentials not configured in environment variables.'),
+      isConfigured: false,
+    }
+  }
+
+  try {
+    let query = supabase
+      .from('watches')
+      .select('*')
+      .eq('status', 'published')
+      .order('brand', { ascending: true })
+
+    if (typeof limit === 'number' && limit > 0) {
+      query = query.limit(limit)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      return {
+        data: null,
+        error: new Error(error.message),
+        isConfigured: true,
+      }
+    }
+
+    return {
+      data: data as Watch[],
+      error: null,
+      isConfigured: true,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err : new Error('An unexpected network error occurred.'),
+      isConfigured: true,
+    }
+  }
+}
+
+/**
  * Fetch all watches from the central Supabase Watch Database.
  */
 export async function fetchWatches(): Promise<FetchWatchesResult> {
