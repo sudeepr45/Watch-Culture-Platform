@@ -6,16 +6,16 @@ import { useRouter } from '../../router/useRouter'
 import { useAuth } from '../../context/useAuth'
 
 const EDITORIAL_ITEMS = [
-  { label: 'CULTURE', to: '/explore' },
+  { label: 'EXPLORE', to: '/explore' },
   { label: 'STORIES', to: '/stories' },
-  { label: 'ARCHIVE', to: '/watches' },
+  { label: 'WATCHES', to: '/watches' },
 ]
 
 const EXPERIENCE_ITEMS = [
   { label: 'WORTH IT?', to: '/case' },
-  { label: 'RANDOM ACCESS', to: '/random' },
+  { label: 'DISCOVERY', to: '/random' },
   { label: 'WATCH 101', to: '/watch-101' },
-  { label: 'BATTLES', to: '/battles' },
+  { label: 'COMPARE', to: '/battles' },
 ]
 
 export default function Navbar() {
@@ -181,7 +181,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <Link
                 to="/profile"
-                aria-label="Collector Profile"
+                aria-label="My Wrist"
                 className={`flex items-center gap-2 text-xs font-medium tracking-[0.15em] transition-colors p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
                   pathname === '/profile'
                     ? 'text-ink font-semibold'
@@ -196,10 +196,15 @@ export default function Navbar() {
                   />
                 ) : (
                   <span className="w-4 h-4 border border-ink bg-ink text-warm-white flex items-center justify-center text-[9px] font-mono">
-                    {profile?.username ? profile.username.charAt(0).toUpperCase() : 'C'}
+                    {profile?.username ? profile.username.charAt(0).toUpperCase() : 'W'}
                   </span>
                 )}
-                <span>@{profile?.username || 'PROFILE'}</span>
+                <span>MY WRIST</span>
+                {profile?.username && (
+                  <span className="text-[10px] font-mono text-ink-muted hidden xl:inline">
+                    (@{profile.username})
+                  </span>
+                )}
               </Link>
             ) : (
               <Link
@@ -379,10 +384,15 @@ export default function Navbar() {
                       />
                     ) : (
                       <span className="w-4 h-4 border border-ink bg-ink text-warm-white flex items-center justify-center text-[9px] font-mono">
-                        {profile?.username ? profile.username.charAt(0).toUpperCase() : 'C'}
+                        {profile?.username ? profile.username.charAt(0).toUpperCase() : 'W'}
                       </span>
                     )}
-                    <span>@{profile?.username || 'PROFILE'}</span>
+                    <span>MY WRIST</span>
+                    {profile?.username && (
+                      <span className="text-[10px] font-mono text-ink-muted">
+                        (@{profile.username})
+                      </span>
+                    )}
                   </Link>
                 ) : (
                   <Link

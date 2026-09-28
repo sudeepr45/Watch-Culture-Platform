@@ -12,19 +12,11 @@ interface FeatureModule {
 const FUTURE_MODULES: FeatureModule[] = [
   {
     tag: 'CATALOG // ARCHIVE',
-    title: 'WATCH ARCHIVE',
+    title: 'WATCHES',
     description:
       'Verified technical specifications, reference history, calibre architecture, and case dimensions.',
     status: 'CENTRAL ARCHIVE',
     to: '/watches',
-  },
-  {
-    tag: 'INTERACTIVE // SHOWDOWN',
-    title: 'WATCH BATTLES',
-    description:
-      'Head-to-head community match-ups, collector voting, and side-by-side spec comparisons.',
-    status: 'INTERACTIVE ENGINE',
-    to: '/battles',
   },
   {
     tag: 'EXAMINATION // VERDICT',
@@ -35,6 +27,14 @@ const FUTURE_MODULES: FeatureModule[] = [
     to: '/case',
   },
   {
+    tag: 'INTERACTIVE // COMPARISON',
+    title: 'COMPARE',
+    description:
+      'Head-to-head watch comparisons, side-by-side spec matrix, and mathematical pillar evaluation.',
+    status: 'COMPARISON ENGINE',
+    to: '/battles',
+  },
+  {
     tag: 'LABORATORY // TECHNICAL NOTEBOOK',
     title: 'WATCH 101',
     description:
@@ -43,18 +43,26 @@ const FUTURE_MODULES: FeatureModule[] = [
     to: '/watch-101',
   },
   {
-    tag: 'DISCOVERY // DISPATCH',
-    title: 'RANDOM ACCESS',
+    tag: 'DISCOVERY // RITUAL',
+    title: 'DISCOVERY',
     description:
-      'Spontaneous archive discovery engine surfacing forgotten references, prototypes, and icons.',
+      'Curatorial discovery ritual and spontaneous exploration engine surfacing significant references.',
     status: 'ARCHIVE DISCOVERY',
     to: '/random',
+  },
+  {
+    tag: 'COMMUNITY // DISPATCHES',
+    title: 'STORIES',
+    description:
+      'Unfiltered narratives, personal photography, and living provenance from real watch collectors.',
+    status: 'COLLECTOR DISPATCHES',
+    to: '/stories',
   },
   {
     tag: 'COMMUNITY // VAULT',
     title: 'MY WRIST',
     description:
-      'Personal wrist catalog, provenance logs, and watch dossier telemetry.',
+      'Personal wrist catalog, saved references, provenance logs, and watch dossier telemetry.',
     status: 'WRIST CATALOG',
     to: '/profile',
   },
@@ -68,13 +76,13 @@ export default function ExplorePage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>SYSTEM INDEX // EXPERIENCES</span>
+            <span>SYSTEM DIRECTORY // EXPLORE</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            Editorial Directory
+            Explore MOJEAN
           </h1>
           <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl">
-            An index of verified archives, interactive decision instruments, and collector dispatches.
+            An index of verified watch archives, interactive decision instruments, and collector dispatches.
           </p>
         </div>
 
