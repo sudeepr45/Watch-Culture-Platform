@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 
 interface BrandLogoProps {
   variant?: 'horizontal' | 'stacked' | 'compact'
@@ -6,6 +6,8 @@ interface BrandLogoProps {
   withSubtitle?: boolean
   subtitle?: ReactNode
   className?: string
+  animateAssembly?: boolean
+  interactiveWind?: boolean
 }
 
 export default function BrandLogo({
@@ -14,23 +16,89 @@ export default function BrandLogo({
   withSubtitle = false,
   subtitle = 'CULTURE \u2022 STORIES \u2022 ARCHIVE',
   className = '',
+  animateAssembly = false,
+  interactiveWind = false,
 }: BrandLogoProps) {
+  const [shouldAnimate, setShouldAnimate] = useState(false)
+  const [autoWind, setAutoWind] = useState(false)
+
+  useEffect(() => {
+    if (!animateAssembly) return
+
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return
+    }
+
+    try {
+      const alreadyPlayed = sessionStorage.getItem('mojean_assembly_played')
+      if (!alreadyPlayed) {
+        const assemblyFrame = requestAnimationFrame(() => {
+          setShouldAnimate(true)
+          try {
+            sessionStorage.setItem('mojean_assembly_played', 'true')
+          } catch {
+            // Gracefully handle storage errors
+          }
+        })
+
+        return () => cancelAnimationFrame(assemblyFrame)
+      }
+    } catch {
+      // Gracefully handle storage errors
+    }
+  }, [animateAssembly])
+
+  useEffect(() => {
+    if (
+      !interactiveWind ||
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return
+    }
+
+    let resetTimer: number | null = null
+    const windInterval = window.setInterval(() => {
+      setAutoWind(true)
+      resetTimer = window.setTimeout(() => {
+        setAutoWind(false)
+        resetTimer = null
+      }, 500)
+    }, 20_000)
+
+    return () => {
+      window.clearInterval(windInterval)
+      if (resetTimer !== null) window.clearTimeout(resetTimer)
+    }
+  }, [interactiveWind])
+
   // 1. Stacked Editorial Variant
   if (variant === 'stacked') {
     return (
       <div className={`flex flex-col items-start uppercase font-sans text-ink ${className}`}>
         <div className="flex flex-col leading-[0.95] tracking-[0.22em] font-semibold text-sm sm:text-base">
-          <span>MOERI</span>
+          <span className={shouldAnimate ? 'animate-assembly-left' : ''}>MOERI</span>
           <span
-            className="my-1.5 text-[0.8em] font-light tracking-[0.1em] text-ink-secondary select-none"
+            className={`my-1.5 text-[0.8em] font-light tracking-[0.1em] text-ink-secondary select-none inline-block origin-center ${
+              interactiveWind
+                ? 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 motion-reduce:group-hover:rotate-0'
+                : ''
+            } ${shouldAnimate ? 'animate-assembly-center' : ''}`}
             aria-hidden="true"
           >
             &amp;
           </span>
-          <span>JEANNERET</span>
+          <span className={shouldAnimate ? 'animate-assembly-right' : ''}>JEANNERET</span>
         </div>
         {withSubtitle && (
-          <span className="mt-2 text-[8px] font-mono tracking-[0.24em] text-ink-muted uppercase">
+          <span
+            className={`mt-2 text-[8px] font-mono tracking-[0.24em] text-ink-muted uppercase ${
+              shouldAnimate ? 'animate-assembly-fade' : ''
+            }`}
+          >
             {subtitle}
           </span>
         )}
@@ -47,7 +115,11 @@ export default function BrandLogo({
       >
         <span className="font-semibold text-xs tracking-wider">M</span>
         <span
-          className="mx-1 text-[0.78em] font-light text-ink-secondary select-none"
+          className={`mx-1 text-[0.78em] font-light text-ink-secondary select-none inline-block origin-center ${
+            interactiveWind
+              ? 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 motion-reduce:group-hover:rotate-0'
+              : ''
+          }`}
           aria-hidden="true"
         >
           &amp;
@@ -81,24 +153,39 @@ export default function BrandLogo({
   return (
     <div className={`flex flex-col ${className}`} aria-label="MOERI & JEANNERET">
       <div className="inline-flex items-baseline leading-none uppercase font-sans text-ink">
-        <span className={`font-semibold ${currentSize.name} transition-colors group-hover:text-neutral-700`}>
+        <span
+          className={`font-semibold ${currentSize.name} ${shouldAnimate ? 'animate-assembly-left' : ''}`}
+        >
           MOERI
         </span>
         <span
-          className={`font-light text-ink-secondary select-none ${currentSize.amp}`}
+          className={`font-light text-ink-secondary select-none inline-block origin-center ${currentSize.amp} ${
+            interactiveWind
+              ? 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 motion-reduce:group-hover:rotate-0'
+              : ''
+          } ${autoWind ? 'rotate-90 motion-reduce:rotate-0' : ''} ${
+            shouldAnimate ? 'animate-assembly-center' : ''
+          }`}
           aria-hidden="true"
         >
           &amp;
         </span>
-        <span className={`font-semibold ${currentSize.name} transition-colors group-hover:text-neutral-700`}>
+        <span
+          className={`font-semibold ${currentSize.name} ${shouldAnimate ? 'animate-assembly-right' : ''}`}
+        >
           JEANNERET
         </span>
       </div>
       {withSubtitle && (
-        <span className={`mt-1 font-mono text-ink-muted uppercase ${currentSize.subtitle}`}>
+        <span
+          className={`mt-1 font-mono text-ink-muted uppercase ${currentSize.subtitle} ${
+            shouldAnimate ? 'animate-assembly-fade' : ''
+          }`}
+        >
           {subtitle}
         </span>
       )}
     </div>
   )
 }
+

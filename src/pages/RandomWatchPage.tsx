@@ -7,6 +7,7 @@ import { useRouter } from '../router/useRouter'
 import { fetchWatches } from '../services/watchService'
 import { fetchStoriesByWatchId } from '../services/storyService'
 import { getAllTopics } from '../data/watch101'
+import ApertureTransition from '../components/common/ApertureTransition'
 import type { Watch } from '../types/watch'
 import type { StoryWithAuthorAndWatch } from '../types/story'
 import type { Watch101Topic } from '../types/watch101'
@@ -385,6 +386,7 @@ export default function RandomWatchPage() {
 
   return (
     <div className="py-12 sm:py-16 lg:py-20">
+      <ApertureTransition />
       <Container>
         {/* Navigation Breadcrumb */}
         <div className="mb-8 sm:mb-12">

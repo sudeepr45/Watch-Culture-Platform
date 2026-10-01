@@ -63,6 +63,8 @@ export default function Navbar() {
                 size="sm"
                 withSubtitle
                 subtitle="CULTURE &bull; STORIES &bull; ARCHIVE"
+                animateAssembly={pathname === '/'}
+                interactiveWind={true}
               />
             </Link>
           </div>

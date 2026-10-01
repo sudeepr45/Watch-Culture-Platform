@@ -12,6 +12,7 @@ import {
   removeWatchFromCollection,
 } from '../services/collectionService'
 import { fetchStoriesByWatchId } from '../services/storyService'
+import IndexSettle from '../components/common/IndexSettle'
 import type { Watch } from '../types/watch'
 import type { StoryWithAuthorAndWatch } from '../types/story'
 
@@ -307,7 +308,11 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 CALIBRE
               </span>
               <span className="text-ink font-medium tracking-wide block truncate" title={watch.calibre || watch.movement_name || watch.movement_type || '—'}>
-                {watch.calibre || watch.movement_name || watch.movement_type || '—'}
+                <IndexSettle
+                  value={watch.calibre || watch.movement_name || watch.movement_type || '—'}
+                  duration={520}
+                  delay={200}
+                />
               </span>
             </div>
 
@@ -316,8 +321,15 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 CASE ARCHITECTURE
               </span>
               <span className="text-ink font-medium tracking-wide block">
-                {watch.case_diameter_mm ? `${watch.case_diameter_mm}mm` : '—'}
-                {watch.case_thickness_mm ? ` × ${watch.case_thickness_mm}mm` : ''}
+                <IndexSettle
+                  value={
+                    watch.case_diameter_mm
+                      ? `${watch.case_diameter_mm}mm${watch.case_thickness_mm ? ` × ${watch.case_thickness_mm}mm` : ''}`
+                      : '—'
+                  }
+                  duration={480}
+                  delay={280}
+                />
               </span>
             </div>
 
@@ -335,7 +347,11 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 WATER DEPTH
               </span>
               <span className="text-ink font-medium tracking-wide block">
-                {watch.water_resistance_m ? `${watch.water_resistance_m}m (${Math.round(watch.water_resistance_m / 10)} bar)` : '—'}
+                <IndexSettle
+                  value={watch.water_resistance_m ? `${watch.water_resistance_m}m (${Math.round(watch.water_resistance_m / 10)} bar)` : '—'}
+                  duration={440}
+                  delay={360}
+                />
               </span>
             </div>
           </div>
@@ -400,7 +416,11 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 <div className="flex items-baseline justify-between border-b border-hairline/60 pb-2">
                   <dt className="text-ink-muted uppercase tracking-wider">Calibre</dt>
                   <dd className="text-ink font-medium tracking-wide">
-                    {watch.calibre || watch.movement_name || '—'}
+                    <IndexSettle
+                      value={watch.calibre || watch.movement_name || '—'}
+                      duration={540}
+                      delay={150}
+                    />
                   </dd>
                 </div>
 
@@ -408,7 +428,11 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 <div className="flex items-baseline justify-between border-b border-hairline/60 pb-2">
                   <dt className="text-ink-muted uppercase tracking-wider">Power Reserve</dt>
                   <dd className="text-ink font-medium tracking-wide">
-                    {watch.power_reserve_hours ? `${watch.power_reserve_hours} Hours` : '—'}
+                    <IndexSettle
+                      value={watch.power_reserve_hours ? `${watch.power_reserve_hours} Hours` : '—'}
+                      duration={460}
+                      delay={250}
+                    />
                   </dd>
                 </div>
 

@@ -37,3 +37,73 @@
     color: var(--color-ink);
   }
 }
+
+@keyframes assembly-left {
+  from {
+    transform: translateX(-14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes assembly-right {
+  from {
+    transform: translateX(14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes assembly-center {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes assembly-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-assembly-left {
+  animation: assembly-left 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-assembly-right {
+  animation: assembly-right 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-assembly-center {
+  animation: assembly-center 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-assembly-fade {
+  animation: assembly-fade 600ms cubic-bezier(0.16, 1, 0.3, 1) 150ms forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-assembly-left,
+  .animate-assembly-right,
+  .animate-assembly-center,
+  .animate-assembly-fade {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+

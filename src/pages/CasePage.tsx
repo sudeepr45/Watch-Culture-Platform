@@ -13,6 +13,8 @@ import {
   removeWatchFromCollection,
 } from '../services/collectionService'
 import { evaluateWatchContender } from '../services/evaluationEngine'
+import ApertureTransition from '../components/common/ApertureTransition'
+import IndexSettle from '../components/common/IndexSettle'
 import type { ContenderEvaluation } from '../types/evaluation'
 import type { Watch } from '../types/watch'
 
@@ -486,6 +488,7 @@ export default function CasePage({ initialSlug }: CasePageProps) {
 
   return (
     <div className="py-12 sm:py-16 lg:py-20">
+      <ApertureTransition />
       <Container>
         {/* ================================================================== */}
         {/* EDITORIAL MASTHEAD                                                 */}
@@ -1130,7 +1133,8 @@ export default function CasePage({ initialSlug }: CasePageProps) {
                     </span>
                     <span className="text-hairline">•</span>
                     <span>
-                      <strong className="text-ink-muted uppercase">Alignment:</strong> {verdictData.alignmentScore.toFixed(0)}%
+                      <strong className="text-ink-muted uppercase">Alignment:</strong>{' '}
+                      <IndexSettle value={`${verdictData.alignmentScore.toFixed(0)}%`} duration={480} />
                     </span>
                   </div>
                 </div>
