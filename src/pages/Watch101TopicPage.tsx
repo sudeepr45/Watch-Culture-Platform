@@ -205,7 +205,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
             <h2 className="font-display text-2xl sm:text-3xl font-normal text-ink uppercase">
               Timepieces That Embody This
             </h2>
-            <p className="text-xs font-mono text-ink-secondary mt-1">
+            <p className="text-sm font-sans text-ink-secondary mt-1">
               Cataloged specimens from the central archive illustrating this specific mechanical architecture.
             </p>
           </div>
@@ -229,7 +229,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                       className="transition-opacity duration-300 group-hover:opacity-90"
                     />
                     {watch.category && (
-                      <div className="absolute top-2 left-2 px-2 py-0.5 bg-warm-white border border-hairline text-[8px] font-mono tracking-widest uppercase font-medium text-ink">
+                      <div className="absolute top-2 left-2 px-2 py-0.5 bg-warm-white border border-hairline text-[9px] font-mono tracking-widest uppercase font-medium text-ink">
                         {watch.category}
                       </div>
                     )}
@@ -237,7 +237,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
 
                   <div className="p-5 flex flex-col justify-between flex-grow">
                     <div>
-                      <div className="text-[9px] font-mono uppercase tracking-widest text-ink-secondary">
+                      <div className="text-[10px] font-mono uppercase tracking-widest text-ink-secondary">
                         {watch.brand}
                       </div>
                       <h4 className="font-display text-lg uppercase font-normal text-ink mt-0.5">
@@ -254,7 +254,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                           ? `$${watch.price.toLocaleString()} ${watch.currency}`
                           : 'PRICE ON REQUEST'}
                       </span>
-                      <span className="text-ink tracking-widest uppercase text-[9px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-ink tracking-widest uppercase text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                         VIEW DOSSIER &rarr;
                       </span>
                     </div>
@@ -263,7 +263,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
               ))}
             </div>
           ) : (
-            <div className="p-6 border border-hairline bg-warm-surface/20 text-xs font-mono text-ink-secondary mb-12">
+            <div className="p-6 border border-hairline bg-warm-surface/20 text-sm font-sans text-ink-secondary mb-12">
               Specific database specimen tag linking across upcoming index expansions.
             </div>
           )}
@@ -278,7 +278,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                 <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
                   {topic.battleSuggestion.label}
                 </h3>
-                <p className="text-xs font-mono text-ink-secondary mt-1 max-w-xl">
+                <p className="text-sm font-sans text-ink-secondary mt-1 max-w-xl leading-relaxed">
                   {topic.battleSuggestion.prompt}
                 </p>
               </div>
@@ -315,18 +315,18 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
                       className="group border border-hairline bg-warm-white p-4 hover:border-ink hover:bg-warm-surface/30 transition-all flex flex-col justify-between"
                     >
                       <div>
-                        <div className="text-[9px] font-mono uppercase tracking-widest text-ink-secondary mb-1">
+                        <div className="text-[10px] font-mono uppercase tracking-widest text-ink-secondary mb-1">
                           {relTopic.category} &bull; {relTopic.readTimeMinutes} MIN STUDY
                         </div>
                         <h4 className="font-display text-base font-normal uppercase text-ink group-hover:text-neutral-800">
                           {relTopic.title}
                         </h4>
-                        <p className="text-xs font-mono text-ink-secondary mt-1 line-clamp-2">
+                        <p className="text-sm font-sans text-ink-secondary mt-1 line-clamp-2 leading-relaxed">
                           {relTopic.shortDescription}
                         </p>
                       </div>
 
-                      <div className="mt-4 pt-2 border-t border-hairline/60 flex items-center justify-between text-[9px] font-mono uppercase text-ink-muted group-hover:text-ink">
+                      <div className="mt-4 pt-2 border-t border-hairline/60 flex items-center justify-between text-[10px] font-mono uppercase text-ink-muted group-hover:text-ink">
                         <span>EXAMINE RECORD</span>
                         <span>&rarr;</span>
                       </div>

@@ -844,7 +844,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                     <div className="font-display text-lg text-ink uppercase tracking-tight">
                       Personal Provenance Only (Unlinked)
                     </div>
-                    <p className="text-xs font-mono text-ink-secondary mt-1 max-w-lg">
+                    <p className="text-sm font-sans text-ink-secondary mt-1 max-w-lg font-light leading-relaxed">
                       Your story will be published under your personal timepiece details without an official archive catalog link.
                     </p>
                   </div>

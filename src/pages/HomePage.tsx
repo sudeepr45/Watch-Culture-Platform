@@ -84,7 +84,7 @@ export default function HomePage() {
               <h3 className="font-display text-xl uppercase tracking-tight text-ink">
                 Archive Specimen Standby
               </h3>
-              <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
+              <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                 {error || 'Connect your Supabase database to stream verified watch records to the front page.'}
               </p>
               <div className="mt-6">

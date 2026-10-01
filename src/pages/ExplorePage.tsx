@@ -101,7 +101,7 @@ export default function ExplorePage() {
                     {mod.title}
                   </h2>
 
-                  <p className="mt-3 text-xs sm:text-sm text-ink-secondary font-light leading-relaxed">
+                  <p className="mt-3 text-sm text-ink-secondary font-light leading-relaxed">
                     {mod.description}
                   </p>
                 </div>

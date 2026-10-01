@@ -798,7 +798,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                           {story.title}
                         </h3>
 
-                        <p className="mt-2.5 text-xs sm:text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
+                        <p className="mt-2.5 text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
                           {story.story_text}
                         </p>
 

@@ -54,7 +54,7 @@ export default function CopyrightPage() {
                 <div className="p-5 bg-warm-surface/50 border border-hairline">
                   <div className="text-xs font-mono text-ink-muted uppercase tracking-widest mb-1">FORMAL PLATFORM TITLE</div>
                   <div className="text-lg font-display text-ink uppercase tracking-tight mb-2">MOERI &amp; JEANNERET</div>
-                  <p className="text-xs text-ink-secondary leading-relaxed">
+                  <p className="text-sm text-ink-secondary leading-relaxed">
                     The overarching publication name, masthead, and cultural archive identity representing our independent
                     horological editorial and digital catalog.
                   </p>
@@ -63,7 +63,7 @@ export default function CopyrightPage() {
                 <div className="p-5 bg-warm-surface/50 border border-hairline">
                   <div className="text-xs font-mono text-ink-muted uppercase tracking-widest mb-1">COMPACT VISUAL WORDMARK</div>
                   <div className="text-lg font-mono font-bold text-ink uppercase tracking-widest mb-2">MOJEAN.</div>
-                  <p className="text-xs text-ink-secondary leading-relaxed">
+                  <p className="text-sm text-ink-secondary leading-relaxed">
                     Our compact graphic emblem and favicon insignia, distinguished by bold European grotesque lettering
                     and our signature red point accent.
                   </p>

@@ -224,7 +224,7 @@ export default function ProfilePage() {
               My Wrist
             </h1>
             <p className="mt-3 text-xs font-mono uppercase tracking-[0.2em] text-ink-muted">
-              Personal record of watches
+              Keep track of the watches you own or want.
             </p>
           </div>
 
@@ -282,7 +282,7 @@ export default function ProfilePage() {
               <div className="text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase pb-3 border-b border-hairline">
                 PERSONAL RECORD
               </div>
-              <p className="mt-4 text-xs text-ink-secondary leading-relaxed font-light">
+              <p className="mt-4 text-sm text-ink-secondary leading-relaxed font-light">
                 Catalog timepieces you own, study, or wish to preserve. Each reference is logged with technical specifications and archival photography.
               </p>
             </div>
@@ -291,7 +291,7 @@ export default function ProfilePage() {
               <div className="text-[10px] font-mono tracking-[0.18em] text-ink-muted uppercase pb-3 border-b border-hairline">
                 SAVED STORIES
               </div>
-              <p className="mt-4 text-xs text-ink-secondary leading-relaxed font-light">
+              <p className="mt-4 text-sm text-ink-secondary leading-relaxed font-light">
                 Keep noteworthy editorial profiles, collector accounts, and historical dispatches close for continued reference.
               </p>
             </div>
@@ -312,7 +312,7 @@ export default function ProfilePage() {
             <span>PERSONAL ARCHIVE &bull; AUTHENTICATED</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            Personal Record
+            My Wrist
           </h1>
           <p className="mt-3 text-xs font-mono uppercase tracking-widest text-ink-secondary">
             MEMBER SINCE {memberSinceDate.toUpperCase()}

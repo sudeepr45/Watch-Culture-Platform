@@ -60,7 +60,7 @@ export default function Watch101Page() {
           </h1>
 
           <p className="mt-3 text-lg sm:text-2xl font-display text-ink font-normal uppercase tracking-tight">
-            Horological Mechanics &amp; Architecture
+            How watches work, explained by using them.
           </p>
 
           <p className="mt-3 text-sm sm:text-base text-ink-secondary max-w-3xl font-light leading-relaxed">
@@ -210,7 +210,7 @@ export default function Watch101Page() {
               >
                 <div>
                   {/* Topic Metadata */}
-                  <div className="flex items-center justify-between gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3">
+                  <div className="flex items-center justify-between gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3">
                     <span className="font-semibold text-ink">{topic.category}</span>
                     <span>{topic.readTimeMinutes} MIN STUDY</span>
                   </div>
@@ -219,13 +219,13 @@ export default function Watch101Page() {
                     {topic.title}
                   </h3>
 
-                  <p className="mt-2 text-xs sm:text-sm text-ink-secondary font-light line-clamp-3 leading-relaxed">
+                  <p className="mt-2 text-sm text-ink-secondary font-light line-clamp-3 leading-relaxed">
                     {topic.shortDescription}
                   </p>
 
                   {/* Simulation Instrument Indicator */}
                   {topic.interactiveType && (
-                    <div className="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 border border-hairline bg-warm-white text-[9px] font-mono tracking-wider uppercase text-ink font-medium">
+                    <div className="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 border border-hairline bg-warm-white text-[10px] font-mono tracking-wider uppercase text-ink font-medium">
                       <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                       <span>SIMULATION INSTRUMENT</span>
                     </div>

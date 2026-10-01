@@ -62,7 +62,7 @@ export default function StoriesPage() {
                 Stories
               </h1>
               <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-normal leading-relaxed">
-                Real collectors, real watches, and the personal provenance behind the timepieces.
+                Real watches, real collectors, and the stories they choose to tell.
               </p>
             </div>
 
@@ -418,7 +418,7 @@ export default function StoriesPage() {
                             </h3>
 
                             {/* Excerpt */}
-                            <p className="mt-3 text-xs sm:text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
+                            <p className="mt-3 text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
                               {story.story_text}
                             </p>
                           </div>

@@ -422,7 +422,7 @@ export default function SearchPage() {
                     >
                       <div>
                         {/* Topic Category & Read Time */}
-                        <div className="flex items-center justify-between gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3">
+                        <div className="flex items-center justify-between gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-secondary mb-3">
                           <span className="font-semibold text-ink">{topic.category}</span>
                           <span>{topic.readTimeMinutes} MIN</span>
                         </div>
@@ -431,13 +431,13 @@ export default function SearchPage() {
                           {topic.title}
                         </h4>
 
-                        <p className="mt-2 text-xs sm:text-sm text-ink-secondary font-light line-clamp-3 leading-relaxed">
+                        <p className="mt-2 text-sm text-ink-secondary font-light line-clamp-3 leading-relaxed">
                           {topic.shortDescription}
                         </p>
 
                         {/* Interactive Widget indicator */}
                         {topic.interactiveType && (
-                          <div className="mt-4 inline-flex items-center gap-1.5 px-2 py-0.5 border border-hairline bg-warm-white text-[8px] font-mono tracking-widest uppercase text-ink font-medium">
+                          <div className="mt-4 inline-flex items-center gap-1.5 px-2 py-0.5 border border-hairline bg-warm-white text-[10px] font-mono tracking-widest uppercase text-ink font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                             <span>SIMULATION INSTRUMENT</span>
                           </div>

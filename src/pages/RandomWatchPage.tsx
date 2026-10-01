@@ -410,10 +410,10 @@ export default function RandomWatchPage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-secondary">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>ARCHIVAL EXTRACTION // RANDOM ACCESS</span>
+            <span>ARCHIVAL EXTRACTION // DISCOVERY</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            Random Access
+            Discovery
           </h1>
           <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-light leading-relaxed">
             {step === 'finding'
@@ -682,7 +682,7 @@ export default function RandomWatchPage() {
                 <div className="flex items-center gap-3 text-ink-muted">
                   <span>SPECIMEN ID: {watch.slug}</span>
                   <span>&bull;</span>
-                  <span>MODE: RANDOM ACCESS</span>
+                  <span>MODE: DISCOVERY</span>
                 </div>
               </div>
 
@@ -831,20 +831,20 @@ export default function RandomWatchPage() {
                 {/* Door 1: Open Dossier */}
                 <div className="border border-hairline bg-warm-white p-5 flex flex-col justify-between">
                   <div>
-                    <div className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
+                    <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
                       DOORWAY 01 // ARCHIVE RECORD
                     </div>
-                    <div className="font-display text-base uppercase text-ink font-normal">
+                    <div className="font-display text-lg uppercase text-ink font-normal">
                       Specimen Dossier
                     </div>
-                    <p className="mt-2 text-xs font-sans text-ink-secondary leading-relaxed font-light">
+                    <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                       Complete archival record, technical specifications, and high-resolution plate.
                     </p>
                   </div>
                   <div className="mt-5 pt-3 border-t border-hairline/60">
                     <Link
                       to={`/watches/${watch.slug}`}
-                      className="text-[10px] font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
+                      className="text-xs font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
                     >
                       <span>EXAMINE DOSSIER</span>
                       <span>&rarr;</span>
@@ -855,20 +855,20 @@ export default function RandomWatchPage() {
                 {/* Door 2: WORTH IT? Evaluation */}
                 <div className="border border-hairline bg-warm-white p-5 flex flex-col justify-between">
                   <div>
-                    <div className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
+                    <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
                       DOORWAY 02 // BUYING INSTRUMENT
                     </div>
-                    <div className="font-display text-base uppercase text-ink font-normal">
+                    <div className="font-display text-lg uppercase text-ink font-normal">
                       Worth It? Audit
                     </div>
-                    <p className="mt-2 text-xs font-sans text-ink-secondary leading-relaxed font-light">
+                    <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                       Audit this specimen against your personal wear priorities and compromise tolerance.
                     </p>
                   </div>
                   <div className="mt-5 pt-3 border-t border-hairline/60">
                     <Link
                       to={`/case?slug=${watch.slug}`}
-                      className="text-[10px] font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
+                      className="text-xs font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
                     >
                       <span>AUDIT SPECIMEN</span>
                       <span>&rarr;</span>
@@ -879,20 +879,20 @@ export default function RandomWatchPage() {
                 {/* Door 3: Central Archive */}
                 <div className="border border-hairline bg-warm-white p-5 flex flex-col justify-between">
                   <div>
-                    <div className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
+                    <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
                       DOORWAY 03 // REFERENCE VAULT
                     </div>
-                    <div className="font-display text-base uppercase text-ink font-normal">
+                    <div className="font-display text-lg uppercase text-ink font-normal">
                       The Central Archive
                     </div>
-                    <p className="mt-2 text-xs font-sans text-ink-secondary leading-relaxed font-light">
+                    <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                       Cross-reference {watch.brand} against all cataloged specimens across the repository.
                     </p>
                   </div>
                   <div className="mt-5 pt-3 border-t border-hairline/60">
                     <Link
                       to="/watches"
-                      className="text-[10px] font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
+                      className="text-xs font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
                     >
                       <span>ENTER ARCHIVE</span>
                       <span>&rarr;</span>
@@ -903,24 +903,24 @@ export default function RandomWatchPage() {
                 {/* Door 4: Story / Field Reports */}
                 <div className="border border-hairline bg-warm-white p-5 flex flex-col justify-between">
                   <div>
-                    <div className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
+                    <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
                       DOORWAY 04 // COLLECTOR PROVENANCE
                     </div>
                     {relatedStory ? (
                       <>
-                        <div className="font-display text-base uppercase text-ink font-normal line-clamp-1">
+                        <div className="font-display text-lg uppercase text-ink font-normal line-clamp-1">
                           "{relatedStory.title}"
                         </div>
-                        <p className="mt-2 text-xs font-sans text-ink-secondary leading-relaxed font-light">
+                        <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                           By {relatedStory.author.display_name || relatedStory.author.username || 'Collector'}. Firsthand wrist dispatch.
                         </p>
                       </>
                     ) : (
                       <>
-                        <div className="font-display text-base uppercase text-ink font-normal">
+                        <div className="font-display text-lg uppercase text-ink font-normal">
                           Collector Dispatches
                         </div>
-                        <p className="mt-2 text-xs font-sans text-ink-secondary leading-relaxed font-light">
+                        <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                           Firsthand ownership accounts and field reports from the community.
                         </p>
                       </>
@@ -929,7 +929,7 @@ export default function RandomWatchPage() {
                   <div className="mt-5 pt-3 border-t border-hairline/60">
                     <Link
                       to={relatedStory ? `/stories/${relatedStory.slug}` : '/stories'}
-                      className="text-[10px] font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
+                      className="text-xs font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
                     >
                       <span>{relatedStory ? 'READ FIELD REPORT' : 'EXPLORE DISPATCHES'}</span>
                       <span>&rarr;</span>
@@ -940,20 +940,20 @@ export default function RandomWatchPage() {
                 {/* Door 5: Watch 101 Academy */}
                 <div className="border border-hairline bg-warm-white p-5 flex flex-col justify-between">
                   <div>
-                    <div className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
+                    <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
                       DOORWAY 05 // TECHNICAL SPECIFICATION
                     </div>
-                    <div className="font-display text-base uppercase text-ink font-normal line-clamp-1">
+                    <div className="font-display text-lg uppercase text-ink font-normal line-clamp-1">
                       {relevantTopic?.title || 'Watch Foundations'}
                     </div>
-                    <p className="mt-2 text-xs font-sans text-ink-secondary leading-relaxed font-light line-clamp-2">
+                    <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light line-clamp-2">
                       {relevantTopic?.shortDescription || 'Core mechanical concepts, escapements, and architecture.'}
                     </p>
                   </div>
                   <div className="mt-5 pt-3 border-t border-hairline/60">
                     <Link
                       to={relevantTopic ? `/watch-101/${relevantTopic.slug}` : '/watch-101'}
-                      className="text-[10px] font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
+                      className="text-xs font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between hover:underline"
                     >
                       <span>STUDY TOPIC</span>
                       <span>&rarr;</span>
@@ -964,13 +964,13 @@ export default function RandomWatchPage() {
                 {/* Door 6: Systematic Recalibration */}
                 <div className="border border-hairline bg-warm-white p-5 flex flex-col justify-between">
                   <div>
-                    <div className="text-[9px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
+                    <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
                       ARCHIVAL REPETITION
                     </div>
-                    <div className="font-display text-base uppercase text-ink font-normal">
+                    <div className="font-display text-lg uppercase text-ink font-normal">
                       Draw Another Specimen
                     </div>
-                    <p className="mt-2 text-xs font-sans text-ink-secondary leading-relaxed font-light">
+                    <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                       Extract an alternate cataloged specimen matching your current inquiry parameters.
                     </p>
                   </div>
@@ -979,7 +979,7 @@ export default function RandomWatchPage() {
                       type="button"
                       disabled={drawing}
                       onClick={handleDrawAnother}
-                      className="text-[10px] font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between w-full hover:underline cursor-pointer disabled:opacity-50"
+                      className="text-xs font-mono tracking-wider uppercase text-ink font-semibold flex items-center justify-between w-full hover:underline cursor-pointer disabled:opacity-50"
                     >
                       <span>{drawing ? 'EXTRACTING...' : 'DRAW ALTERNATE'}</span>
                       <span>&rarr;</span>

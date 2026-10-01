@@ -16,7 +16,7 @@ export default function Footer() {
               <Link to="/" className="inline-block mb-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink">
                 <BrandLogo variant="horizontal" size="sm" />
               </Link>
-              <p className="text-xs sm:text-sm text-ink-secondary font-light leading-relaxed max-w-sm">
+              <p className="text-sm text-ink-secondary font-light leading-relaxed max-w-sm">
                 An independent horological journal, cultural archive, and deterministic exploration platform. Documenting
                 the mechanics, heritage, and human stories behind timepieces.
               </p>

@@ -62,7 +62,7 @@ export default function AboutPage() {
               <h2 className="font-display text-2xl sm:text-3xl text-ink uppercase tracking-tight leading-tight mb-4">
                 Mechanical Substance Over Speculative Noise.
               </h2>
-              <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed font-normal">
+              <p className="text-sm sm:text-base text-ink-secondary leading-relaxed font-normal">
                 Most modern watch media functions as an extension of the luxury marketing apparatus—chasing hype cycles,
                 speculative auction results, and press releases. We built MOERI &amp; JEANNERET to return to substance:
                 mechanical architecture, design restraint, and genuine collector curiosity.

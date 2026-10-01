@@ -364,7 +364,7 @@ export default function WatchesPage() {
                 <h3 className="font-display text-xl sm:text-2xl font-normal tracking-tight text-ink uppercase">
                   No Matching Records
                 </h3>
-                <p className="mt-2 text-xs font-mono text-ink-secondary leading-relaxed">
+                <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
                   No cataloged specimens meet the assembled specifications. Clear your filters to restore the archive view.
                 </p>
                 <div className="mt-6">
