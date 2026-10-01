@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { RouterProvider } from './router'
 import { useRouter } from './router/useRouter'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import SoundNote from './components/common/SoundNote'
+import useScrollWindOnce from './hooks/useScrollWindOnce'
 import HomePage from './pages/HomePage'
 import StoriesPage from './pages/StoriesPage'
 import StoryDetailPage from './pages/StoryDetailPage'
@@ -31,6 +34,15 @@ import ContactPage from './pages/ContactPage'
 
 function AppContent() {
   const { pathname } = useRouter()
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    try {
+      return window.localStorage.getItem('mj_sound_choice') === 'enabled'
+    } catch {
+      return false
+    }
+  })
+
+  useScrollWindOnce(soundEnabled)
 
   const renderPage = () => {
     // Curator routes — private, checked before public dynamic routes
@@ -135,6 +147,8 @@ function AppContent() {
 
       {/* Comprehensive Editorial Footer */}
       <Footer />
+
+      <SoundNote onEnable={() => setSoundEnabled(true)} />
     </div>
   )
 }
