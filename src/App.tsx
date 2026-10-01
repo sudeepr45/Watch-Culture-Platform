@@ -148,7 +148,7 @@ function AppContent() {
       {/* Comprehensive Editorial Footer */}
       <Footer />
 
-      <SoundNote onEnable={() => setSoundEnabled(true)} />
+      <SoundNote soundEnabled={soundEnabled} onSoundChange={setSoundEnabled} />
     </div>
   )
 }

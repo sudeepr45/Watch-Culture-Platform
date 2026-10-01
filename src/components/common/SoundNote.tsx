@@ -12,10 +12,11 @@ function readSoundChoice(): SoundChoice {
 }
 
 interface SoundNoteProps {
-  onEnable: () => void
+  soundEnabled: boolean
+  onSoundChange: (enabled: boolean) => void
 }
 
-export default function SoundNote({ onEnable }: SoundNoteProps) {
+export default function SoundNote({ soundEnabled, onSoundChange }: SoundNoteProps) {
   const [choice, setChoice] = useState<SoundChoice>(readSoundChoice)
   const [visible, setVisible] = useState(false)
 
@@ -34,10 +35,24 @@ export default function SoundNote({ onEnable }: SoundNoteProps) {
     }
 
     setChoice(nextChoice)
-    if (nextChoice === 'enabled') onEnable()
+    onSoundChange(nextChoice === 'enabled')
   }
 
-  if (choice !== null) return null
+  if (choice !== null) {
+    return (
+      <button
+        type="button"
+        role="switch"
+        aria-label="Winding sound"
+        aria-checked={soundEnabled}
+        onClick={() => choose(soundEnabled ? 'declined' : 'enabled')}
+        className="fixed bottom-4 left-4 z-[60] inline-flex items-center gap-3 border border-hairline bg-warm-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:bottom-6 sm:left-6"
+      >
+        <span>Winding sound</span>
+        <span className="font-semibold text-ink-secondary">{soundEnabled ? 'On' : 'Off'}</span>
+      </button>
+    )
+  }
 
   return (
     <div
@@ -53,7 +68,7 @@ export default function SoundNote({ onEnable }: SoundNoteProps) {
     >
       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-muted">A Note</div>
       <p className="mt-2 text-xs leading-relaxed text-ink-secondary">
-        This site has a small sound — a mechanical wind, played once as you scroll. Worth a listen, entirely optional.
+        This site has a small sound — a mechanical wind, played as you scroll. Worth a listen, entirely optional.
       </p>
       <div className="mt-3 flex items-center gap-5">
         <button
