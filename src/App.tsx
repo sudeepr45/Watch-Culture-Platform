@@ -42,7 +42,7 @@ function AppContent() {
     }
   })
 
-  useScrollWindOnce(soundEnabled)
+  useScrollWindOnce(soundEnabled, pathname)
 
   const renderPage = () => {
     // Curator routes — private, checked before public dynamic routes
