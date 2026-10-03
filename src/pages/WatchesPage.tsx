@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useLayoutEffect, useState, useMemo } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
 import { Link } from '../router'
@@ -35,6 +35,21 @@ export default function WatchesPage() {
       isMounted = false
     }
   }, [])
+
+  useLayoutEffect(() => {
+    if (loading) return
+
+    const state = window.history.state as { watchArchiveScrollY?: unknown; [key: string]: unknown } | null
+    if (!state || typeof state.watchArchiveScrollY !== 'number') return
+
+    const { watchArchiveScrollY, ...remainingState } = state
+    window.history.replaceState(
+      Object.keys(remainingState).length > 0 ? remainingState : null,
+      '',
+      window.location.href
+    )
+    window.scrollTo(0, watchArchiveScrollY)
+  }, [loading])
 
   const handleRetry = async () => {
     setLoading(true)
@@ -380,6 +395,25 @@ export default function WatchesPage() {
                   <Link
                     key={watch.id}
                     to={`/watches/${watch.slug}`}
+                    onClick={(event) => {
+                      if (
+                        event.button !== 0 ||
+                        event.metaKey ||
+                        event.ctrlKey ||
+                        event.shiftKey ||
+                        event.altKey
+                      ) return
+
+                      const currentState = window.history.state
+                      window.history.replaceState(
+                        {
+                          ...(currentState && typeof currentState === 'object' ? currentState : {}),
+                          watchArchiveScrollY: window.scrollY,
+                        },
+                        '',
+                        window.location.href
+                      )
+                    }}
                     className="group relative border border-hairline bg-warm-surface/20 flex flex-col justify-between transition-all duration-300 hover:border-ink hover:bg-warm-surface/50 overflow-hidden"
                   >
                     {/* Documentary Specimen Photography */}

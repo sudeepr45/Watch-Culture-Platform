@@ -272,7 +272,7 @@ export default function StoriesPage() {
                   </div>
 
                   {/* Lead Narrative (5 cols on desktop) */}
-                  <div className="lg:col-span-5 p-6 sm:p-10 lg:p-12 flex flex-col justify-between">
+                  <div className="lg:col-span-5 p-6 sm:p-10 lg:p-12 flex flex-col justify-between bg-warm-white">
                     <div>
                       {/* Lead Section Marker */}
                       <div className="flex items-center gap-2 mb-4 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
@@ -381,7 +381,7 @@ export default function StoriesPage() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-6 sm:p-7 flex flex-col justify-between flex-grow">
+                        <div className="p-6 sm:p-7 flex flex-col justify-between flex-grow bg-warm-white">
                           <div>
                             {/* Author Bar */}
                             <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-hairline">

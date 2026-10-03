@@ -51,10 +51,6 @@ export default function HomePage() {
       >
         <Container>
           <div className="flex items-center justify-between border-b border-hairline pb-4 mb-10 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span className="text-ink font-semibold">ARCHIVAL SPECIMEN // SPOTLIGHT</span>
-            </div>
             <span>VERIFIED RECORD</span>
           </div>
 
@@ -201,10 +197,6 @@ export default function HomePage() {
       >
         <Container>
           <div className="border-b border-hairline pb-8 mb-12 sm:mb-16 max-w-4xl">
-            <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted">
-              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span>THE MOJEAN SYSTEM // CORE ARCHITECTURE</span>
-            </div>
             <h2
               id="core-actions-heading"
               className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-ink uppercase"
@@ -304,10 +296,6 @@ export default function HomePage() {
           <Container>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-hairline pb-8 mb-10 sm:mb-12">
               <div>
-                <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted">
-                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                  <span>CENTRAL REPOSITORY // SELECTION</span>
-                </div>
                 <h2
                   id="archive-preview-heading"
                   className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-ink uppercase"
@@ -421,10 +409,6 @@ export default function HomePage() {
       >
         <Container>
           <div className="border-b border-hairline pb-8 mb-12 sm:mb-16 max-w-4xl">
-            <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted">
-              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span>INTERACTIVE INSTRUMENTS // CRITICAL DECONSTRUCTION</span>
-            </div>
             <h2
               id="instruments-heading"
               className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-ink uppercase"
@@ -512,10 +496,6 @@ export default function HomePage() {
             {/* Left: Stories */}
             <div className="lg:col-span-6 border border-hairline bg-warm-white p-8 sm:p-10 flex flex-col justify-between hover:border-ink transition-colors">
               <div>
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted mb-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                  <span>COMMUNITY ARCHIVE // DISPATCHES</span>
-                </div>
 
                 <h3
                   id="community-heading"
@@ -547,10 +527,6 @@ export default function HomePage() {
             {/* Right: My Wrist */}
             <div className="lg:col-span-6 border border-hairline bg-warm-white p-8 sm:p-10 flex flex-col justify-between hover:border-ink transition-colors">
               <div>
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted mb-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                  <span>COLLECTOR DOSSIER // CATALOG</span>
-                </div>
 
                 <h3 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
                   My Wrist

@@ -9,16 +9,6 @@ export default function PhilosophyStrip() {
     >
       <Container>
         <div className="relative max-w-5xl mx-auto">
-          {/* Subtle Dial Marker Accents */}
-          <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-8 border-b border-hairline/80 pb-4">
-            <span className="flex items-center gap-2">
-              <span className="w-1 h-1 bg-steel rounded-full" aria-hidden="true" />
-              MANIFESTO // 001
-            </span>
-            <span>HOROLOGICAL CRITICISM &bull; ARCHIVAL RECORD</span>
-            <span className="hidden sm:inline">ARCHIVAL SPECIFICATION // VOL. I</span>
-          </div>
-
           {/* Philosophy Statement */}
           <div className="text-center sm:text-left">
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal leading-[1.08] tracking-tight text-ink uppercase">
@@ -36,10 +26,6 @@ export default function PhilosophyStrip() {
 
           {/* Bottom Indicators */}
           <div className="mt-12 flex items-center justify-between pt-6 border-t border-hairline/80 text-[11px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-            <span className="flex items-center gap-2">
-              <span className="inline-block w-6 h-px bg-ink" aria-hidden="true" />
-              FOUNDATION SPECIFICATIONS
-            </span>
             <Link
               to="/watches"
               className="text-ink font-semibold hover:text-neutral-700 transition-colors uppercase tracking-wider"

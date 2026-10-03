@@ -64,16 +64,6 @@ export default function Hero() {
           {/* Left Column: Editorial Content (7 cols on lg) */}
           <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1">
             {/* Editorial Header / Category Badge */}
-            <div className="flex flex-wrap items-center gap-3 mb-5 sm:mb-6">
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-warm-surface border border-hairline text-[11px] font-mono uppercase tracking-[0.2em] text-ink font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                HOROLOGICAL JOURNAL &bull; ARCHIVE
-              </span>
-              <span className="text-[11px] font-mono tracking-[0.18em] text-ink-muted uppercase">
-                VOL. I &bull; FOUNDATION
-              </span>
-            </div>
-
             {/* Main Headline */}
             <h1
               id="hero-headline"

@@ -195,7 +195,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
 
     // Validate File Size
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setUploadError('File exceeds 10MB limit. Please choose a smaller photograph.')
+      setUploadError('Image is too large. Please choose a photograph under 10 MB.')
       if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
@@ -966,8 +966,8 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
               />
 
               {uploadError && (
-                <div className="mt-3 text-xs font-mono text-ink tracking-wide">
-                  &bull; {uploadError}
+                <div role="alert" className="mt-3 border border-ink/25 bg-warm-surface px-3 py-2 text-xs font-mono leading-relaxed text-ink tracking-wide">
+                  {uploadError}
                 </div>
               )}
             </section>
