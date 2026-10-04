@@ -1,5 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
+export type BulletinEra = 'Modern' | 'Vintage'
+
 export interface BulletinRelatedWatch {
   id: string
   brand: string
@@ -15,6 +17,7 @@ export interface Bulletin {
   slug: string
   title: string
   body: string
+  era: BulletinEra
   category: 'Market' | 'Auction' | 'Release' | 'History' | 'Note'
   cover_image: string | null
   author_id: string
@@ -50,6 +53,7 @@ const BULLETIN_SELECT_FIELDS = `
   slug,
   title,
   body,
+  era,
   category,
   cover_image,
   author_id,

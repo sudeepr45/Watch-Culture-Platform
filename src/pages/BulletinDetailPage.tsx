@@ -125,10 +125,16 @@ export default function BulletinDetailPage({ slug }: BulletinDetailPageProps) {
                 THE BULLETIN — VOL. I
               </p>
               <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
-                MODERN WATCH WORLD
+                {bulletin.era.toUpperCase()} WATCH WORLD
               </p>
               <p className="mt-7 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
-                BULLETIN NO. {String(bulletin.bulletin_number).padStart(3, '0')} — {formatEditorialDate(bulletin.published_at)}
+                BULLETIN NO. {String(bulletin.bulletin_number).padStart(3, '0')}
+              </p>
+              <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                {formatEditorialDate(bulletin.published_at)}
+              </p>
+              <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                {bulletin.era} · {bulletin.category}
               </p>
               <h1 className="mt-4 font-display text-3xl font-medium leading-tight tracking-tight text-ink sm:text-4xl lg:text-5xl">
                 {bulletin.title}

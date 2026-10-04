@@ -121,8 +121,10 @@ export default function BulletinPage() {
                   <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
                     <span>BULLETIN NO. {String(bulletin.bulletin_number).padStart(3, '0')}</span>
                     <span>{formatEditorialDate(bulletin.published_at)}</span>
-                    {bulletin.category && <span>{bulletin.category}</span>}
                   </div>
+                  <p className="mb-2 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                    {bulletin.era} · {bulletin.category}
+                  </p>
                   <h2 className="font-display text-xl font-medium leading-snug tracking-tight text-ink sm:text-2xl">
                     <Link
                       to={`/bulletin/${bulletin.slug}`}

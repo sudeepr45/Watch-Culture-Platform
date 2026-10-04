@@ -5,6 +5,7 @@ import { useRouter } from '../router/useRouter'
 import {
   createBulletin,
   type BulletinCategory,
+  type BulletinEra,
 } from '../services/curatorBulletinService'
 
 const BULLETIN_CATEGORIES: BulletinCategory[] = [
@@ -37,6 +38,7 @@ export default function CuratorNewBulletinPage() {
   const { navigate } = useRouter()
 
   const [title, setTitle] = useState('')
+  const [era, setEra] = useState<BulletinEra>('Modern')
   const [category, setCategory] = useState<BulletinCategory | ''>('')
   const [slug, setSlug] = useState('')
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
@@ -76,6 +78,7 @@ export default function CuratorNewBulletinPage() {
     setSaving(publish ? 'publish' : 'draft')
     const result = await createBulletin({
       title: title.trim(),
+      era,
       category: category as BulletinCategory,
       slug: normalizedSlug,
       body: body.trim(),
@@ -183,6 +186,21 @@ export default function CuratorNewBulletinPage() {
                 ))}
               </select>
               <FieldError id="bulletin-category-error">{fieldErrors.category}</FieldError>
+            </div>
+
+            <div>
+              <label htmlFor="bulletin-era" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                ERA
+              </label>
+              <select
+                id="bulletin-era"
+                value={era}
+                onChange={(event) => setEra(event.target.value as BulletinEra)}
+                className="w-full appearance-none border border-hairline bg-warm-white px-3 py-3 font-mono text-sm text-ink focus:border-ink focus:outline-none"
+              >
+                <option value="Modern">Modern</option>
+                <option value="Vintage">Vintage</option>
+              </select>
             </div>
 
             <div>

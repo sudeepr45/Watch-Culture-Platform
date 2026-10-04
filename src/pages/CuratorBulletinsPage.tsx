@@ -58,8 +58,10 @@ function BulletinRow({
             {bulletin.published_at ? 'PUBLISHED' : 'DRAFT'}
           </span>
           {publicationDate && <time dateTime={bulletin.published_at ?? undefined}>{publicationDate}</time>}
-          <span>{bulletin.category}</span>
         </div>
+        <p className="mb-3 text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
+          {bulletin.era} · {bulletin.category}
+        </p>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">

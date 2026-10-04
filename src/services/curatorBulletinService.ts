@@ -1,15 +1,19 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import type {
   Bulletin,
+  BulletinEra,
   BulletinRelatedWatch,
   BulletinWithRelatedWatch,
 } from './bulletinService'
+
+export type { BulletinEra } from './bulletinService'
 
 export type BulletinCategory = 'Market' | 'Auction' | 'Release' | 'History' | 'Note'
 
 export interface CreateBulletinInput {
   title: string
   body: string
+  era: BulletinEra
   category: BulletinCategory
   slug: string
   cover_image?: string | null
@@ -20,6 +24,7 @@ export interface CreateBulletinInput {
 export interface UpdateBulletinInput {
   title?: string
   body?: string
+  era?: BulletinEra
   category?: BulletinCategory
   slug?: string
   cover_image?: string | null
@@ -38,6 +43,7 @@ export interface CuratorBulletinListItem {
   bulletin_number: number
   slug: string
   title: string
+  era: BulletinEra
   category: BulletinCategory
   cover_image: string | null
   published_at: string | null
@@ -72,6 +78,7 @@ const BULLETIN_LIST_FIELDS = `
   bulletin_number,
   slug,
   title,
+  era,
   category,
   cover_image,
   published_at,
@@ -85,6 +92,7 @@ const BULLETIN_DETAIL_FIELDS = `
   slug,
   title,
   body,
+  era,
   category,
   cover_image,
   author_id,
@@ -108,6 +116,7 @@ const BULLETIN_MUTATION_FIELDS = `
   slug,
   title,
   body,
+  era,
   category,
   cover_image,
   author_id,
@@ -218,6 +227,7 @@ export async function createBulletin(
       .insert({
         title: input.title,
         body: input.body,
+        era: input.era,
         category: input.category,
         slug: input.slug,
         cover_image: input.cover_image,
@@ -256,6 +266,7 @@ export async function updateBulletin(
   const updates: UpdateBulletinInput = {}
   if (input.title !== undefined) updates.title = input.title
   if (input.body !== undefined) updates.body = input.body
+  if (input.era !== undefined) updates.era = input.era
   if (input.category !== undefined) updates.category = input.category
   if (input.slug !== undefined) updates.slug = input.slug
   if (input.cover_image !== undefined) updates.cover_image = input.cover_image
