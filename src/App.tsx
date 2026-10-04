@@ -8,6 +8,8 @@ import SoundNote from './components/common/SoundNote'
 import useScrollWindOnce from './hooks/useScrollWindOnce'
 import HomePage from './pages/HomePage'
 import StoriesPage from './pages/StoriesPage'
+import BulletinPage from './pages/BulletinPage'
+import BulletinDetailPage from './pages/BulletinDetailPage'
 import StoryDetailPage from './pages/StoryDetailPage'
 import CreateStoryPage from './pages/CreateStoryPage'
 import WatchesPage from './pages/WatchesPage'
@@ -22,6 +24,8 @@ import SearchPage from './pages/SearchPage'
 import RandomWatchPage from './pages/RandomWatchPage'
 import CasePage from './pages/CasePage'
 import CuratorPage from './pages/CuratorPage'
+import CuratorBulletinsPage from './pages/CuratorBulletinsPage'
+import CuratorNewBulletinPage from './pages/CuratorNewBulletinPage'
 import CuratorNewWatchPage from './pages/CuratorNewWatchPage'
 import CuratorEditWatchPage from './pages/CuratorEditWatchPage'
 import PrivacyPage from './pages/PrivacyPage'
@@ -46,6 +50,14 @@ function AppContent() {
 
   const renderPage = () => {
     // Curator routes — private, checked before public dynamic routes
+    if (pathname === '/curator/bulletins') {
+      return <CuratorBulletinsPage />
+    }
+
+    if (pathname === '/curator/bulletins/new') {
+      return <CuratorNewBulletinPage />
+    }
+
     if (pathname === '/curator/new') {
       return <CuratorNewWatchPage />
     }
@@ -57,6 +69,12 @@ function AppContent() {
 
     if (pathname === '/curator') {
       return <CuratorPage />
+    }
+
+    // Dynamic Bulletin detail route: /bulletin/:slug
+    const bulletinMatch = pathname.match(/^\/bulletin\/([^/]+)$/)
+    if (bulletinMatch) {
+      return <BulletinDetailPage slug={bulletinMatch[1]} />
     }
 
     // Create Story route: /stories/new (must be checked before dynamic :slug)
@@ -95,6 +113,8 @@ function AppContent() {
     }
 
     switch (pathname) {
+      case '/bulletin':
+        return <BulletinPage />
       case '/stories':
         return <StoriesPage />
       case '/watches':

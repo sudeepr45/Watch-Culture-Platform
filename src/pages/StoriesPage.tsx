@@ -8,6 +8,7 @@ import type { StoryWithAuthorAndWatch } from '../types/story'
 
 export default function StoriesPage() {
   const [stories, setStories] = useState<StoryWithAuthorAndWatch[] | null>(null)
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isConfigured, setIsConfigured] = useState(true)
@@ -45,6 +46,14 @@ export default function StoriesPage() {
     setLoading(false)
   }
 
+  const sortedStories = stories
+    ? [...stories].sort((a, b) => {
+        const publishedA = a.published_at ? new Date(a.published_at).getTime() : 0
+        const publishedB = b.published_at ? new Date(b.published_at).getTime() : 0
+        return sortOrder === 'newest' ? publishedB - publishedA : publishedA - publishedB
+      })
+    : null
+
   return (
     <div className="py-12 sm:py-16 lg:py-20">
       <Container>
@@ -52,14 +61,8 @@ export default function StoriesPage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
-              <div className="flex items-center gap-2.5 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
-                <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                <span>COMMUNITY ARCHIVE &bull; DISPATCHES</span>
-                <span className="text-ink-muted">&bull;</span>
-                <span className="text-ink-muted">VOL. I</span>
-              </div>
               <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-                Stories
+                Community Stories
               </h1>
               <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-normal leading-relaxed">
                 Real watches, real collectors, and the stories they choose to tell.
@@ -223,18 +226,27 @@ export default function StoriesPage() {
         )}
 
         {/* 4. Real Data-Driven Community Stories */}
-        {!loading && !error && stories && stories.length > 0 && (() => {
-          const [leadStory, ...otherStories] = stories
+        {!loading && !error && sortedStories && sortedStories.length > 0 && (() => {
+          const [leadStory, ...otherStories] = sortedStories
 
           return (
             <div>
-              {/* Stories Telemetry Bar */}
-              <div className="mb-8 flex items-center justify-between text-[11px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-                  <span>COMMUNITY STORIES // {stories.length} {stories.length === 1 ? 'RECORD' : 'RECORDS'}</span>
-                </div>
-                <span>ORDER: CHRONOLOGICAL // NEWEST</span>
+              <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-hairline pb-4">
+                <p className="text-sm text-ink-secondary">
+                  {sortedStories.length} {sortedStories.length === 1 ? 'story' : 'stories'}
+                </p>
+                <label className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-muted">
+                  <span>Sort</span>
+                  <select
+                    aria-label="Sort stories"
+                    value={sortOrder}
+                    onChange={(event) => setSortOrder(event.target.value as 'newest' | 'oldest')}
+                    className="cursor-pointer border-0 border-b border-hairline bg-transparent py-1 pr-5 font-mono text-xs tracking-normal text-ink focus:border-ink focus:outline-none"
+                  >
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                  </select>
+                </label>
               </div>
 
               {/* Featured Lead Story Profile */}
@@ -348,8 +360,7 @@ export default function StoriesPage() {
               {otherStories.length > 0 && (
                 <div>
                   <div className="mb-6 flex items-center justify-between text-[11px] font-mono tracking-[0.2em] text-ink-muted uppercase pt-4 border-t border-hairline">
-                    <span>COMMUNITY STORIES // CHRONOLOGICAL</span>
-                    <span>{otherStories.length} {otherStories.length === 1 ? 'RECORD' : 'RECORDS'}</span>
+                    <span>More stories</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
