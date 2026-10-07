@@ -4,6 +4,11 @@ import { Link } from '../router'
 import { getBulletinBySlug } from '../services/bulletinService'
 import type { BulletinWithRelatedWatchAndImages } from '../services/bulletinService'
 
+const BULLETIN_VOLUME_LABELS = {
+  Modern: 'VOL. I — MODERN',
+  Vintage: 'VOL. II — VINTAGE',
+} as const
+
 function formatEditorialDate(value: string | null): string {
   if (!value) return ''
 
@@ -101,7 +106,7 @@ export default function BulletinDetailPage({ slug }: BulletinDetailPageProps) {
         {!loading && !error && !bulletin && (
           <section className="max-w-3xl border-y border-hairline py-8 sm:py-10">
             <p className="mb-3 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
-              THE BULLETIN — VOL. I
+              THE BULLETIN
             </p>
             <h1 className="font-display text-2xl font-medium tracking-tight text-ink sm:text-3xl">
               Bulletin not found
@@ -122,10 +127,10 @@ export default function BulletinDetailPage({ slug }: BulletinDetailPageProps) {
           <article className="mx-auto max-w-3xl">
             <header className="border-b border-hairline pb-7 sm:pb-9">
               <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
-                THE BULLETIN — VOL. I
+                THE BULLETIN
               </p>
               <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
-                {bulletin.era.toUpperCase()} WATCH WORLD
+                {BULLETIN_VOLUME_LABELS[bulletin.era]}
               </p>
               <p className="mt-7 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
                 BULLETIN NO. {String(bulletin.bulletin_number).padStart(3, '0')}
