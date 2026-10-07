@@ -14,6 +14,7 @@ export interface AuthContextType {
   session: Session | null
   loading: boolean
   isAuthenticated: boolean
+  isPasswordRecovery: boolean
   /** UX-only curator flag. Real authorization boundary is database RLS via public.is_curator(). */
   isCurator: boolean
   signIn: (data: SignInData) => Promise<AuthResult>
@@ -22,6 +23,7 @@ export interface AuthContextType {
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
   updateProfile: (data: UpdateProfileData) => Promise<{ success: boolean; error?: string }>
+  updatePassword: (password: string) => Promise<{ success: boolean }>
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)

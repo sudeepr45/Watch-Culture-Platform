@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(() => isSupabaseConfigured)
   const [isCurator, setIsCurator] = useState(false)
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false)
 
   // Fetch or safely auto-provision profile for an authenticated user
   const loadProfile = useCallback(async (authUser: User) => {
@@ -109,8 +110,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen to real-time auth state transitions
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (!isMounted) return
+
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordRecovery(true)
+      } else if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        setIsPasswordRecovery(false)
+      }
 
       setSession(newSession)
       setUser(newSession?.user || null)
@@ -280,6 +287,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       setSession(null)
       setProfile(null)
+      setIsPasswordRecovery(false)
+    }
+  }
+
+  const updatePassword = async (password: string): Promise<{ success: boolean }> => {
+    if (!isPasswordRecovery || !session) return { success: false }
+
+    try {
+      const { error } = await supabase.auth.updateUser({ password })
+      if (error) return { success: false }
+      setIsPasswordRecovery(false)
+      return { success: true }
+    } catch {
+      return { success: false }
     }
   }
 
@@ -336,6 +357,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         loading,
         isAuthenticated: Boolean(user),
+        isPasswordRecovery,
         isCurator,
         signIn,
         signUp,
@@ -343,6 +365,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         refreshProfile,
         updateProfile,
+        updatePassword,
       }}
     >
       {children}

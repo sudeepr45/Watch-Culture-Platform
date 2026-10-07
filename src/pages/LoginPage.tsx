@@ -4,6 +4,7 @@ import Button from '../components/common/Button'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { useAuth } from '../context/useAuth'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 interface LoginPageProps {
   initialMode?: 'login' | 'signup'
@@ -24,6 +25,9 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
   const [oauthLoading, setOauthLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [confirmationNotice, setConfirmationNotice] = useState<string | null>(null)
+  const [recoveryMode, setRecoveryMode] = useState(false)
+  const [recoverySent, setRecoverySent] = useState(false)
+  const [recoveryLoading, setRecoveryLoading] = useState(false)
 
   // If already logged in, redirect to /profile
   if (isAuthenticated) {
@@ -112,8 +116,42 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
     }
   }
 
+  const handlePasswordRecovery = async (event: FormEvent) => {
+    event.preventDefault()
+    setErrorMessage(null)
+    setRecoverySent(false)
+
+    const recoveryEmail = email.trim()
+    if (!recoveryEmail) {
+      setErrorMessage('Enter your email address to receive a password recovery link.')
+      return
+    }
+    if (!isSupabaseConfigured) {
+      setErrorMessage('Password recovery is temporarily unavailable. Please try again later.')
+      return
+    }
+
+    setRecoveryLoading(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(recoveryEmail, {
+        redirectTo: `${window.location.origin}/update-password`,
+      })
+      if (error) {
+        setErrorMessage('Unable to send a recovery email. Check the address and try again.')
+      } else {
+        setRecoverySent(true)
+      }
+    } catch {
+      setErrorMessage('Unable to send a recovery email. Please try again later.')
+    } finally {
+      setRecoveryLoading(false)
+    }
+  }
+
   const toggleMode = (newMode: 'login' | 'signup') => {
     setMode(newMode)
+    setRecoveryMode(false)
+    setRecoverySent(false)
     setErrorMessage(null)
     setConfirmationNotice(null)
   }
@@ -128,10 +166,12 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
             <span>COLLECTOR GATEWAY &bull; ARCHIVE LOGBOOK</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            {mode === 'signup' ? 'Create Profile' : 'Welcome Back'}
+            {recoveryMode ? 'Password Recovery' : mode === 'signup' ? 'Create Profile' : 'Welcome Back'}
           </h1>
           <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-2xl font-light">
-            {mode === 'signup'
+            {recoveryMode
+              ? 'Enter your account email and we will send a link to update your password.'
+              : mode === 'signup'
               ? 'Register your collector profile to document your personal wrist archive and participate in head-to-head audits.'
               : 'Sign in to access your collector dossier, profile specifications, and saved bookmarks.'}
           </p>
@@ -165,6 +205,52 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
             </button>
           </div>
 
+          {recoveryMode ? (
+            <section aria-labelledby="password-recovery-heading">
+              <p id="password-recovery-heading" className="mb-5 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                PASSWORD RECOVERY
+              </p>
+              {recoverySent ? (
+                <div className="border border-hairline bg-warm-white p-4 text-xs font-mono leading-relaxed text-ink">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest">PASSWORD RESET EMAIL SENT</p>
+                  Check your email for a link to choose a new password.
+                </div>
+              ) : (
+                <form onSubmit={handlePasswordRecovery} className="space-y-5">
+                  <div>
+                    <label htmlFor="recovery-email" className="mb-1.5 block text-xs font-mono font-medium uppercase tracking-[0.18em] text-ink">
+                      Email Address <span className="text-steel">*</span>
+                    </label>
+                    <input
+                      id="recovery-email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="collector@watchculture.com"
+                      className="w-full border border-hairline bg-warm-white px-4 py-3 text-xs font-mono text-ink focus:border-ink focus:outline-none placeholder:text-ink-muted/50"
+                    />
+                  </div>
+                  {errorMessage && (
+                    <p className="border-y border-rose-300 py-3 text-xs font-mono leading-relaxed text-rose-900" role="alert">
+                      {errorMessage}
+                    </p>
+                  )}
+                  <Button type="submit" variant="primary" size="md" className="w-full" disabled={recoveryLoading}>
+                    {recoveryLoading ? 'SENDING RECOVERY EMAIL…' : 'SEND PASSWORD RESET EMAIL'}
+                  </Button>
+                </form>
+              )}
+              <button
+                type="button"
+                onClick={() => { setRecoveryMode(false); setRecoverySent(false); setErrorMessage(null) }}
+                className="mt-6 text-xs font-mono uppercase tracking-wider text-ink underline underline-offset-4 hover:text-neutral-700"
+              >
+                Return to sign in
+              </button>
+            </section>
+          ) : (
+            <>
           {/* Google OAuth Action Button */}
           <div className="mb-6">
             <button
@@ -312,6 +398,18 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
               />
             </div>
 
+            {mode === 'login' && (
+              <div className="-mt-2 text-right">
+                <button
+                  type="button"
+                  onClick={() => { setRecoveryMode(true); setRecoverySent(false); setErrorMessage(null) }}
+                  className="text-[10px] font-mono uppercase tracking-[0.12em] text-ink-muted underline underline-offset-4 hover:text-ink"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
+
             {/* Confirm Password (Sign Up only) */}
             {mode === 'signup' && (
               <div>
@@ -383,6 +481,8 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
           <div className="mt-6 text-center text-[10px] font-mono text-ink-muted uppercase tracking-widest">
             AUTHENTICATED ARCHIVE ACCESS
           </div>
+            </>
+          )}
         </div>
       </Container>
     </div>

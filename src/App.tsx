@@ -20,6 +20,7 @@ import Watch101TopicPage from './pages/Watch101TopicPage'
 import ExplorePage from './pages/ExplorePage'
 import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
+import UpdatePasswordPage from './pages/UpdatePasswordPage'
 import SearchPage from './pages/SearchPage'
 import RandomWatchPage from './pages/RandomWatchPage'
 import CasePage from './pages/CasePage'
@@ -139,6 +140,8 @@ function AppContent() {
         return <ProfilePage />
       case '/login':
         return <LoginPage initialMode="login" />
+      case '/update-password':
+        return <UpdatePasswordPage />
       case '/signup':
         return <LoginPage initialMode="signup" />
       case '/search':
