@@ -26,6 +26,7 @@ import CasePage from './pages/CasePage'
 import CuratorPage from './pages/CuratorPage'
 import CuratorBulletinsPage from './pages/CuratorBulletinsPage'
 import CuratorNewBulletinPage from './pages/CuratorNewBulletinPage'
+import CuratorEditBulletinPage from './pages/CuratorEditBulletinPage'
 import CuratorNewWatchPage from './pages/CuratorNewWatchPage'
 import CuratorEditWatchPage from './pages/CuratorEditWatchPage'
 import PrivacyPage from './pages/PrivacyPage'
@@ -50,6 +51,11 @@ function AppContent() {
 
   const renderPage = () => {
     // Curator routes — private, checked before public dynamic routes
+    const curatorBulletinEditMatch = pathname.match(/^\/curator\/bulletins\/([^/]+)\/edit$/)
+    if (curatorBulletinEditMatch) {
+      return <CuratorEditBulletinPage key={curatorBulletinEditMatch[1]} id={curatorBulletinEditMatch[1]} />
+    }
+
     if (pathname === '/curator/bulletins') {
       return <CuratorBulletinsPage />
     }

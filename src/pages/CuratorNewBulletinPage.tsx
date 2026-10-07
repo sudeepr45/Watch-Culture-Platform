@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import Container from '../components/common/Container'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import {
   createBulletin,
+  uploadBulletinImages,
+  validateBulletinPhoto,
+  type BulletinPhotoUpload,
   type BulletinCategory,
   type BulletinEra,
 } from '../services/curatorBulletinService'
@@ -18,6 +21,16 @@ const BULLETIN_CATEGORIES: BulletinCategory[] = [
 
 type BulletinField = 'title' | 'category' | 'slug' | 'body'
 type FieldErrors = Partial<Record<BulletinField, string>>
+
+interface SelectedBulletinPhoto {
+  file: File
+  uploadId: string
+  previewUrl: string
+}
+
+function formatFileSize(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
 
 function normalizeSlug(value: string): string {
   return value
@@ -43,9 +56,44 @@ export default function CuratorNewBulletinPage() {
   const [slug, setSlug] = useState('')
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
   const [body, setBody] = useState('')
+  const [selectedPhotos, setSelectedPhotos] = useState<SelectedBulletinPhoto[]>([])
+  const [photoSelectionError, setPhotoSelectionError] = useState<string | null>(null)
+  const [savedBulletinId, setSavedBulletinId] = useState<string | null>(null)
+  const [savedBulletinAction, setSavedBulletinAction] = useState<'draft' | 'publish'>('draft')
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [saving, setSaving] = useState<'draft' | 'publish' | null>(null)
+  const photoInputRef = useRef<HTMLInputElement>(null)
+  const selectedPhotosRef = useRef(selectedPhotos)
+
+  useEffect(() => {
+    selectedPhotosRef.current = selectedPhotos
+  }, [selectedPhotos])
+
+  useEffect(() => () => {
+    selectedPhotosRef.current.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl))
+  }, [])
+
+  const handlePhotoSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.currentTarget.files ?? [])
+    event.currentTarget.value = ''
+
+    const accepted: SelectedBulletinPhoto[] = []
+    const rejected: string[] = []
+    for (const file of files) {
+      const validationError = validateBulletinPhoto(file)
+      if (validationError) rejected.push(`${file.name}: ${validationError}`)
+      else accepted.push({ file, uploadId: crypto.randomUUID(), previewUrl: URL.createObjectURL(file) })
+    }
+
+    if (accepted.length > 0) setSelectedPhotos((current) => [...current, ...accepted])
+    setPhotoSelectionError(rejected.length > 0 ? rejected.join(' ') : null)
+  }
+
+  const handleRemovePhoto = (previewUrl: string) => {
+    URL.revokeObjectURL(previewUrl)
+    setSelectedPhotos((current) => current.filter((photo) => photo.previewUrl !== previewUrl))
+  }
 
   const clearFieldError = (field: BulletinField) => {
     setFieldErrors((current) => ({ ...current, [field]: undefined }))
@@ -61,6 +109,27 @@ export default function CuratorNewBulletinPage() {
 
   const handleCreate = async (publish: boolean) => {
     if (saving) return
+
+    if (savedBulletinId) {
+      if (selectedPhotos.length === 0) {
+        navigate('/curator/bulletins')
+        return
+      }
+
+      setSaving(savedBulletinAction)
+      setSubmitError(null)
+      const uploadResult = await uploadBulletinImages(
+        savedBulletinId,
+        selectedPhotos.map(({ file, uploadId }) => ({ file, uploadId } satisfies BulletinPhotoUpload))
+      )
+      if (uploadResult.error) {
+        setSubmitError(`Bulletin saved, but photo upload failed: ${uploadResult.error.message}`)
+        setSaving(null)
+        return
+      }
+      navigate('/curator/bulletins')
+      return
+    }
 
     const normalizedSlug = normalizeSlug(slug)
     const nextErrors: FieldErrors = {}
@@ -94,6 +163,27 @@ export default function CuratorNewBulletinPage() {
       )
       setSaving(null)
       return
+    }
+
+    if (!result.data?.id) {
+      setSubmitError('Bulletin was not returned after saving. Photos were not uploaded.')
+      setSaving(null)
+      return
+    }
+
+    setSavedBulletinId(result.data.id)
+    setSavedBulletinAction(publish ? 'publish' : 'draft')
+
+    if (selectedPhotos.length > 0) {
+      const uploadResult = await uploadBulletinImages(
+        result.data.id,
+        selectedPhotos.map(({ file, uploadId }) => ({ file, uploadId } satisfies BulletinPhotoUpload))
+      )
+      if (uploadResult.error) {
+        setSubmitError(`Bulletin saved, but photo upload failed: ${uploadResult.error.message}`)
+        setSaving(null)
+        return
+      }
     }
 
     navigate('/curator/bulletins')
@@ -242,6 +332,66 @@ export default function CuratorNewBulletinPage() {
             <FieldError id="bulletin-body-error">{fieldErrors.body}</FieldError>
           </div>
 
+          <section className="border border-hairline bg-warm-surface/20 p-5 sm:p-6" aria-labelledby="bulletin-photos-heading">
+            <div className="mb-4 border-b border-hairline pb-3">
+              <h2 id="bulletin-photos-heading" className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                PHOTOS
+              </h2>
+              <p className="mt-1 text-xs text-ink-secondary">
+                JPEG, PNG, or WebP. Maximum 10 MB per image.
+              </p>
+            </div>
+            <label
+              htmlFor="bulletin-photos"
+              className="inline-flex cursor-pointer border border-ink px-4 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-ink transition-colors hover:bg-ink hover:text-warm-white"
+            >
+              SELECT PHOTOGRAPHS
+            </label>
+            <input
+              ref={photoInputRef}
+              id="bulletin-photos"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              disabled={savedBulletinId !== null || saving !== null}
+              onChange={handlePhotoSelect}
+              className="sr-only"
+              aria-label="Select multiple Bulletin photographs"
+            />
+
+            {selectedPhotos.length > 0 && (
+              <ol className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {selectedPhotos.map(({ file, previewUrl }, index) => (
+                  <li key={previewUrl} className="flex gap-3 border border-hairline bg-warm-white p-3">
+                    <img
+                      src={previewUrl}
+                      alt={`Selected Bulletin photograph ${index + 1}`}
+                      className="h-24 w-28 shrink-0 border border-hairline object-cover"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="break-all text-xs font-mono text-ink">{file.name}</p>
+                      <p className="mt-1 text-[10px] font-mono text-ink-muted">{formatFileSize(file.size)}</p>
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePhoto(previewUrl)}
+                        disabled={savedBulletinId !== null || saving !== null}
+                        className="mt-3 text-[10px] font-mono uppercase tracking-[0.14em] text-ink-muted underline underline-offset-4 hover:text-ink"
+                      >
+                        REMOVE
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            {photoSelectionError && (
+              <p className="mt-4 border-y border-hairline py-3 text-xs leading-relaxed text-steel-dark" role="alert">
+                {photoSelectionError} Invalid images were not added.
+              </p>
+            )}
+          </section>
+
           {submitError && (
             <p className="border-y border-hairline py-3 text-sm text-steel-dark" role="alert">
               {submitError}
@@ -249,6 +399,26 @@ export default function CuratorNewBulletinPage() {
           )}
 
           <div className="flex flex-col items-start gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center">
+            {savedBulletinId && selectedPhotos.length > 0 && (
+              <button
+                type="button"
+                onClick={() => handleCreate(savedBulletinAction === 'publish')}
+                disabled={saving !== null}
+                className="border border-ink px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink transition-colors hover:bg-ink hover:text-warm-white disabled:opacity-40"
+              >
+                {saving ? 'UPLOADING PHOTOS…' : 'RETRY PHOTO UPLOAD'}
+              </button>
+            )}
+            {savedBulletinId && selectedPhotos.length === 0 && (
+              <button
+                type="button"
+                onClick={() => navigate('/curator/bulletins')}
+                className="border border-ink px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink transition-colors hover:bg-ink hover:text-warm-white"
+              >
+                RETURN TO BULLETINS
+              </button>
+            )}
+            {!savedBulletinId && <>
             <button
               type="button"
               onClick={() => handleCreate(false)}
@@ -265,8 +435,11 @@ export default function CuratorNewBulletinPage() {
             >
               {saving === 'publish' ? 'PUBLISHING…' : 'PUBLISH'}
             </button>
+            </>}
             <p className="text-[10px] font-mono text-ink-muted sm:ml-2">
-              Bulletin number is assigned when this record is created.
+              {savedBulletinId
+                ? 'Bulletin saved. Photo retries will not create another Bulletin.'
+                : 'Bulletin number is assigned when this record is created.'}
             </p>
           </div>
         </form>

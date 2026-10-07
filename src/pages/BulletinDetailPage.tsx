@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Container from '../components/common/Container'
 import { Link } from '../router'
 import { getBulletinBySlug } from '../services/bulletinService'
-import type { BulletinWithRelatedWatch } from '../services/bulletinService'
+import type { BulletinWithRelatedWatchAndImages } from '../services/bulletinService'
 
 function formatEditorialDate(value: string | null): string {
   if (!value) return ''
@@ -27,7 +27,7 @@ interface BulletinDetailPageProps {
 }
 
 export default function BulletinDetailPage({ slug }: BulletinDetailPageProps) {
-  const [bulletin, setBulletin] = useState<BulletinWithRelatedWatch | null>(null)
+  const [bulletin, setBulletin] = useState<BulletinWithRelatedWatchAndImages | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isConfigured, setIsConfigured] = useState(true)
@@ -148,6 +148,24 @@ export default function BulletinDetailPage({ slug }: BulletinDetailPageProps) {
                 </p>
               ))}
             </div>
+
+            {bulletin.images.length > 0 && (
+              <section className="mt-10 space-y-10 sm:mt-12" aria-label="Bulletin photographs">
+                {bulletin.images.map((image, index) => (
+                  <figure key={image.id}>
+                    <img
+                      src={image.signed_url}
+                      alt=""
+                      loading="lazy"
+                      className="h-auto max-h-[42rem] w-full object-contain object-left"
+                    />
+                    <figcaption className="mt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-ink-muted">
+                      PHOTOGRAPH {String(index + 1).padStart(2, '0')}
+                    </figcaption>
+                  </figure>
+                ))}
+              </section>
+            )}
 
             {bulletin.cover_image && (
               <figure className="mt-9 max-w-lg">

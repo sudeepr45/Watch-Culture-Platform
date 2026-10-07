@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 export type BulletinEra = 'Modern' | 'Vintage'
+export const BULLETIN_IMAGES_BUCKET = 'bulletin-images'
 
 export interface BulletinRelatedWatch {
   id: string
@@ -31,6 +32,19 @@ export interface BulletinWithRelatedWatch extends Bulletin {
   related_watch: BulletinRelatedWatch | null
 }
 
+export interface BulletinImage {
+  id: string
+  bulletin_id: string
+  image_path: string
+  sort_order: number
+  created_at: string
+  signed_url: string
+}
+
+export interface BulletinWithRelatedWatchAndImages extends BulletinWithRelatedWatch {
+  images: BulletinImage[]
+}
+
 export interface GetBulletinsResult {
   data: Bulletin[] | null
   error: Error | null
@@ -38,7 +52,7 @@ export interface GetBulletinsResult {
 }
 
 export interface GetBulletinResult {
-  data: BulletinWithRelatedWatch | null
+  data: BulletinWithRelatedWatchAndImages | null
   error: Error | null
   isConfigured: boolean
 }
@@ -150,10 +164,49 @@ export async function getBulletinBySlug(slug: string): Promise<GetBulletinResult
       return { data: null, error: new Error(error.message), isConfigured: true }
     }
 
+    if (!data) return { data: null, error: null, isConfigured: true }
+
+    const bulletin = normalizeBulletinWithRelatedWatch(
+      data as unknown as RawBulletinWithRelatedWatch
+    )
+    const { data: imageRows, error: imageError } = await supabase
+      .from('bulletin_images')
+      .select('id, bulletin_id, image_path, sort_order, created_at')
+      .eq('bulletin_id', bulletin.id)
+      .order('sort_order', { ascending: true })
+
+    if (imageError) {
+      return { data: null, error: new Error(imageError.message), isConfigured: true }
+    }
+
+    const rows = imageRows ?? []
+    let images: BulletinImage[] = []
+    if (rows.length > 0) {
+      const { data: signedUrls, error: signedUrlError } = await supabase.storage
+        .from(BULLETIN_IMAGES_BUCKET)
+        .createSignedUrls(rows.map((image) => image.image_path), 60 * 60)
+
+      if (signedUrlError) {
+        return { data: null, error: new Error(signedUrlError.message), isConfigured: true }
+      }
+
+      const failedUrl = signedUrls.find((item) => item.error || !item.signedUrl)
+      if (failedUrl) {
+        return {
+          data: null,
+          error: new Error(failedUrl.error || 'Unable to create a signed Bulletin photo URL.'),
+          isConfigured: true,
+        }
+      }
+
+      images = rows.map((image, index) => ({
+        ...image,
+        signed_url: signedUrls[index].signedUrl as string,
+      }))
+    }
+
     return {
-      data: data
-        ? normalizeBulletinWithRelatedWatch(data as unknown as RawBulletinWithRelatedWatch)
-        : null,
+      data: { ...bulletin, images },
       error: null,
       isConfigured: true,
     }

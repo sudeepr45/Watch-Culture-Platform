@@ -5,6 +5,7 @@ import type {
   BulletinRelatedWatch,
   BulletinWithRelatedWatch,
 } from './bulletinService'
+import { BULLETIN_IMAGES_BUCKET } from './bulletinService'
 
 export type { BulletinEra } from './bulletinService'
 
@@ -67,6 +68,47 @@ export interface DeleteCuratorBulletinResult {
   success: boolean
   error: Error | null
   isConfigured: boolean
+}
+
+export interface UploadBulletinImagesResult {
+  success: boolean
+  error: Error | null
+}
+
+export interface BulletinPhotoUpload {
+  file: File
+  uploadId: string
+}
+
+const BULLETIN_IMAGE_FORMATS: Record<string, { mimeType: string; extension: string }> = {
+  'image/jpeg': { mimeType: 'image/jpeg', extension: 'jpg' },
+  'image/jpg': { mimeType: 'image/jpeg', extension: 'jpg' },
+  'image/png': { mimeType: 'image/png', extension: 'png' },
+  'image/webp': { mimeType: 'image/webp', extension: 'webp' },
+}
+const BULLETIN_IMAGE_EXTENSIONS: Record<string, { mimeType: string; extension: string }> = {
+  '.jpg': { mimeType: 'image/jpeg', extension: 'jpg' },
+  '.jpeg': { mimeType: 'image/jpeg', extension: 'jpg' },
+  '.png': { mimeType: 'image/png', extension: 'png' },
+  '.webp': { mimeType: 'image/webp', extension: 'webp' },
+}
+const MAX_BULLETIN_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
+
+function getBulletinPhotoFormat(file: File) {
+  const declaredType = file.type.trim().toLowerCase().split(';', 1)[0]
+  return BULLETIN_IMAGE_FORMATS[declaredType] ??
+    BULLETIN_IMAGE_EXTENSIONS[file.name.slice(file.name.lastIndexOf('.')).toLowerCase()] ??
+    null
+}
+
+export function validateBulletinPhoto(file: File): string | null {
+  if (file.size > MAX_BULLETIN_IMAGE_SIZE_BYTES) {
+    return 'Image exceeds the 10 MB per-image limit.'
+  }
+  if (!getBulletinPhotoFormat(file)) {
+    return 'Use a JPEG, PNG, or WebP image.'
+  }
+  return null
 }
 
 interface RawBulletinWithRelatedWatch extends Bulletin {
@@ -145,6 +187,182 @@ function configurationError() {
 
 function unexpectedError(err: unknown) {
   return err instanceof Error ? err : new Error('An unexpected database error occurred.')
+}
+
+function getBulletinImagePath(
+  bulletinId: string,
+  file: File,
+  uploadId: string
+): string {
+  const format = getBulletinPhotoFormat(file)
+  if (!format) throw new Error('Use a JPEG, PNG, or WebP image.')
+  return `${bulletinId}/${uploadId}.${format.extension}`
+}
+
+/** Inspect a database-reserved path and its Storage object through the curator RPC. */
+async function reconcileBulletinImagePath(
+  bulletinId: string,
+  imagePath: string,
+  uploadId: string,
+  sortOrder: number
+): Promise<{ completed: boolean; error: Error | null }> {
+  const [folder, ...nameParts] = imagePath.split('/')
+  const fileName = nameParts.join('/')
+  const expectedFileName = new RegExp(`^${uploadId}\\.(jpg|png|webp)$`, 'i')
+  if (folder !== bulletinId || !expectedFileName.test(fileName) || nameParts.length !== 1) {
+    return { completed: false, error: new Error('Photo path could not be safely matched to this Bulletin.') }
+  }
+
+  try {
+    const { data: reservation, error } = await supabase.rpc(
+      'inspect_bulletin_image_upload',
+      {
+        p_bulletin_id: bulletinId,
+        p_upload_id: uploadId,
+        p_image_path: imagePath,
+        p_sort_order: sortOrder,
+      }
+    )
+
+    if (error) return { completed: false, error: new Error(`Unable to verify the database photo reservation: ${error.message}`) }
+    if (!reservation || reservation.image_path !== imagePath || reservation.sort_order !== sortOrder) {
+      return { completed: false, error: new Error('No matching database reservation exists for this photo. The Storage object was left untouched.') }
+    }
+    const objectExists = reservation.object_exists === true
+
+    if (objectExists && (
+      reservation.object_bulletin_id !== bulletinId ||
+      reservation.object_upload_id !== uploadId
+    )) {
+      return { completed: false, error: new Error('The existing Storage object does not match this photo upload.') }
+    }
+
+    if (objectExists) return { completed: true, error: null }
+    if (reservation.upload_status === 'ready') {
+      return { completed: false, error: new Error('A ready photo record exists but its Storage object is missing. Resolve the existing photo before retrying.') }
+    }
+    return { completed: false, error: null }
+  } catch (err) {
+    return { completed: false, error: unexpectedError(err) }
+  }
+}
+
+/** Upload images only after a real Bulletin exists, then associate them in selected order. */
+async function uploadBulletinImagesWithLock(
+  bulletinId: string,
+  photos: BulletinPhotoUpload[]
+): Promise<UploadBulletinImagesResult> {
+  const cleanBulletinId = typeof bulletinId === 'string' ? bulletinId.trim() : ''
+  if (!cleanBulletinId) {
+    return { success: false, error: new Error('A saved Bulletin ID is required for photo upload.') }
+  }
+  if (photos.length === 0) return { success: true, error: null }
+  if (!isSupabaseConfigured) {
+    return { success: false, error: configurationError() }
+  }
+
+  for (const { file, uploadId } of photos) {
+    const validationError = validateBulletinPhoto(file)
+    if (validationError) {
+      return { success: false, error: new Error(`${file.name}: ${validationError}`) }
+    }
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uploadId)) {
+      return { success: false, error: new Error(`Unable to safely identify the photo upload for "${file.name}".`) }
+    }
+  }
+
+  for (const [sortOrder, { file, uploadId }] of photos.entries()) {
+    const imagePath = getBulletinImagePath(cleanBulletinId, file, uploadId)
+    const { data: reservationStatus, error: reservationError } = await supabase.rpc(
+      'reserve_bulletin_image',
+      {
+        p_bulletin_id: cleanBulletinId,
+        p_upload_id: uploadId,
+        p_image_path: imagePath,
+        p_sort_order: sortOrder,
+      }
+    )
+    if (reservationError) {
+      return { success: false, error: new Error(`Unable to reserve "${file.name}": ${reservationError.message}`) }
+    }
+    if (reservationStatus !== 'pending' && reservationStatus !== 'ready') {
+      return { success: false, error: new Error(`The database returned an invalid reservation state for "${file.name}".`) }
+    }
+  }
+
+  for (const [sortOrder, { file, uploadId }] of photos.entries()) {
+    const imagePath = getBulletinImagePath(cleanBulletinId, file, uploadId)
+    const reconciliation = await reconcileBulletinImagePath(cleanBulletinId, imagePath, uploadId, sortOrder)
+    if (reconciliation.error) {
+      return { success: false, error: new Error(`Unable to safely retry "${file.name}": ${reconciliation.error.message}`) }
+    }
+    if (reconciliation.completed) {
+      continue
+    }
+    try {
+      const { error } = await supabase.storage
+        .from(BULLETIN_IMAGES_BUCKET)
+        .upload(imagePath, file, {
+          cacheControl: '3600',
+          contentType: getBulletinPhotoFormat(file)?.mimeType,
+          upsert: false,
+          metadata: { bulletin_id: cleanBulletinId, photo_upload_id: uploadId },
+        })
+
+      if (error) {
+        return {
+          success: false,
+          error: new Error(`Upload failed for "${file.name}": ${error.message} Its reserved photo record remains pending for a safe retry.`),
+        }
+      }
+    } catch (err) {
+      const message = unexpectedError(err).message
+      return {
+        success: false,
+        error: new Error(`Upload failed for "${file.name}": ${message} Its reserved photo record remains pending for a safe retry.`),
+      }
+    }
+  }
+
+  try {
+    const { error } = await supabase.rpc('finalize_bulletin_images', {
+      p_bulletin_id: cleanBulletinId,
+      p_upload_ids: photos.map(({ uploadId }) => uploadId),
+    })
+    if (error) {
+      return { success: false, error: new Error(`Photos uploaded but could not be finalized: ${error.message}. Their reserved records remain pending for a safe retry.`) }
+    }
+    return { success: true, error: null }
+  } catch (err) {
+    return { success: false, error: unexpectedError(err) }
+  }
+}
+
+/** Serialize upload and stale-object reconciliation across tabs in this browser origin. */
+export async function uploadBulletinImages(
+  bulletinId: string,
+  photos: BulletinPhotoUpload[]
+): Promise<UploadBulletinImagesResult> {
+  const cleanBulletinId = typeof bulletinId === 'string' ? bulletinId.trim() : ''
+  if (!cleanBulletinId) {
+    return { success: false, error: new Error('A saved Bulletin ID is required for photo upload.') }
+  }
+  if (typeof navigator === 'undefined' || !navigator.locks) {
+    return {
+      success: false,
+      error: new Error('This browser cannot safely coordinate Bulletin photo retries. Use a browser with Web Locks support.'),
+    }
+  }
+
+  try {
+    return await navigator.locks.request(
+      `mojean:bulletin-images:${cleanBulletinId}`,
+      { mode: 'exclusive' },
+      () => uploadBulletinImagesWithLock(cleanBulletinId, photos)
+    )
+  } catch (err) {
+    return { success: false, error: unexpectedError(err) }
+  }
 }
 
 /** Fetch all curator-visible Bulletins, including drafts, newest first. */
@@ -304,21 +522,71 @@ export async function deleteBulletin(id: string): Promise<DeleteCuratorBulletinR
   }
 
   try {
-    const { data, error } = await supabase
-      .from('bulletins')
-      .delete()
-      .eq('id', bulletinId)
-      .select('id')
-      .maybeSingle()
+    const { data: deletionStarted, error: beginError } = await supabase.rpc(
+      'begin_bulletin_deletion',
+      { p_bulletin_id: bulletinId }
+    )
 
-    if (error) return { success: false, error: new Error(error.message), isConfigured: true }
-    if (!data) {
+    if (beginError) {
+      return { success: false, error: new Error(beginError.message), isConfigured: true }
+    }
+    if (!deletionStarted) {
       return {
         success: false,
-        error: new Error('Bulletin not found or you do not have permission to delete it.'),
+        error: new Error('Bulletin has photos still uploading. Retry deletion after the photo upload finishes.'),
         isConfigured: true,
       }
     }
+
+    const { data: imagePathsData, error: imageRowsError } = await supabase.rpc(
+      'get_bulletin_deletion_image_paths',
+      { p_bulletin_id: bulletinId }
+    )
+
+    if (imageRowsError) {
+      return {
+        success: false,
+        error: new Error(`Unable to inspect Bulletin photos before deletion: ${imageRowsError.message}`),
+        isConfigured: true,
+      }
+    }
+
+    const imagePaths = (imagePathsData ?? []) as string[]
+    if (imagePaths.some((path) => {
+      const [folder, ...fileParts] = path.split('/')
+      return folder !== bulletinId || fileParts.length !== 1 || !fileParts[0]
+    })) {
+      return {
+        success: false,
+        error: new Error('A Bulletin photo path could not be safely matched to this Bulletin. No photos or Bulletin records were deleted.'),
+        isConfigured: true,
+      }
+    }
+
+    if (imagePaths.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from(BULLETIN_IMAGES_BUCKET)
+        .remove(imagePaths)
+      if (storageError) {
+        return {
+          success: false,
+          error: new Error(
+            `Unable to remove Bulletin photos from Storage. The Bulletin was not deleted; retry deletion after resolving the storage error: ${storageError.message}`
+          ),
+          isConfigured: true,
+        }
+      }
+    }
+
+    const { data: deletionFinished, error: finishError } = await supabase.rpc(
+      'finish_bulletin_deletion',
+      { p_bulletin_id: bulletinId }
+    )
+
+    if (finishError) {
+      return { success: false, error: new Error(finishError.message), isConfigured: true }
+    }
+    if (!deletionFinished) return { success: false, error: new Error('Bulletin deletion did not complete.'), isConfigured: true }
     return { success: true, error: null, isConfigured: true }
   } catch (err) {
     return { success: false, error: unexpectedError(err), isConfigured: true }
