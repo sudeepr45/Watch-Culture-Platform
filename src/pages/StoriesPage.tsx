@@ -232,10 +232,10 @@ export default function StoriesPage() {
           return (
             <div>
               <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-hairline pb-4">
-                <p className="text-sm text-ink-secondary">
+                <p className="text-sm text-ink sm:text-ink-secondary">
                   {sortedStories.length} {sortedStories.length === 1 ? 'story' : 'stories'}
                 </p>
-                <label className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-muted">
+                <label className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-secondary sm:text-ink-muted">
                   <span>Sort</span>
                   <select
                     aria-label="Sort stories"
@@ -309,7 +309,7 @@ export default function StoriesPage() {
                           <div className="text-xs font-semibold tracking-wide text-ink uppercase">
                             {leadStory.author.display_name || leadStory.author.username}
                           </div>
-                          <div className="text-[10px] font-mono text-ink-muted">
+                          <div className="text-[10px] font-mono text-ink-secondary sm:text-ink-muted">
                             @{leadStory.author.username}
                           </div>
                         </div>
@@ -328,7 +328,7 @@ export default function StoriesPage() {
 
                     {/* Bottom Meta */}
                     <div className="mt-8 pt-6 border-t border-hairline flex flex-wrap items-center justify-between gap-3 text-xs font-mono uppercase tracking-wider">
-                      <div className="flex items-center gap-3 text-ink-muted text-[11px]">
+                      <div className="flex items-center gap-3 text-ink-secondary text-[11px] sm:text-ink-muted">
                         <span>
                           {leadStory.published_at
                             ? new Date(leadStory.published_at).toLocaleDateString('en-US', {
@@ -341,7 +341,7 @@ export default function StoriesPage() {
                         {((leadStory.likes_count ?? 0) > 0 || (leadStory.comments_count ?? 0) > 0) && (
                           <>
                             <span>&bull;</span>
-                            <span className="text-ink-muted">
+                            <span className="text-ink-secondary sm:text-ink-muted">
                               {leadStory.likes_count ?? 0} {(leadStory.likes_count ?? 0) === 1 ? 'like' : 'likes'}
                               {(leadStory.comments_count ?? 0) > 0 && ` &bull; ${leadStory.comments_count} ${leadStory.comments_count === 1 ? 'note' : 'notes'}`}
                             </span>
@@ -414,7 +414,7 @@ export default function StoriesPage() {
                               </div>
 
                               {story.published_at && (
-                                <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted flex-shrink-0">
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-ink-secondary sm:text-ink-muted flex-shrink-0">
                                   {new Date(story.published_at).toLocaleDateString('en-US', {
                                     month: 'short',
                                     day: 'numeric',
