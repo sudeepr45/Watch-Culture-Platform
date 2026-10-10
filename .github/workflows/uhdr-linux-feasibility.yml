@@ -210,11 +210,17 @@ jobs:
                   "hasExif": field("exif-data") is not None,
               }
 
-          def jpeg_segments(path):
+          def jpeg_segments(path, allow_trailing_padding=False):
               data = path.read_bytes()
               if len(data) < 4 or data[:2] != b"\xff\xd8":
                   raise RuntimeError("Output does not start with JPEG SOI")
-              if data[-2:] != b"\xff\xd9":
+              if allow_trailing_padding:
+                  end = len(data)
+                  while end > 0 and data[end - 1] == 0:
+                      end -= 1
+                  if data[end - 2:end] != b"\xff\xd9":
+                      raise RuntimeError("Output does not contain JPEG EOI")
+              elif data[-2:] != b"\xff\xd9":
                   raise RuntimeError("Output does not end with JPEG EOI")
               segments = []
               offset = 2
@@ -338,7 +344,7 @@ jobs:
                   raise RuntimeError(f"Unexpected fixture dimensions: {source_header}")
               if source_header["width"] > MAX_SIDE or source_header["height"] > MAX_SIDE or source_header["width"] * source_header["height"] > MAX_PIXELS:
                   raise RuntimeError("Fixture exceeds dimension/pixel safety limits")
-              _, source_segments, _ = jpeg_segments(FIXTURE)
+              _, source_segments, _ = jpeg_segments(FIXTURE, allow_trailing_padding=True)
               source_metadata, _ = metadata_flags(source_segments)
               if not source_metadata["gainMap"] or not source_metadata["xmp"]:
                   raise RuntimeError(f"Fixture marker check did not confirm Ultra HDR metadata: {source_metadata}")
