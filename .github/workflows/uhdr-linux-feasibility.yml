@@ -2,6 +2,9 @@ name: Ultra HDR Linux feasibility
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/uhdr-linux-feasibility
 
 permissions:
   contents: read
