@@ -67,7 +67,7 @@ export default function Hero() {
             {/* Main Headline */}
             <h1
               id="hero-headline"
-              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[62px] xl:text-[72px] font-normal leading-[1.02] tracking-tight text-ink uppercase text-balance"
+              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[64px] xl:text-[74px] font-normal leading-[1.02] tracking-[-0.035em] text-ink uppercase text-balance"
             >
               Understand watches.
               <br />
@@ -107,30 +107,6 @@ export default function Hero() {
               </Button>
             </div>
 
-            {/* Secondary Brand Tagline */}
-            <div className="mt-4 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-              A WATCH MAGAZINE YOU CAN ACTUALLY PLAY WITH.
-            </div>
-
-            {/* Editorial Pillars: ARCHIVE / LEARN */}
-            <div className="mt-10 pt-6 border-t border-hairline grid grid-cols-2 gap-4 max-w-lg">
-              <div>
-                <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  01 // ARCHIVE
-                </span>
-                <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  Verified Archive
-                </span>
-              </div>
-              <div>
-                <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  02 // LEARN
-                </span>
-                <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  Watch 101 Lab
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Right Column: MOJEAN original instrument */}

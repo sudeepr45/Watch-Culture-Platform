@@ -8,25 +8,40 @@ import Hero from '../components/hero/Hero'
 import PhilosophyStrip from '../components/home/PhilosophyStrip'
 import { fetchPublishedWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
+import { isSafeWatchImageUrl } from '../utils/imageSafety'
+
+function getLocalDayKey(date = new Date()): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function selectWatchOfTheDay(watches: Watch[], dayKey: string): Watch | null {
+  if (watches.length === 0) return null
+
+  const [year, month, day] = dayKey.split('-').map(Number)
+  const localDayIndex = Math.floor(Date.UTC(year, month - 1, day) / 86_400_000)
+  const orderedWatches = [...watches].sort((a, b) => a.id.localeCompare(b.id))
+  const watchIndex = ((localDayIndex % orderedWatches.length) + orderedWatches.length) % orderedWatches.length
+
+  return orderedWatches[watchIndex]
+}
 
 export default function HomePage() {
   const { navigate } = useRouter()
   const [watches, setWatches] = useState<Watch[] | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isConfigured, setIsConfigured] = useState(true)
+  const [hasLoadError, setHasLoadError] = useState(false)
+  const [dayKey, setDayKey] = useState(() => getLocalDayKey())
 
   useEffect(() => {
     let isMounted = true
 
     fetchPublishedWatches().then((result) => {
       if (!isMounted) return
-      setIsConfigured(result.isConfigured)
-      if (result.error) {
-        setError(result.error.message)
-      } else {
-        setWatches(result.data)
-      }
+      setHasLoadError(Boolean(result.error))
+      setWatches(result.error ? [] : result.data || [])
       setLoading(false)
     })
 
@@ -35,9 +50,26 @@ export default function HomePage() {
     }
   }, [])
 
-  // Derive spotlight specimen and archive preview selection from verified published data
-  const spotlightWatch = watches && watches.length > 0 ? watches[0] : null
-  const previewWatches = watches && watches.length > 1 ? watches.slice(1, 4) : watches || []
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      const currentDay = getLocalDayKey()
+      setDayKey((previousDay) => (previousDay === currentDay ? previousDay : currentDay))
+    }, 60_000)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
+
+  const eligibleWatches = (watches || []).filter(
+    (watch) => watch.status === 'published' && isSafeWatchImageUrl(watch.image_url),
+  )
+  const verifiedWatches = eligibleWatches.filter(
+    (watch) => watch.image_verification_status === 'verified',
+  )
+  const spotlightWatch = selectWatchOfTheDay(
+    verifiedWatches.length > 0 ? verifiedWatches : eligibleWatches,
+    dayKey,
+  )
+  const previewWatches = (watches || []).filter((watch) => watch.id !== spotlightWatch?.id).slice(0, 3)
 
   return (
     <div className="flex flex-col">
@@ -46,48 +78,28 @@ export default function HomePage() {
 
       {/* 2. REAL WATCH SPECIMEN — TODAY'S WATCH SPOTLIGHT */}
       <section
-        aria-labelledby="spotlight-heading"
+        aria-labelledby="watch-of-the-day-heading"
         className="border-b border-hairline bg-warm-surface/30 py-16 sm:py-20 lg:py-24"
       >
         <Container>
-          <div className="flex items-center justify-between border-b border-hairline pb-4 mb-10 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-            <span>VERIFIED RECORD</span>
+          <div className="border-b border-hairline pb-6 mb-8 sm:mb-10">
+            <h2
+              id="watch-of-the-day-heading"
+              className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-ink uppercase"
+            >
+              WATCH OF THE DAY
+            </h2>
           </div>
 
           {loading ? (
-            <div className="border border-hairline bg-warm-white p-12 text-center max-w-xl mx-auto">
-              <div className="w-8 h-8 mx-auto mb-4 flex items-center justify-center border border-hairline bg-warm-surface">
-                <svg
-                  className="w-4 h-4 text-steel animate-spin"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="12" />
-                </svg>
-              </div>
-              <p className="text-xs font-mono tracking-widest text-ink-muted uppercase">
-                LOADING ARCHIVE SPECIMEN...
-              </p>
+            <div className="py-12 text-center text-sm font-light text-ink-muted">
+              Loading today&apos;s watch…
             </div>
-          ) : error || !spotlightWatch ? (
-            <div className="border border-hairline bg-warm-white p-8 sm:p-12 text-center max-w-xl mx-auto">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted mb-2">
-                {isConfigured ? 'DATABASE NOTICE' : 'STANDBY MODE'}
-              </div>
-              <h3 className="font-display text-xl uppercase tracking-tight text-ink">
-                Archive Specimen Standby
-              </h3>
-              <p className="mt-2 text-sm font-sans text-ink-secondary leading-relaxed font-light">
-                {error || 'Connect your Supabase database to stream verified watch records to the front page.'}
-              </p>
-              <div className="mt-6">
-                <Button variant="secondary" size="sm" onClick={() => navigate('/watches')}>
-                  BROWSE ARCHIVE INDEX &rarr;
-                </Button>
-              </div>
+          ) : hasLoadError || !spotlightWatch ? (
+            <div className="py-10 text-center text-sm font-light text-ink-secondary">
+              {hasLoadError
+                ? 'The watch archive is unavailable right now.'
+                : 'No published watch with a usable image is available today.'}
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center bg-warm-white border border-hairline p-6 sm:p-10 lg:p-12">
@@ -116,20 +128,15 @@ export default function HomePage() {
               {/* Right Column: Technical Dossier & Actions */}
               <div className="lg:col-span-6 flex flex-col justify-between">
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-ink-muted mb-2">
-                    TODAY&apos;S WATCH // ARCHIVAL DOSSIER
-                  </div>
-
                   <div className="text-xs font-mono uppercase tracking-[0.2em] text-ink-secondary">
                     {spotlightWatch.brand}
                   </div>
 
-                  <h2
-                    id="spotlight-heading"
-                    className="mt-1 font-display text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-ink uppercase"
+                  <h3
+                    className="mt-2 font-display text-2xl sm:text-3xl lg:text-4xl font-normal tracking-tight text-ink uppercase"
                   >
                     {spotlightWatch.model}
-                  </h2>
+                  </h3>
 
                   <div className="mt-1.5 text-xs font-mono text-ink-muted tracking-wider">
                     REF. {spotlightWatch.reference_number}
@@ -183,80 +190,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* 3. CORE ACTIONS — ARCHIVE & LEARNING */}
-      <section
-        aria-labelledby="core-actions-heading"
-        className="border-b border-hairline bg-warm-white py-16 sm:py-20 lg:py-24"
-      >
-        <Container>
-          <div className="border-b border-hairline pb-8 mb-12 sm:mb-16 max-w-4xl">
-            <h2
-              id="core-actions-heading"
-              className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-ink uppercase"
-            >
-              Browse the archive. Understand the craft.
-            </h2>
-            <p className="mt-3 text-base sm:text-lg text-ink-secondary font-light max-w-2xl leading-relaxed">
-              Browse verified watch records and learn how the mechanics work.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {/* Action 1: ARCHIVE */}
-            <div className="border border-hairline bg-warm-surface/20 p-8 sm:p-10 flex flex-col justify-between hover:border-ink hover:bg-warm-surface/40 transition-colors">
-              <div>
-                <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-4">
-                  01 // ARCHIVE
-                </div>
-                <h3 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
-                  Browse the Archive
-                </h3>
-                <p className="mt-3 text-sm text-ink-secondary font-light leading-relaxed">
-                  Search verified watch records and review case dimensions, calibre lineages, water resistance, and reference history.
-                </p>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-hairline">
-                <Link
-                  to="/watches"
-                  className="text-xs font-mono uppercase tracking-wider text-ink font-semibold inline-flex items-center gap-1.5 hover:text-neutral-700 transition-colors"
-                >
-                  <span>OPEN WATCH ARCHIVE</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Action 2: LEARN */}
-            <div className="border border-hairline bg-warm-surface/20 p-8 sm:p-10 flex flex-col justify-between hover:border-ink hover:bg-warm-surface/40 transition-colors">
-              <div>
-                <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-4">
-                  02 // LEARN
-                </div>
-                <h3 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
-                  Learn Mechanics
-                </h3>
-                <p className="mt-3 text-sm text-ink-secondary font-light leading-relaxed">
-                  Understand movements, escapements, power reserve, complications, and metallurgy through structured technical notebooks and interactive simulations.
-                </p>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-hairline">
-                <Link
-                  to="/watch-101"
-                  className="text-xs font-mono uppercase tracking-wider text-ink font-semibold inline-flex items-center gap-1.5 hover:text-neutral-700 transition-colors"
-                >
-                  <span>STUDY WATCH 101</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-          </div>
-        </Container>
-      </section>
-
-      {/* 4. VERIFIED ARCHIVE PREVIEW — REAL SUPABASE SPECIMENS */}
+      {/* 3. VERIFIED ARCHIVE PREVIEW — REAL SUPABASE SPECIMENS */}
       {previewWatches.length > 0 && (
         <section
           aria-labelledby="archive-preview-heading"
@@ -371,7 +305,7 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 5. TECHNICAL LEARNING — WATCH 101 */}
+      {/* 4. TECHNICAL LEARNING — WATCH 101 */}
       <section
         aria-labelledby="instruments-heading"
         className="border-b border-hairline bg-warm-white py-16 sm:py-20 lg:py-24"
@@ -392,11 +326,6 @@ export default function HomePage() {
           <div className="mx-auto max-w-3xl">
             <div className="border border-hairline bg-warm-surface/30 p-8 sm:p-12 flex flex-col justify-between hover:border-ink transition-colors">
               <div>
-                <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-4">
-                  <span>TECHNICAL NOTEBOOK</span>
-                  <span>LABORATORY</span>
-                </div>
-
                 <h3 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
                   Watch 101
                 </h3>
@@ -410,20 +339,17 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-hairline flex items-center justify-between">
+              <div className="mt-8 pt-6 border-t border-hairline">
                 <Button variant="secondary" size="sm" onClick={() => navigate('/watch-101')}>
                   START WITH WATCH 101 &rarr;
                 </Button>
-                <span className="text-[10px] font-mono tracking-widest text-ink-muted uppercase">
-                  SIMULATION LAB
-                </span>
               </div>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* 6. LIVING PROVENANCE & COMMUNITY — STORIES + MY WRIST */}
+      {/* 5. LIVING PROVENANCE & COMMUNITY — STORIES + MY WRIST */}
       <section
         aria-labelledby="community-heading"
         className="border-b border-hairline bg-warm-surface/10 py-16 sm:py-20 lg:py-24"
@@ -492,7 +418,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* 7. EDITORIAL MANIFESTO / PHILOSOPHY STRIP */}
+      {/* 6. EDITORIAL MANIFESTO / PHILOSOPHY STRIP */}
       <PhilosophyStrip />
     </div>
   )
