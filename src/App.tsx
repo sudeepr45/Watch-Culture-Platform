@@ -7,6 +7,7 @@ import Footer from './components/layout/Footer'
 import SoundNote from './components/common/SoundNote'
 import useScrollWindOnce from './hooks/useScrollWindOnce'
 import HomePage from './pages/HomePage'
+import ImageDiagnosticPage from './pages/ImageDiagnosticPage'
 import StoriesPage from './pages/StoriesPage'
 import BulletinPage from './pages/BulletinPage'
 import BulletinDetailPage from './pages/BulletinDetailPage'
@@ -51,6 +52,10 @@ function AppContent() {
   useScrollWindOnce(soundEnabled, pathname)
 
   const renderPage = () => {
+    if (pathname === '/image-diagnostic') {
+      return <ImageDiagnosticPage />
+    }
+
     // Curator routes — private, checked before public dynamic routes
     const curatorBulletinEditMatch = pathname.match(/^\/curator\/bulletins\/([^/]+)\/edit$/)
     if (curatorBulletinEditMatch) {
