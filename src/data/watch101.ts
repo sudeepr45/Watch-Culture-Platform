@@ -480,6 +480,28 @@ export const WATCH_101_TOPICS: Watch101Topic[] = [
     watchSlugs: ['hamilton-khaki-field-mechanical-h69439931', 'tissot-prx-powermatic-80-t1374071104100'],
     relatedTopicSlugs: ['case-size', 'case-materials'],
   },
+  {
+    id: 'm7',
+    slug: 'guilloche',
+    title: 'Guilloché',
+    category: 'materials',
+    shortDescription: 'Guilloché is a decorative technique that creates fine, repeating patterns on metal surfaces such as watch dials.',
+    readTimeMinutes: 2,
+    keywords: ['guilloché', 'guilloche', 'engine turning', 'engine-turned', 'rose engine', 'straight-line engine', 'watch dial'],
+    tenSecondAnswer:
+      'Guilloché is a decorative technique that creates fine, repeating patterns on metal surfaces such as watch dials.',
+    deeperExplanation: {
+      lead: 'Traditional guilloché is cut into metal with a hand-guided engine-turning machine.',
+      paragraphs: [
+        'The dial is secured to a turning machine. On a rose engine, a shaped rosette guides the workpiece as it rotates; the artisan turns the machine and guides the graver against the metal, controlling its pressure to cut fine, regular grooves.',
+        'A rose engine creates curved and intersecting lines, while a straight-line engine makes repeated linear patterns. The pattern comes from the machine’s movement and the craftsperson’s control of the cut.',
+        'A patterned dial is not automatically hand engine-turned. Some similar surfaces are stamped or machined. The maker’s description is the best guide to how a particular dial was made.',
+      ],
+    },
+    whyItMatters:
+      'A repeating pattern alone does not prove a dial was hand engine-turned; the maker’s description can clarify the process used.',
+    relatedTopicSlugs: [],
+  },
 
   // ==========================================
   // 4. WATCH LANGUAGE

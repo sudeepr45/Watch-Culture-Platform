@@ -34,6 +34,7 @@ import DisclaimerPage from './pages/DisclaimerPage'
 import CopyrightPage from './pages/CopyrightPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
+import PlatePage from './pages/PlatePage'
 
 function AppContent() {
   const { pathname } = useRouter()
@@ -123,6 +124,8 @@ function AppContent() {
         return <WatchesPage />
       case '/watch-101':
         return <Watch101Page />
+      case '/plate':
+        return <PlatePage />
       case '/profile':
         return <ProfilePage />
       case '/login':

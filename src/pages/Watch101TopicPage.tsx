@@ -8,6 +8,7 @@ import { fetchWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
 import InteractiveTopicWidget from '../components/watch101/InteractiveTopicWidget'
 import WatchImage from '../components/common/WatchImage'
+import GuillocheStory from '../components/watch101/GuillocheStory'
 
 interface Watch101TopicPageProps {
   slug: string
@@ -25,6 +26,12 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
   useEffect(() => {
     let isMounted = true
 
+    if (slug === 'guilloche') {
+      return () => {
+        isMounted = false
+      }
+    }
+
     fetchWatches().then((result) => {
       if (!isMounted) return
       if (result.data) {
@@ -36,7 +43,7 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [slug])
 
   // Derive matched watches for this topic
   const matchedWatches = useMemo(() => {
@@ -66,6 +73,10 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
         </Container>
       </div>
     )
+  }
+
+  if (topic.slug === 'guilloche') {
+    return <GuillocheStory topic={topic} prev={prev} next={next} />
   }
 
   return (
