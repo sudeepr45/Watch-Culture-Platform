@@ -8,7 +8,7 @@ import { useAuth } from '../../context/useAuth'
 const EDITORIAL_ITEMS = [
   { label: 'STORIES', to: '/stories' },
   { label: 'BULLETIN', to: '/bulletin' },
-  { label: 'WATCHES', to: '/watches' },
+  { label: 'THE REFERENCE', to: '/watches' },
 ]
 
 const EXPERIENCE_ITEMS = [

@@ -133,15 +133,11 @@ export default function WatchesPage() {
       <Container>
         {/* Archival Masthead */}
         <div className="border-b border-hairline pb-8 mb-10 sm:mb-14">
-          <div className="flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
-            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>VERIFIED REFERENCE ARCHIVE // SPECIMEN CATALOG</span>
-          </div>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
-            The Archive
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-ink uppercase">
+            THE REFERENCE
           </h1>
-          <p className="mt-3 text-base sm:text-lg text-ink-secondary max-w-3xl font-light leading-relaxed">
-            A living reference repository of historically significant and culturally definitive horological specimens. Indexed by mechanical specification and archival provenance.
+          <p className="mt-3 text-sm sm:text-base text-ink-secondary max-w-3xl font-light leading-relaxed">
+            Explore watch specifications, design, and history. MOJEAN is an editorial archive, not a retailer. Watches shown here are for research and reading, not for sale.
           </p>
         </div>
 
@@ -253,14 +249,11 @@ export default function WatchesPage() {
           <div>
             {/* Specification Filter Assembly */}
             <div className="mb-10 border border-hairline bg-warm-surface/25 p-5 sm:p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-hairline text-[10px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              <div className="flex items-center pb-4 border-b border-hairline text-[10px] font-mono tracking-[0.2em] uppercase text-ink-muted">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
                   <span className="text-ink font-semibold">SPECIFICATION ASSEMBLY // FILTERS</span>
                 </div>
-                <span>
-                  {filteredWatches.length} OF {watches.length} SPECIMENS MATCHING CRITERIA
-                </span>
               </div>
 
               {/* Search Query Input */}

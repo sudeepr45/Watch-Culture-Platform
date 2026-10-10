@@ -512,9 +512,8 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
         {/* Story Header */}
         <div className="max-w-4xl mx-auto border-b border-hairline pb-8 mb-10 sm:mb-12">
           {/* Section Indicator */}
-          <div className="flex items-center gap-2 mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-muted">
-            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>HUMAN EDITORIAL // WRIST RECORD</span>
+          <div className="mb-4 font-display text-sm sm:text-base italic tracking-wide text-ink-secondary">
+            A STORY FROM THE WRIST.
           </div>
 
           {/* Story Title */}
@@ -541,7 +540,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
                 <div className="text-sm font-semibold tracking-wide text-ink">
                   {authorName}
                 </div>
-                <div className="text-xs font-mono text-ink-muted">
+                <div className="text-xs sm:text-sm font-display italic tracking-wide text-ink-secondary">
                   {authorHandle}
                 </div>
               </div>
@@ -592,9 +591,8 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
 
         {/* Personal Story Narrative */}
         <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="mb-6 flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>THE OWNER&rsquo;S NOTE</span>
+          <div className="mb-6 font-display text-sm sm:text-base tracking-[0.12em] text-ink-secondary uppercase">
+            THE OWNER&rsquo;S NOTE
           </div>
 
           <div className="space-y-6 text-base sm:text-lg text-ink font-light leading-relaxed">
