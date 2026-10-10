@@ -36,7 +36,7 @@ export default function DisclaimerPage() {
                 <a href="#pricing" className="hover:text-ink transition-colors">03. PRICING &amp; VALUATION ESTIMATES</a>
                 <a href="#independence" className="hover:text-ink transition-colors">04. INDEPENDENCE &amp; NO AFFILIATION</a>
                 <a href="#trademarks" className="hover:text-ink transition-colors">05. TRADEMARK NOMINATIVE USE</a>
-                <a href="#evaluation-engine" className="hover:text-ink transition-colors">06. EVALUATIONS &amp; WORTH IT?</a>
+                <a href="#editorial-assessments" className="hover:text-ink transition-colors">06. EDITORIAL ASSESSMENTS</a>
                 <a href="#verification" className="hover:text-ink transition-colors">07. VERIFICATION ADVISORY</a>
               </nav>
             </div>
@@ -141,19 +141,18 @@ export default function DisclaimerPage() {
             <hr className="border-hairline" />
 
             {/* Section 06 */}
-            <section id="evaluation-engine" className="scroll-mt-28">
+            <section id="editorial-assessments" className="scroll-mt-28">
               <h2 className="font-display text-xl sm:text-2xl text-ink uppercase tracking-tight mb-4">
-                06. Evaluations, Battles &amp; &ldquo;WORTH IT?&rdquo; Scoring
+                06. Editorial Assessments &amp; No Advice
               </h2>
               <p className="mb-4">
-                The platform includes algorithmic and editorial evaluation mechanisms (such as the &ldquo;WORTH IT?&rdquo; Case
-                evaluation engine and head-to-head Battles):
+                Editorial commentary and technical assessments reflect the authors&apos; views and the sources available at publication.
+                Specifications and market information may change over time.
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>
-                  <strong className="text-ink font-medium">Deterministic Editorial Rubrics:</strong> Scores and verdicts are
-                  calculated based on structured qualitative and technical benchmarks (heritage, caliber architecture, daily wearability,
-                  and value retention).
+                  <strong className="text-ink font-medium">Editorial Judgment:</strong> Horological assessments are interpretive and
+                  may differ among collectors and researchers.
                 </li>
                 <li>
                   <strong className="text-ink font-medium">Not Financial or Investment Advice:</strong> Horological collecting carries

@@ -15,16 +15,12 @@ import StoryDetailPage from './pages/StoryDetailPage'
 import CreateStoryPage from './pages/CreateStoryPage'
 import WatchesPage from './pages/WatchesPage'
 import WatchDetailPage from './pages/WatchDetailPage'
-import BattlesPage from './pages/BattlesPage'
 import Watch101Page from './pages/Watch101Page'
 import Watch101TopicPage from './pages/Watch101TopicPage'
-import ExplorePage from './pages/ExplorePage'
 import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
 import UpdatePasswordPage from './pages/UpdatePasswordPage'
 import SearchPage from './pages/SearchPage'
-import RandomWatchPage from './pages/RandomWatchPage'
-import CasePage from './pages/CasePage'
 import CuratorPage from './pages/CuratorPage'
 import CuratorBulletinsPage from './pages/CuratorBulletinsPage'
 import CuratorNewBulletinPage from './pages/CuratorNewBulletinPage'
@@ -118,12 +114,6 @@ function AppContent() {
       return <Watch101TopicPage slug={slug} />
     }
 
-    // Dynamic The Case route: /case/:slug
-    if (pathname.startsWith('/case/') && pathname !== '/case') {
-      const slug = pathname.replace('/case/', '')
-      return <CasePage initialSlug={slug} />
-    }
-
     switch (pathname) {
       case '/bulletin':
         return <BulletinPage />
@@ -131,16 +121,8 @@ function AppContent() {
         return <StoriesPage />
       case '/watches':
         return <WatchesPage />
-      case '/battles':
-        return <BattlesPage />
       case '/watch-101':
         return <Watch101Page />
-      case '/explore':
-        return <ExplorePage />
-      case '/random':
-        return <RandomWatchPage />
-      case '/case':
-        return <CasePage />
       case '/profile':
         return <ProfilePage />
       case '/login':

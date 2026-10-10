@@ -268,35 +268,6 @@ export default function Watch101TopicPage({ slug }: Watch101TopicPageProps) {
             </div>
           )}
 
-          {/* Contextual Battle Suggestion Banner */}
-          {topic.battleSuggestion && (
-            <div className="border border-hairline bg-warm-surface/40 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
-              <div>
-                <div className="text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-1">
-                  SPECIFICATION COMPARISON // HEAD-TO-HEAD AUDIT
-                </div>
-                <h3 className="font-display text-xl sm:text-2xl font-normal text-ink uppercase">
-                  {topic.battleSuggestion.label}
-                </h3>
-                <p className="text-sm font-sans text-ink-secondary mt-1 max-w-xl leading-relaxed">
-                  {topic.battleSuggestion.prompt}
-                </p>
-              </div>
-
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() =>
-                  navigate(
-                    `/battles?w1=${topic.battleSuggestion?.watch1Slug}&w2=${topic.battleSuggestion?.watch2Slug}`
-                  )
-                }
-              >
-                COMPARE IN WATCH BATTLE &rarr;
-              </Button>
-            </div>
-          )}
-
           {/* Related Technical Records / Cross-References */}
           {topic.relatedTopicSlugs.length > 0 && (
             <div>

@@ -519,7 +519,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                 </div>
               </dl>
 
-              {/* Action Triggers: My Wrist Collection, Watch Battle, & Worth It */}
+              {/* My Wrist Collection Action */}
               <div className="mt-8 pt-6 border-t border-hairline flex flex-col gap-3">
                 {/* Collection Action */}
                 {!isAuthenticated ? (
@@ -568,23 +568,6 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                   </div>
                 )}
 
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => navigate(`/battles?w1=${watch.slug}`)}
-                  className="w-full"
-                >
-                  AUDIT IN WATCH BATTLE &rarr;
-                </Button>
-
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => navigate(`/case?slug=${watch.slug}`)}
-                  className="w-full"
-                >
-                  EXAMINE IN WORTH IT? &rarr;
-                </Button>
               </div>
             </div>
           </div>

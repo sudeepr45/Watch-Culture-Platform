@@ -118,11 +118,11 @@ export default function CommunityGuidelinesPage() {
             {/* Section 04 */}
             <section id="civil-debate" className="scroll-mt-28">
               <h2 className="font-display text-xl sm:text-2xl text-ink uppercase tracking-tight mb-4">
-                04. Respectful Criticism &amp; Battle Debates
+                04. Respectful Horological Debate
               </h2>
               <p className="mb-4">
-                Watch enthusiast culture thrives on passionate debate. Whether defending the merits of a high-beat automatic caliber
-                over Spring Drive or voting in head-to-head Battles:
+                Watch enthusiast culture thrives on passionate debate, from the merits of a high-beat automatic caliber over Spring Drive
+                to differences in finishing, water resistance, and price:
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>

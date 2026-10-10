@@ -113,7 +113,7 @@ export default function PrivacyPage() {
                 </li>
                 <li>
                   <strong className="text-ink font-medium">My Wrist &amp; Interactions:</strong> Timepieces logged in your collection,
-                  ownership status indicators, personal ownership notes, battle votes, story bookmarks, and comments.
+                  ownership status indicators, personal ownership notes, previously submitted watch votes, story bookmarks, and comments.
                 </li>
               </ul>
             </section>

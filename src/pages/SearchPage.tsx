@@ -130,7 +130,7 @@ export default function SearchPage() {
         <div className="border-b border-hairline pb-8 mb-12 sm:mb-16">
           <div className="flex items-center gap-2 mb-3 text-[10px] font-mono font-semibold uppercase tracking-[0.25em] text-ink-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-            <span>GLOBAL REPOSITORY &bull; SEARCH &amp; DISCOVERY</span>
+            <span>GLOBAL REPOSITORY &bull; SEARCH &amp; ARCHIVE</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-ink uppercase">
             Search Index
@@ -318,7 +318,7 @@ export default function SearchPage() {
               CENTRAL DIRECTORY // STANDBY
             </div>
             <h3 className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-ink uppercase">
-              Explore the Watch Index
+              Browse the Watch Index
             </h3>
             <p className="mt-3 text-xs sm:text-sm font-light text-ink-secondary leading-relaxed max-w-lg mx-auto">
               Type a brand name, reference code, movement calibre, case material, or horological concept to query the central archive.

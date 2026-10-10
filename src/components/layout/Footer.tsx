@@ -17,8 +17,7 @@ export default function Footer() {
                 <BrandLogo variant="horizontal" size="sm" />
               </Link>
               <p className="text-sm text-ink-secondary font-light leading-relaxed max-w-sm">
-                An independent horological journal, cultural archive, and deterministic exploration platform. Documenting
-                the mechanics, heritage, and human stories behind timepieces.
+                An independent horological journal and cultural archive documenting the mechanics, heritage, and human stories behind timepieces.
               </p>
             </div>
 
@@ -28,35 +27,25 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Cluster 1: Archive & Instruments (2 cols on lg) */}
+          {/* Cluster 1: Archive & Learning (2 cols on lg) */}
           <div className="lg:col-span-2">
             <div className="text-[10px] font-mono tracking-[0.25em] text-ink font-semibold uppercase mb-4">
-              ARCHIVE
+              ARCHIVE &amp; LEARNING
             </div>
             <ul className="space-y-2.5 text-xs font-mono tracking-wider">
-              <li>
-                <Link to="/explore" className="text-ink-secondary hover:text-ink transition-colors uppercase">
-                  Culture
-                </Link>
-              </li>
               <li>
                 <Link to="/stories" className="text-ink-secondary hover:text-ink transition-colors uppercase">
                   Stories
                 </Link>
               </li>
               <li>
+                <Link to="/bulletin" className="text-ink-secondary hover:text-ink transition-colors uppercase">
+                  Bulletin
+                </Link>
+              </li>
+              <li>
                 <Link to="/watches" className="text-ink-secondary hover:text-ink transition-colors uppercase">
                   Archive Index
-                </Link>
-              </li>
-              <li>
-                <Link to="/case" className="text-ink-secondary hover:text-ink transition-colors uppercase">
-                  Worth It?
-                </Link>
-              </li>
-              <li>
-                <Link to="/battles" className="text-ink-secondary hover:text-ink transition-colors uppercase">
-                  Battles
                 </Link>
               </li>
               <li>

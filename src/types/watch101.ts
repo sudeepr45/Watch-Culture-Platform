@@ -33,10 +33,4 @@ export interface Watch101Topic {
   interactiveType?: InteractiveWidgetType
   watchSlugs?: string[] // References into public.watches
   relatedTopicSlugs: string[]
-  battleSuggestion?: {
-    watch1Slug: string
-    watch2Slug: string
-    label: string
-    prompt: string
-  }
 }

@@ -595,7 +595,7 @@ export default function ProfilePage() {
                 Your Wrist Is Empty
               </h4>
               <p className="mt-3 text-xs sm:text-sm font-light text-ink-secondary leading-relaxed max-w-md mx-auto">
-                No timepieces cataloged in your personal record yet. Explore the Archive to curate the pieces you hold or admire.
+                No timepieces cataloged in your personal record yet. Browse the Archive to curate the pieces you hold or admire.
               </p>
               <div className="mt-6">
                 <Button
@@ -603,7 +603,7 @@ export default function ProfilePage() {
                   size="sm"
                   onClick={() => navigate('/watches')}
                 >
-                  EXPLORE ARCHIVE &rarr;
+                  BROWSE ARCHIVE &rarr;
                 </Button>
               </div>
             </div>
@@ -757,7 +757,7 @@ export default function ProfilePage() {
                 to="/stories"
                 className="inline-flex items-center text-xs font-mono text-ink font-semibold hover:text-neutral-700 uppercase tracking-wider transition-colors duration-200"
               >
-                DISCOVER STORIES &rarr;
+                READ STORIES &rarr;
               </Link>
             </div>
           ) : (

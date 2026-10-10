@@ -85,7 +85,7 @@ export default function HomePage() {
               </p>
               <div className="mt-6">
                 <Button variant="secondary" size="sm" onClick={() => navigate('/watches')}>
-                  EXPLORE ARCHIVE INDEX &rarr;
+                  BROWSE ARCHIVE INDEX &rarr;
                 </Button>
               </div>
             </div>
@@ -176,13 +176,6 @@ export default function HomePage() {
                     VIEW SPECIMEN DOSSIER &rarr;
                   </Button>
 
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => navigate(`/case/${spotlightWatch.slug}`)}
-                  >
-                    EXAMINE IN WORTH IT? &rarr;
-                  </Button>
                 </div>
               </div>
             </div>
@@ -190,7 +183,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* 3. THREE CORE ACTIONS — DISCOVER → LEARN → DECIDE */}
+      {/* 3. CORE ACTIONS — ARCHIVE & LEARNING */}
       <section
         aria-labelledby="core-actions-heading"
         className="border-b border-hairline bg-warm-white py-16 sm:py-20 lg:py-24"
@@ -201,25 +194,25 @@ export default function HomePage() {
               id="core-actions-heading"
               className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-ink uppercase"
             >
-              Discover. Understand. Decide.
+              Browse the archive. Understand the craft.
             </h2>
             <p className="mt-3 text-base sm:text-lg text-ink-secondary font-light max-w-2xl leading-relaxed">
-              Three interconnected pathways designed to take you from initial curiosity to deep mechanical understanding and rigorous buying decisions.
+              Browse verified watch records and learn how the mechanics work.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {/* Action 1: FIND */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            {/* Action 1: ARCHIVE */}
             <div className="border border-hairline bg-warm-surface/20 p-8 sm:p-10 flex flex-col justify-between hover:border-ink hover:bg-warm-surface/40 transition-colors">
               <div>
                 <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-4">
-                  01 // DISCOVER
+                  01 // ARCHIVE
                 </div>
                 <h3 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
-                  Find a Watch
+                  Browse the Archive
                 </h3>
                 <p className="mt-3 text-sm text-ink-secondary font-light leading-relaxed">
-                  Search and explore the verified archive. Compare case dimensions, calibre lineages, water resistance, and reference history.
+                  Search verified watch records and review case dimensions, calibre lineages, water resistance, and reference history.
                 </p>
               </div>
 
@@ -228,7 +221,7 @@ export default function HomePage() {
                   to="/watches"
                   className="text-xs font-mono uppercase tracking-wider text-ink font-semibold inline-flex items-center gap-1.5 hover:text-neutral-700 transition-colors"
                 >
-                  <span>EXPLORE ARCHIVE</span>
+                  <span>OPEN WATCH ARCHIVE</span>
                   <span>&rarr;</span>
                 </Link>
               </div>
@@ -259,30 +252,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Action 3: DECIDE */}
-            <div className="border border-hairline bg-warm-surface/20 p-8 sm:p-10 flex flex-col justify-between hover:border-ink hover:bg-warm-surface/40 transition-colors">
-              <div>
-                <div className="text-[10px] font-mono tracking-[0.25em] text-ink-muted uppercase mb-4">
-                  03 // DECIDE
-                </div>
-                <h3 className="font-display text-2xl font-normal uppercase tracking-tight text-ink">
-                  Decide with Facts
-                </h3>
-                <p className="mt-3 text-sm text-ink-secondary font-light leading-relaxed">
-                  Evaluate whether a watch is worth it for you. Examine five mechanical and ergonomic pillars scored against your personal wearing priorities.
-                </p>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-hairline">
-                <Link
-                  to="/case"
-                  className="text-xs font-mono uppercase tracking-wider text-ink font-semibold inline-flex items-center gap-1.5 hover:text-neutral-700 transition-colors"
-                >
-                  <span>EXAMINE IN WORTH IT?</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
           </div>
         </Container>
       </section>
@@ -402,7 +371,7 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 5. DECISION & KNOWLEDGE INSTRUMENTS — WORTH IT? & WATCH 101 */}
+      {/* 5. TECHNICAL LEARNING — WATCH 101 */}
       <section
         aria-labelledby="instruments-heading"
         className="border-b border-hairline bg-warm-white py-16 sm:py-20 lg:py-24"
@@ -413,46 +382,14 @@ export default function HomePage() {
               id="instruments-heading"
               className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-ink uppercase"
             >
-              Instruments for Critical Evaluation
+              Learn the Mechanics
             </h2>
             <p className="mt-3 text-base sm:text-lg text-ink-secondary font-light max-w-2xl leading-relaxed">
-              Move beyond subjective marketing. Examine technical mechanics and evaluate whether a timepiece delivers real substance.
+              Build a practical understanding of movements, materials, and watchmaking through interactive technical guides.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Instrument 1: WORTH IT? */}
-            <div className="border border-hairline bg-warm-surface/30 p-8 sm:p-12 flex flex-col justify-between hover:border-ink transition-colors">
-              <div>
-                <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-4">
-                  <span>DECISION INSTRUMENT</span>
-                  <span>EVALUATION ENGINE</span>
-                </div>
-
-                <h3 className="font-display text-2xl sm:text-3xl font-normal uppercase tracking-tight text-ink">
-                  WORTH IT?
-                </h3>
-
-                <div className="mt-2 text-xs font-mono uppercase tracking-wider text-ink font-medium">
-                  See the facts. Decide if it&apos;s worth it for you.
-                </div>
-
-                <p className="mt-4 text-sm text-ink-secondary font-light leading-relaxed">
-                  An objective decision instrument evaluating mechanical substance, calibre architecture, ergonomics, build materials, and heritage against your personal wearing priorities and budget tolerances.
-                </p>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-hairline flex items-center justify-between">
-                <Button variant="primary" size="sm" onClick={() => navigate('/case')}>
-                  OPEN WORTH IT? &rarr;
-                </Button>
-                <span className="text-[10px] font-mono tracking-widest text-ink-muted uppercase">
-                  5-PILLAR MODEL
-                </span>
-              </div>
-            </div>
-
-            {/* Instrument 2: WATCH 101 */}
+          <div className="mx-auto max-w-3xl">
             <div className="border border-hairline bg-warm-surface/30 p-8 sm:p-12 flex flex-col justify-between hover:border-ink transition-colors">
               <div>
                 <div className="flex items-center justify-between text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase mb-4">
@@ -469,7 +406,7 @@ export default function HomePage() {
                 </div>
 
                 <p className="mt-4 text-sm text-ink-secondary font-light leading-relaxed">
-                  Learn how mechanical watches function. Explore balance springs, escapements, power reserves, water depth standards, and complications through interactive simulations and ten-second takeaways.
+                  Learn how mechanical watches function through guides to balance springs, escapements, power reserves, water resistance, and complications.
                 </p>
               </div>
 

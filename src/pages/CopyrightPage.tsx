@@ -84,7 +84,7 @@ export default function CopyrightPage() {
               <ul className="list-disc pl-5 space-y-2">
                 <li><strong className="text-ink font-medium">Original Editorial Text:</strong> Articles, historical monographs, technical essays, and curated watch profiles authored by our editorial staff.</li>
                 <li><strong className="text-ink font-medium">UI &amp; Architectural Design:</strong> The distinctive layout, typography system, interactive widgets, color palettes, and visual design of the website.</li>
-                <li><strong className="text-ink font-medium">Source Code &amp; Logic:</strong> The underlying React application code, routing architecture, and proprietary evaluation algorithms (including the &ldquo;WORTH IT?&rdquo; Case engine).</li>
+                <li><strong className="text-ink font-medium">Source Code &amp; Logic:</strong> The underlying React application code, routing architecture, and proprietary evaluation algorithms.</li>
               </ul>
             </section>
 

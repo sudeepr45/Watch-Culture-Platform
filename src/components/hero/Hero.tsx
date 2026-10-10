@@ -71,12 +71,12 @@ export default function Hero() {
             >
               Understand watches.
               <br />
-              Decide about them.
+              Read their stories.
             </h1>
 
             {/* Supporting Copy */}
             <p className="mt-6 sm:mt-7 text-base sm:text-lg md:text-xl text-ink-secondary font-normal leading-relaxed max-w-xl">
-              MOJEAN is a verified archive of watches with guides, stories, and tools that help people find, understand, compare, and evaluate watches.
+              MOJEAN is a verified watch archive with technical guides and stories about the mechanics, design, and history of timepieces.
             </p>
 
             {/* Call to Action */}
@@ -95,7 +95,7 @@ export default function Hero() {
                   </span>
                 }
               >
-                EXPLORE WATCHES
+                BROWSE WATCH ARCHIVE
               </Button>
 
               <Button
@@ -112,11 +112,11 @@ export default function Hero() {
               A WATCH MAGAZINE YOU CAN ACTUALLY PLAY WITH.
             </div>
 
-            {/* Editorial Pillars: FIND / LEARN / DECIDE */}
-            <div className="mt-10 pt-6 border-t border-hairline grid grid-cols-3 gap-4 max-w-lg">
+            {/* Editorial Pillars: ARCHIVE / LEARN */}
+            <div className="mt-10 pt-6 border-t border-hairline grid grid-cols-2 gap-4 max-w-lg">
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  01 // FIND
+                  01 // ARCHIVE
                 </span>
                 <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
                   Verified Archive
@@ -128,14 +128,6 @@ export default function Hero() {
                 </span>
                 <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
                   Watch 101 Lab
-                </span>
-              </div>
-              <div>
-                <span className="block text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-                  03 // DECIDE
-                </span>
-                <span className="mt-0.5 block text-xs font-semibold tracking-wider text-ink uppercase">
-                  WORTH IT? Tool
                 </span>
               </div>
             </div>

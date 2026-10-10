@@ -6,17 +6,13 @@ import { useRouter } from '../../router/useRouter'
 import { useAuth } from '../../context/useAuth'
 
 const EDITORIAL_ITEMS = [
-  { label: 'EXPLORE', to: '/explore' },
   { label: 'STORIES', to: '/stories' },
   { label: 'BULLETIN', to: '/bulletin' },
   { label: 'WATCHES', to: '/watches' },
 ]
 
 const EXPERIENCE_ITEMS = [
-  { label: 'WORTH IT?', to: '/case' },
-  { label: 'DISCOVERY', to: '/random' },
   { label: 'WATCH 101', to: '/watch-101' },
-  { label: 'COMPARE', to: '/battles' },
 ]
 
 export default function Navbar() {
@@ -78,10 +74,7 @@ export default function Navbar() {
             {/* EDITORIAL CLUSTER */}
             <div className="flex items-center gap-4 xl:gap-6">
               {EDITORIAL_ITEMS.map((item) => {
-                const isActive =
-                  item.to === '/explore'
-                    ? pathname === '/explore'
-                    : pathname.startsWith(item.to)
+                const isActive = pathname.startsWith(item.to)
                 return (
                   <Link
                     key={item.label}
@@ -116,10 +109,7 @@ export default function Navbar() {
             {/* EXPERIENCES CLUSTER */}
             <div className="flex items-center gap-4 xl:gap-6">
               {EXPERIENCE_ITEMS.map((item) => {
-                const isActive =
-                  item.to === '/random'
-                    ? pathname === '/random'
-                    : pathname.startsWith(item.to)
+                const isActive = pathname.startsWith(item.to)
                 return (
                   <Link
                     key={item.label}
@@ -296,10 +286,7 @@ export default function Navbar() {
                 </div>
                 <div className="flex flex-col gap-1">
                   {EDITORIAL_ITEMS.map((item) => {
-                    const isActive =
-                      item.to === '/explore'
-                        ? pathname === '/explore'
-                        : pathname.startsWith(item.to)
+                    const isActive = pathname.startsWith(item.to)
                     return (
                       <Link
                         key={item.label}
@@ -325,10 +312,7 @@ export default function Navbar() {
                 </div>
                 <div className="flex flex-col gap-1">
                   {EXPERIENCE_ITEMS.map((item) => {
-                    const isActive =
-                      item.to === '/random'
-                        ? pathname === '/random'
-                        : pathname.startsWith(item.to)
+                    const isActive = pathname.startsWith(item.to)
                     return (
                       <Link
                         key={item.label}

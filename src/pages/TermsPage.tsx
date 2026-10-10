@@ -89,8 +89,7 @@ export default function TermsPage() {
                 03. User-Generated Content &amp; Licensing
               </h2>
               <p className="mb-4">
-                Our community features allow collectors and enthusiasts to author watch stories, write comments, record wrist collections,
-                and participate in head-to-head battle votes.
+                Our community features allow collectors and enthusiasts to author watch stories, write comments, and record wrist collections.
               </p>
               <ul className="list-disc pl-5 space-y-2 mb-4">
                 <li>
@@ -182,8 +181,8 @@ export default function TermsPage() {
               </p>
               <p className="mb-4">
                 The Platform is not an investment advisor, financial analyst, certified horological appraisal authority, or official
-                retailer. Editorial evaluations, community ratings, and &ldquo;WORTH IT?&rdquo; scores reflect deterministic editorial
-                rubrics and enthusiast opinion, not financial or investment recommendations.
+                retailer. Editorial assessments and community discussions are provided for cultural and educational reference, not as
+                financial or investment recommendations.
               </p>
               <p>
                 See our complete <Link to="/disclaimer" className="text-ink underline font-medium hover:text-steel">Watch Information &amp; Content Disclaimer</Link>.

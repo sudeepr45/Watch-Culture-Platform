@@ -5,25 +5,11 @@ import { Link } from '../router'
 export default function AboutPage() {
   const pillars = [
     {
-      label: 'DISCOVER',
-      title: 'Cultural Architecture',
-      description: 'Examining the design movements, historical contexts, and artistic philosophies that define mechanical watchmaking across eras.',
-      linkText: 'Explore Culture',
-      linkTo: '/explore',
-    },
-    {
       label: 'INTERACT',
       title: 'Watch 101 Instruments',
       description: 'Hands-on interactive learning tools—exploring power reserves, GMT bezel logic, water resistance ratings, and chronograph mechanics in real time.',
       linkText: 'Launch Instruments',
       linkTo: '/watch-101',
-    },
-    {
-      label: 'COMPARE',
-      title: 'Battles & The Case',
-      description: 'Head-to-head community audits and the deterministic "WORTH IT?" evaluation engine assessing heritage, finishing, daily wear, and value retention.',
-      linkText: 'View Battles',
-      linkTo: '/battles',
     },
     {
       label: 'CREATE & COLLECT',
@@ -42,7 +28,7 @@ export default function AboutPage() {
           <SectionHeading
             label="ORIGIN &bull; MANIFESTO &bull; PURPOSE"
             title="A watch magazine you can actually play with."
-            description="MOERI & JEANNERET is an independent horological journal and cultural archive built to explore, examine, and celebrate the mechanics of time."
+            description="MOERI & JEANNERET is an independent horological journal and cultural archive built to study and celebrate the mechanics of time."
           />
           <div className="mt-6 flex items-center gap-4 text-xs font-mono tracking-widest text-ink-muted uppercase">
             <span>VOL. I // FOUNDATION</span>
@@ -72,27 +58,21 @@ export default function AboutPage() {
 
           <div className="lg:col-span-7 space-y-6 text-sm sm:text-base text-ink-secondary leading-relaxed font-normal">
             <p>
-              Horology is a singular intersection of engineering, art, human history, and personal memory. Yet exploring
-              watches online often feels either flatly commercial or overwhelmingly academic.
+              Horology is a singular intersection of engineering, art, human history, and personal memory. Yet learning
+              about watches online often feels either flatly commercial or overwhelmingly academic.
             </p>
             <p>
               MOERI &amp; JEANNERET bridges that divide by pairing rigorous editorial criticism with deterministic,
               interactive tools. We think of it as an open archive: a space where you can read an essay on dial balance,
-              interactively test how a dual-time GMT hand rotates around a 24-hour bezel, evaluate whether an iconic reference
-              justifies its secondary market premium, and document your own wrist journey alongside fellow collectors.
+              interactively test how a dual-time GMT hand rotates around a 24-hour bezel, and document your own wrist journey
+              alongside fellow collectors.
             </p>
             <p>
-              <strong className="text-ink font-medium">The Exploration Cycle:</strong> Our architecture is built around a natural
+              <strong className="text-ink font-medium">The Editorial Cycle:</strong> Our architecture is built around a natural
               rhythm of engagement:
             </p>
             <div className="p-4 bg-warm-surface/40 border border-hairline text-xs font-mono text-ink tracking-wider uppercase flex flex-wrap items-center gap-2">
-              <span>Discover</span>
-              <span className="text-ink-muted">&rarr;</span>
               <span>Interact</span>
-              <span className="text-ink-muted">&rarr;</span>
-              <span>Compare</span>
-              <span className="text-ink-muted">&rarr;</span>
-              <span>Explore</span>
               <span className="text-ink-muted">&rarr;</span>
               <span>Learn</span>
               <span className="text-ink-muted">&rarr;</span>

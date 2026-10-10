@@ -58,12 +58,6 @@ export const WATCH_101_TOPICS: Watch101Topic[] = [
     interactiveType: 'automatic-vs-quartz',
     watchSlugs: ['seiko-5-sports-srpd55', 'casio-g-shock-ga-2100-1a1', 'cartier-tank-must-wsta0041'],
     relatedTopicSlugs: ['mechanical-watches', 'power-reserve', 'frequency-beat-rate', 'rotor'],
-    battleSuggestion: {
-      watch1Slug: 'seiko-5-sports-srpd55',
-      watch2Slug: 'casio-g-shock-ga-2100-1a1',
-      label: 'Everyday Automatic vs Cult Digital/Analog Quartz',
-      prompt: 'Compare an accessible automatic mechanical workhorse against the world\'s most resilient carbon quartz piece.',
-    },
   },
   {
     id: 'f2',
@@ -91,12 +85,6 @@ export const WATCH_101_TOPICS: Watch101Topic[] = [
       'Understanding mechanical horology shifts watches from being utilitarian time-tellers into wearable kinetic art. When you wind a manual watch like the Hamilton Khaki or Omega Speedmaster, you are personally powering a physical machine that has zero digital dependencies.',
     watchSlugs: ['hamilton-khaki-field-mechanical-h69439931', 'tudor-black-bay-58-m79030n-0001', 'omega-speedmaster-professional-moonwatch-31030425001002'],
     relatedTopicSlugs: ['automatic-vs-quartz', 'what-is-a-calibre', 'power-reserve', 'what-is-an-escapement'],
-    battleSuggestion: {
-      watch1Slug: 'hamilton-khaki-field-mechanical-h69439931',
-      watch2Slug: 'tudor-black-bay-58-m79030n-0001',
-      label: 'Manual-Wind Military Field vs Automatic Luxury Diver',
-      prompt: 'Put pure hand-wound field heritage up against a certified chronometer automatic dive watch.',
-    },
   },
   {
     id: 'f3',
@@ -407,12 +395,6 @@ export const WATCH_101_TOPICS: Watch101Topic[] = [
     interactiveType: 'water-resistance',
     watchSlugs: ['rolex-submariner-date-126610ln', 'tudor-black-bay-58-m79030n-0001', 'cartier-tank-must-wsta0041'],
     relatedTopicSlugs: ['crown', 'sapphire-crystal', 'case-materials'],
-    battleSuggestion: {
-      watch1Slug: 'rolex-submariner-date-126610ln',
-      watch2Slug: 'cartier-tank-must-wsta0041',
-      label: '300m Subsea Vault vs 30m Parisian Dress Watch',
-      prompt: 'Compare the ultimate 300-meter deep-sea tool against a pure 30-meter high-society design icon.',
-    },
   },
   {
     id: 'm4',

@@ -172,7 +172,7 @@ export default function LoginPage({ initialMode = 'login' }: LoginPageProps) {
             {recoveryMode
               ? 'Enter your account email and we will send a link to update your password.'
               : mode === 'signup'
-              ? 'Register your collector profile to document your personal wrist archive and participate in head-to-head audits.'
+              ? 'Register your collector profile to document your personal wrist archive and share your watch stories.'
               : 'Sign in to access your collector dossier, profile specifications, and saved bookmarks.'}
           </p>
         </div>
