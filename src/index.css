@@ -36,6 +36,10 @@
     background-color: var(--color-warm-white);
     color: var(--color-ink);
   }
+
+  img {
+    dynamic-range-limit: standard;
+  }
 }
 
 @keyframes assembly-left {
