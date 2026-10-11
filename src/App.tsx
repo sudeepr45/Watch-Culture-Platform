@@ -35,6 +35,7 @@ import CopyrightPage from './pages/CopyrightPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import PlatePage from './pages/PlatePage'
+import PlateIndexPage from './pages/PlateIndexPage'
 
 function AppContent() {
   const { pathname } = useRouter()
@@ -46,7 +47,7 @@ function AppContent() {
     }
   })
 
-  useScrollWindOnce(soundEnabled, pathname)
+  const { playbackIssue, retryWindSound } = useScrollWindOnce(soundEnabled, pathname)
 
   const renderPage = () => {
     if (pathname === '/image-diagnostic') {
@@ -126,6 +127,8 @@ function AppContent() {
         return <Watch101Page />
       case '/plate':
         return <PlatePage />
+      case '/plates':
+        return <PlateIndexPage />
       case '/profile':
         return <ProfilePage />
       case '/login':
@@ -167,7 +170,7 @@ function AppContent() {
       {/* Comprehensive Editorial Footer */}
       <Footer />
 
-      <SoundNote soundEnabled={soundEnabled} onSoundChange={setSoundEnabled} />
+      <SoundNote soundEnabled={soundEnabled} onSoundChange={setSoundEnabled} playbackIssue={pathname === '/' ? playbackIssue : null} onRetry={retryWindSound} />
     </div>
   )
 }

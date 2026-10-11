@@ -1,13 +1,40 @@
-import { useState, type KeyboardEvent } from 'react'
+import { useEffect, useState, type KeyboardEvent } from 'react'
 import { Link } from '../../router'
-import { dateKey, longDate, plateNumber } from '../../lib/plate'
-import PlateCanvas from './PlateCanvas'
+import { dateKey, longDate } from '../../lib/plate'
+import { plateForDateKey } from '../../lib/plateDaily'
+import PlateIndexCanvas from './PlateIndexCanvas'
+
+const REVEAL_DURATION_MS = 42 * 24
 
 export default function PlateHero() {
   const todayKey = dateKey(new Date())
-  const number = plateNumber(todayKey)
+  const plate = plateForDateKey(todayKey)
+  const number = plate.id
   const date = longDate(todayKey)
   const [replayToken, setReplayToken] = useState(0)
+  const [revealed, setRevealed] = useState(100)
+
+  useEffect(() => {
+    let animationFrame = 0
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+
+    if (reducedMotion) {
+      animationFrame = requestAnimationFrame(() => setRevealed(100))
+    } else {
+      animationFrame = requestAnimationFrame(() => {
+        setRevealed(0)
+        const startedAt = performance.now()
+        const reveal = (now: number) => {
+          const progress = Math.min(100, ((now - startedAt) / REVEAL_DURATION_MS) * 100)
+          setRevealed(progress)
+          if (progress < 100) animationFrame = requestAnimationFrame(reveal)
+        }
+        animationFrame = requestAnimationFrame(reveal)
+      })
+    }
+
+    return () => cancelAnimationFrame(animationFrame)
+  }, [replayToken, todayKey])
 
   const handleSurfaceKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -19,25 +46,26 @@ export default function PlateHero() {
 
   return (
     <figure className="mx-auto w-full max-w-[460px] border border-hairline bg-warm-white p-4 sm:p-5 lg:max-w-none">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono uppercase tracking-[0.14em] text-ink-muted">
-        <span>{number ? `Plate No. ${number}` : 'Plate'}</span>
-        <span>{date}</span>
+      <div className="mb-3 border-b border-hairline pb-3">
+        <span className="font-display text-base font-semibold uppercase tracking-[0.08em] text-ink sm:text-lg">{`Plate No. ${number}`}</span>
       </div>
 
       <div
         role="button"
         tabIndex={0}
-        aria-label={`Plate ${number ?? ''} for ${date}. Activate to replay the pattern.`}
+        aria-label={`Plate ${number}, ${plate.name}, for ${date}. Activate to replay the pattern.`}
         onClick={() => setReplayToken((token) => token + 1)}
         onKeyDown={handleSurfaceKeyDown}
         className="cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
       >
-        <PlateCanvas
-          dateKey={todayKey}
-          label={`Plate ${number ?? ''} for ${date}`}
-          replayToken={replayToken}
-          className="w-full border border-hairline bg-warm-white"
-        />
+        <div className="w-full overflow-hidden border border-hairline bg-warm-white">
+          <div
+            aria-hidden="true"
+            style={{ clipPath: `inset(0 ${100 - revealed}% 0 0)` }}
+          >
+            <PlateIndexCanvas plate={plate} size={420} label={`Plate ${number}, ${plate.name}, ${date}`} />
+          </div>
+        </div>
       </div>
 
       <figcaption className="mt-4">

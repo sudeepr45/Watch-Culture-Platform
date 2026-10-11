@@ -20,16 +20,11 @@ export default function Footer() {
                 An independent horological journal and cultural archive documenting the mechanics, heritage, and human stories behind timepieces.
               </p>
             </div>
-
-            <div className="mt-6 pt-4 flex items-center gap-3 text-[10px] font-mono tracking-[0.2em] text-ink-muted uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-steel" aria-hidden="true" />
-              <span>INDEPENDENT ARCHIVE &bull; VOL. I</span>
-            </div>
           </div>
 
           {/* Cluster 1: Archive & Learning (2 cols on lg) */}
           <div className="lg:col-span-2">
-            <div className="text-[10px] font-mono tracking-[0.25em] text-ink font-semibold uppercase mb-4">
+            <div className="text-xs font-mono tracking-[0.25em] text-ink font-semibold uppercase mb-4">
               ARCHIVE &amp; LEARNING
             </div>
             <ul className="space-y-2.5 text-xs font-mono tracking-wider">
@@ -58,8 +53,8 @@ export default function Footer() {
 
           {/* Cluster 2: Platform & Community (2 cols on lg) */}
           <div className="lg:col-span-2">
-            <div className="text-[10px] font-mono tracking-[0.25em] text-ink font-semibold uppercase mb-4">
-              PLATFORM
+            <div className="text-xs font-mono tracking-[0.25em] text-ink font-semibold uppercase mb-4">
+              MOJEAN
             </div>
             <ul className="space-y-2.5 text-xs font-mono tracking-wider">
               <li>
@@ -92,7 +87,7 @@ export default function Footer() {
 
           {/* Cluster 3: Legal & Trust (3 cols on lg) */}
           <div className="lg:col-span-3">
-            <div className="text-[10px] font-mono tracking-[0.25em] text-ink font-semibold uppercase mb-4">
+            <div className="text-xs font-mono tracking-[0.25em] text-ink font-semibold uppercase mb-4">
               LEGAL &amp; TRUST
             </div>
             <ul className="space-y-2.5 text-xs font-mono tracking-wider">
@@ -121,7 +116,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Colophon Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono tracking-[0.16em] text-ink-muted uppercase">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono tracking-[0.16em] text-ink-muted uppercase">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-ink">MOERI &amp; JEANNERET</span>
             <span>&bull;</span>

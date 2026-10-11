@@ -44,7 +44,7 @@ export function plateNumber(k: string): number | null {
 }
 
 function mulberry32(seed: number) {
-  let a = seed | 0;
+  const a = seed | 0;
   return () => {
     let t = (a + 0x6d2b79f5) | 0;
     t = Math.imul(t ^ (t >>> 15), 1 | t);

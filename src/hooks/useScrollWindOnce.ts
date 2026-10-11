@@ -1,17 +1,18 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import useWindSound from './useWindSound'
 
 export default function useScrollWindOnce(enabled: boolean, pathname: string) {
-  const playWindSound = useWindSound()
+  const { playWindSound, prepareWindSound, stopWindSound, playbackIssue } = useWindSound()
   const expectedDestination = useRef<'top' | 'bottom' | null>(null)
 
   useEffect(() => {
-    if (pathname !== '/') {
+    if (pathname !== '/' || !enabled) {
       expectedDestination.current = null
+      stopWindSound()
       return
     }
 
-    if (!enabled) return
+    prepareWindSound()
 
     const tolerance = 2
     const getPagePosition = () => {
@@ -43,14 +44,20 @@ export default function useScrollWindOnce(enabled: boolean, pathname: string) {
 
       if (destination === 'bottom' && atBottom) {
         expectedDestination.current = 'top'
-        playWindSound()
+        void playWindSound()
       } else if (destination === 'top' && atTop) {
         expectedDestination.current = 'bottom'
-        playWindSound()
+        void playWindSound()
       }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [enabled, pathname, playWindSound, prepareWindSound, stopWindSound])
+
+  const retryWindSound = useCallback(() => {
+    if (enabled && pathname === '/') void playWindSound(true)
   }, [enabled, pathname, playWindSound])
+
+  return { playbackIssue, retryWindSound }
 }

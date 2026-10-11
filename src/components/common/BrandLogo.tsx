@@ -20,7 +20,6 @@ export default function BrandLogo({
   interactiveWind = false,
 }: BrandLogoProps) {
   const [shouldAnimate, setShouldAnimate] = useState(false)
-  const [autoWind, setAutoWind] = useState(false)
 
   useEffect(() => {
     if (!animateAssembly) return
@@ -52,29 +51,6 @@ export default function BrandLogo({
     }
   }, [animateAssembly])
 
-  useEffect(() => {
-    if (
-      !interactiveWind ||
-      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    ) {
-      return
-    }
-
-    let resetTimer: number | null = null
-    const windInterval = window.setInterval(() => {
-      setAutoWind(true)
-      resetTimer = window.setTimeout(() => {
-        setAutoWind(false)
-        resetTimer = null
-      }, 500)
-    }, 20_000)
-
-    return () => {
-      window.clearInterval(windInterval)
-      if (resetTimer !== null) window.clearTimeout(resetTimer)
-    }
-  }, [interactiveWind])
-
   // 1. Stacked Editorial Variant
   if (variant === 'stacked') {
     return (
@@ -84,7 +60,7 @@ export default function BrandLogo({
           <span
             className={`my-1.5 text-[0.8em] font-light tracking-[0.1em] text-ink-secondary select-none inline-block origin-center ${
               interactiveWind
-                ? 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 motion-reduce:group-hover:rotate-0'
+                ? 'rotate-90'
                 : ''
             } ${shouldAnimate ? 'animate-assembly-center' : ''}`}
             aria-hidden="true"
@@ -117,7 +93,7 @@ export default function BrandLogo({
         <span
           className={`mx-1 text-[0.78em] font-light text-ink-secondary select-none inline-block origin-center ${
             interactiveWind
-              ? 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 motion-reduce:group-hover:rotate-0'
+              ? 'rotate-90'
               : ''
           }`}
           aria-hidden="true"
@@ -159,11 +135,11 @@ export default function BrandLogo({
           MOERI
         </span>
         <span
-          className={`font-light text-ink-secondary select-none inline-block origin-center ${currentSize.amp} ${
+          className={`font-light text-[#8A102A] select-none inline-block origin-center ${currentSize.amp} ${
             interactiveWind
-              ? 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 motion-reduce:group-hover:rotate-0'
+              ? 'rotate-0 animate-wordmark-ampersand'
               : ''
-          } ${autoWind ? 'rotate-90 motion-reduce:rotate-0' : ''} ${
+          } ${
             shouldAnimate ? 'animate-assembly-center' : ''
           }`}
           aria-hidden="true"

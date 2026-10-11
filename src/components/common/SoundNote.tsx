@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { WindPlaybackIssue } from '../../hooks/useWindSound'
 
 type SoundChoice = 'enabled' | 'declined' | null
 
@@ -14,9 +15,11 @@ function readSoundChoice(): SoundChoice {
 interface SoundNoteProps {
   soundEnabled: boolean
   onSoundChange: (enabled: boolean) => void
+  playbackIssue: WindPlaybackIssue
+  onRetry: () => void
 }
 
-export default function SoundNote({ soundEnabled, onSoundChange }: SoundNoteProps) {
+export default function SoundNote({ soundEnabled, onSoundChange, playbackIssue, onRetry }: SoundNoteProps) {
   const [choice, setChoice] = useState<SoundChoice>(readSoundChoice)
   const [visible, setVisible] = useState(false)
 
@@ -40,17 +43,31 @@ export default function SoundNote({ soundEnabled, onSoundChange }: SoundNoteProp
 
   if (choice !== null) {
     return (
-      <button
-        type="button"
-        role="switch"
-        aria-label="Winding sound"
-        aria-checked={soundEnabled}
-        onClick={() => choose(soundEnabled ? 'declined' : 'enabled')}
-        className="fixed bottom-4 left-4 z-[60] inline-flex items-center gap-3 border border-hairline bg-warm-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:bottom-6 sm:left-6"
-      >
-        <span>Winding sound</span>
-        <span className="font-semibold text-ink-secondary">{soundEnabled ? 'On' : 'Off'}</span>
-      </button>
+      <>
+        <button
+          type="button"
+          role="switch"
+          aria-label="Winding sound"
+          aria-checked={soundEnabled}
+          onClick={() => choose(soundEnabled ? 'declined' : 'enabled')}
+          className="fixed bottom-4 left-4 z-[60] inline-flex items-center gap-3 border border-hairline bg-warm-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:bottom-6 sm:left-6"
+        >
+          <span>Winding sound</span>
+          <span className="font-semibold text-ink-secondary">{soundEnabled ? 'On' : 'Off'}</span>
+        </button>
+        {soundEnabled && playbackIssue && (
+          <div role="status" className="fixed bottom-[4.25rem] left-4 z-[60] max-w-[320px] border border-hairline bg-warm-white p-3 font-mono text-[10px] uppercase tracking-[0.1em] text-ink sm:bottom-[4.75rem] sm:left-6">
+            <p>{playbackIssue === 'blocked' ? 'Your browser blocked playback.' : 'Sound could not load.'}</p>
+            <button
+              type="button"
+              onClick={onRetry}
+              className="mt-2 font-semibold underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            >
+              Retry sound
+            </button>
+          </div>
+        )}
+      </>
     )
   }
 

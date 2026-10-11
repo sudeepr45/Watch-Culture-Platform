@@ -111,3 +111,20 @@
   }
 }
 
+@keyframes wordmark-ampersand-cycle {
+  0%,
+  20%,
+  100% {
+    rotate: 0deg;
+  }
+
+  10% {
+    rotate: 180deg;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-wordmark-ampersand {
+    animation: wordmark-ampersand-cycle 10s ease-in-out infinite;
+  }
+}
