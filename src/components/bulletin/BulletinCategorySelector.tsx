@@ -53,3 +53,16 @@ export function BulletinCategoryLabels({ categories }: { categories: readonly st
     </span>
   )
 }
+
+export function BulletinCategoryDescription({
+  categories,
+  description,
+}: {
+  categories: readonly string[]
+  description: string | null
+}) {
+  const text = description?.trim()
+  if (!categories.includes('Something Else') || !text) return null
+
+  return <p className="mt-1 max-w-3xl text-xs leading-relaxed text-ink-secondary">{text}</p>
+}

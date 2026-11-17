@@ -40,6 +40,7 @@ export interface Bulletin {
   /** First category, kept for compatibility with older clients. */
   category: BulletinCategory
   categories: BulletinCategory[]
+  something_else_description: string | null
   cover_image: string | null
   author_id: string
   related_watch_id: string | null
@@ -90,6 +91,7 @@ const BULLETIN_SELECT_FIELDS = `
   era,
   category,
   categories,
+  something_else_description,
   cover_image,
   author_id,
   related_watch_id,
@@ -121,6 +123,7 @@ function normalizeBulletinWithRelatedWatch(
     ...row,
     categories: normalizeCategories(row.categories, row.category),
     category: normalizeCategories(row.categories, row.category)[0],
+    something_else_description: row.something_else_description ?? null,
     related_watch: watch,
   }
 }

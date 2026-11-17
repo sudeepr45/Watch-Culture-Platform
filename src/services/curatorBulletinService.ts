@@ -21,6 +21,7 @@ export interface CreateBulletinInput {
   body: string
   era: BulletinEra
   categories: BulletinCategory[]
+  something_else_description?: string | null
   slug: string
   cover_image?: string | null
   related_watch_id?: string | null
@@ -32,6 +33,7 @@ export interface UpdateBulletinInput {
   body?: string
   era?: BulletinEra
   categories?: BulletinCategory[]
+  something_else_description?: string | null
   /** Compatibility for older callers that still submit one category. */
   category?: BulletinCategory
   slug?: string
@@ -146,6 +148,7 @@ const BULLETIN_DETAIL_FIELDS = `
   era,
   category,
   categories,
+  something_else_description,
   cover_image,
   author_id,
   related_watch_id,
@@ -171,6 +174,7 @@ const BULLETIN_MUTATION_FIELDS = `
   era,
   category,
   categories,
+  something_else_description,
   cover_image,
   author_id,
   related_watch_id,
@@ -190,6 +194,7 @@ function normalizeRelatedWatch(
     ...row,
     categories: normalizeCategories(row.categories, row.category),
     category: normalizeCategories(row.categories, row.category)[0],
+    something_else_description: row.something_else_description ?? null,
     related_watch: relatedWatch,
   }
 }
@@ -448,6 +453,10 @@ export async function createBulletin(
       isConfigured: true,
     }
   }
+  const somethingElseDescription = input.something_else_description?.trim() || null
+  if (categories.includes('Something Else') && !somethingElseDescription) {
+    return { data: null, error: new Error('Describe what this Bulletin is about.'), isConfigured: true }
+  }
 
   try {
     const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -470,6 +479,7 @@ export async function createBulletin(
         era: input.era,
         category: categories[0],
         categories,
+        something_else_description: categories.includes('Something Else') ? somethingElseDescription : null,
         slug: input.slug,
         cover_image: input.cover_image,
         related_watch_id: input.related_watch_id,
@@ -513,11 +523,19 @@ export async function updateBulletin(
     if (categories.length === 0 || categories.some((item) => !BULLETIN_CATEGORIES.includes(item))) {
       return { data: null, error: new Error('Select one or more valid Bulletin categories.'), isConfigured: true }
     }
+    const somethingElseDescription = input.something_else_description?.trim() || null
+    if (categories.includes('Something Else') && !somethingElseDescription) {
+      return { data: null, error: new Error('Describe what this Bulletin is about.'), isConfigured: true }
+    }
     updates.categories = categories
     updates.category = categories[0]
+    updates.something_else_description = categories.includes('Something Else') ? somethingElseDescription : null
   } else if (input.category !== undefined) {
     updates.category = input.category
     updates.categories = [input.category]
+    updates.something_else_description = null
+  } else if (input.something_else_description !== undefined) {
+    updates.something_else_description = input.something_else_description?.trim() || null
   }
   if (input.slug !== undefined) updates.slug = input.slug
   if (input.cover_image !== undefined) updates.cover_image = input.cover_image

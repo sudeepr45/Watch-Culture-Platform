@@ -34,6 +34,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
   const [body, setBody] = useState('')
   const [era, setEra] = useState<BulletinEra>('Modern')
   const [categories, setCategories] = useState<BulletinCategory[]>(['Note'])
+  const [somethingElseDescription, setSomethingElseDescription] = useState('')
   const [slug, setSlug] = useState('')
   const [coverImage, setCoverImage] = useState('')
   const [relatedWatchId, setRelatedWatchId] = useState('')
@@ -61,6 +62,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
         setBody(record.body)
         setEra(record.era)
         setCategories(record.categories?.length ? [...record.categories] : [record.category])
+        setSomethingElseDescription(record.something_else_description ?? '')
         setSlug(record.slug)
         setCoverImage(record.cover_image ?? '')
         setRelatedWatchId(record.related_watch_id ?? '')
@@ -82,6 +84,9 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
     const normalizedSlug = normalizeSlug(slug)
     if (!title.trim()) return setFieldError('Enter a title.')
     if (categories.length === 0) return setFieldError('Select at least one category.')
+    if (categories.includes('Something Else') && !somethingElseDescription.trim()) {
+      return setFieldError('Describe what this Bulletin is about.')
+    }
     if (!normalizedSlug) return setFieldError('Enter a valid slug.')
     if (!body.trim()) return setFieldError('Enter the Bulletin body.')
 
@@ -93,6 +98,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
       body: body.trim(),
       era,
       categories,
+      something_else_description: categories.includes('Something Else') ? somethingElseDescription.trim() : null,
       slug: normalizedSlug,
       cover_image: coverImage.trim() || null,
       related_watch_id: relatedWatchId || null,
@@ -135,9 +141,35 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
                 <div>
                   <BulletinCategorySelector
                     selected={categories}
-                    onChange={setCategories}
+                    onChange={(value) => {
+                      setCategories(value)
+                      if (!value.includes('Something Else')) {
+                        setSomethingElseDescription('')
+                        if (fieldError === 'Describe what this Bulletin is about.') setFieldError(null)
+                      }
+                    }}
                     error={fieldError === 'Select at least one category.' ? fieldError : undefined}
                   />
+                  {categories.includes('Something Else') && (
+                    <div className="mt-4">
+                      <label htmlFor="bulletin-something-else-description" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                        What is this Bulletin about?
+                      </label>
+                      <textarea
+                        id="bulletin-something-else-description"
+                        value={somethingElseDescription}
+                        onChange={(event) => {
+                          setSomethingElseDescription(event.target.value)
+                          if (fieldError === 'Describe what this Bulletin is about.') setFieldError(null)
+                        }}
+                        rows={2}
+                        placeholder="Briefly describe this category..."
+                        aria-invalid={fieldError === 'Describe what this Bulletin is about.'}
+                        className="w-full resize-y border border-hairline bg-warm-white px-3 py-2.5 font-sans text-sm leading-relaxed text-ink-secondary placeholder:text-ink-muted/50 focus:border-ink focus:outline-none"
+                      />
+                      {fieldError === 'Describe what this Bulletin is about.' && <FieldError>{fieldError}</FieldError>}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="bulletin-era" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">ERA</label>
@@ -163,7 +195,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
               <div>
                 <label htmlFor="bulletin-body" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">BODY</label>
                 <textarea id="bulletin-body" value={body} onChange={(event) => setBody(event.target.value)} rows={14} className="w-full resize-y border border-hairline bg-warm-white px-3 py-3 font-sans text-base leading-relaxed text-ink-secondary focus:border-ink focus:outline-none" />
-                <FieldError>{fieldError === 'Select at least one category.' ? undefined : fieldError}</FieldError>
+                <FieldError>{fieldError === 'Select at least one category.' || fieldError === 'Describe what this Bulletin is about.' ? undefined : fieldError}</FieldError>
               </div>
               {saveError && <p className="border-y border-hairline py-3 text-sm text-steel-dark" role="alert">{saveError}</p>}
               <div className="flex flex-col items-start gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center">

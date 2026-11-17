@@ -12,7 +12,7 @@ import {
   type BulletinEra,
 } from '../services/curatorBulletinService'
 
-type BulletinField = 'title' | 'category' | 'slug' | 'body'
+type BulletinField = 'title' | 'category' | 'somethingElseDescription' | 'slug' | 'body'
 type FieldErrors = Partial<Record<BulletinField, string>>
 
 interface SelectedBulletinPhoto {
@@ -46,6 +46,7 @@ export default function CuratorNewBulletinPage() {
   const [title, setTitle] = useState('')
   const [era, setEra] = useState<BulletinEra>('Modern')
   const [categories, setCategories] = useState<BulletinCategory[]>([])
+  const [somethingElseDescription, setSomethingElseDescription] = useState('')
   const [slug, setSlug] = useState('')
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
   const [body, setBody] = useState('')
@@ -128,6 +129,9 @@ export default function CuratorNewBulletinPage() {
     const nextErrors: FieldErrors = {}
     if (!title.trim()) nextErrors.title = 'Enter a title.'
     if (categories.length === 0) nextErrors.category = 'Select at least one category.'
+    if (categories.includes('Something Else') && !somethingElseDescription.trim()) {
+      nextErrors.somethingElseDescription = 'Describe what this Bulletin is about.'
+    }
     if (!normalizedSlug) nextErrors.slug = 'Enter a valid slug.'
     if (!body.trim()) nextErrors.body = 'Enter the Bulletin body.'
 
@@ -140,6 +144,7 @@ export default function CuratorNewBulletinPage() {
       title: title.trim(),
       era,
       categories,
+      something_else_description: categories.includes('Something Else') ? somethingElseDescription.trim() : null,
       slug: normalizedSlug,
       body: body.trim(),
       published_at: publish ? new Date().toISOString() : null,
@@ -252,9 +257,34 @@ export default function CuratorNewBulletinPage() {
                 onChange={(value) => {
                   setCategories(value)
                   clearFieldError('category')
+                  if (!value.includes('Something Else')) {
+                    setSomethingElseDescription('')
+                    clearFieldError('somethingElseDescription')
+                  }
                 }}
                 error={fieldErrors.category}
               />
+              {categories.includes('Something Else') && (
+                <div className="mt-4">
+                  <label htmlFor="bulletin-something-else-description" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
+                    What is this Bulletin about?
+                  </label>
+                  <textarea
+                    id="bulletin-something-else-description"
+                    value={somethingElseDescription}
+                    onChange={(event) => {
+                      setSomethingElseDescription(event.target.value)
+                      clearFieldError('somethingElseDescription')
+                    }}
+                    rows={2}
+                    placeholder="Briefly describe this category..."
+                    aria-invalid={Boolean(fieldErrors.somethingElseDescription)}
+                    aria-describedby={fieldErrors.somethingElseDescription ? 'bulletin-something-else-description-error' : undefined}
+                    className="w-full resize-y border border-hairline bg-warm-white px-3 py-2.5 font-sans text-sm leading-relaxed text-ink-secondary placeholder:text-ink-muted/50 focus:border-ink focus:outline-none"
+                  />
+                  <FieldError id="bulletin-something-else-description-error">{fieldErrors.somethingElseDescription}</FieldError>
+                </div>
+              )}
             </div>
 
             <div>

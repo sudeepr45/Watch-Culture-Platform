@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import Container from '../components/common/Container'
-import { BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
+import { BulletinCategoryDescription, BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
 import Button from '../components/common/Button'
 import WatchImage from '../components/common/WatchImage'
 import { Link } from '../router'
@@ -246,6 +246,7 @@ export default function HomePage() {
                   <time dateTime={bulletin.published_at || undefined}>{formatBulletinDate(bulletin.published_at || '')}</time>
                   <BulletinCategoryLabels categories={bulletin.categories} />
                 </div>
+                <BulletinCategoryDescription categories={bulletin.categories} description={bulletin.something_else_description} />
                 <p className="mt-1 line-clamp-1 max-w-3xl text-sm leading-relaxed text-ink-secondary">{getBulletinSummary(bulletin.body)}</p>
               </article>
             </li>

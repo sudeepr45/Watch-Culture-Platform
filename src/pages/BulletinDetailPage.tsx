@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Container from '../components/common/Container'
-import { BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
+import { BulletinCategoryDescription, BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
 import { Link } from '../router'
 import { getBulletinBySlug } from '../services/bulletinService'
 import type { BulletinWithRelatedWatchAndImages } from '../services/bulletinService'
@@ -142,6 +142,7 @@ export default function BulletinDetailPage({ slug }: BulletinDetailPageProps) {
               <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
                 {bulletin.era} · <BulletinCategoryLabels categories={bulletin.categories} />
               </p>
+              <BulletinCategoryDescription categories={bulletin.categories} description={bulletin.something_else_description} />
               <h1 className="mt-4 font-display text-3xl font-medium leading-tight tracking-tight text-ink sm:text-4xl lg:text-5xl">
                 {bulletin.title}
               </h1>
