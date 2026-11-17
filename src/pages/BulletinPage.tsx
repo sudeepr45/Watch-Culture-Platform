@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Container from '../components/common/Container'
+import { BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
 import { Link } from '../router'
 import { getPublishedBulletins } from '../services/bulletinService'
 import type { Bulletin } from '../services/bulletinService'
@@ -189,7 +190,7 @@ export default function BulletinPage() {
                     <span>{formatEditorialDate(bulletin.published_at)}</span>
                   </div>
                   <p className="mb-2 text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
-                    {bulletin.era} · {bulletin.category}
+                    {bulletin.era} · <BulletinCategoryLabels categories={bulletin.categories} />
                   </p>
                   <h2 className="font-display text-xl font-medium leading-snug tracking-tight text-ink sm:text-2xl">
                     <Link

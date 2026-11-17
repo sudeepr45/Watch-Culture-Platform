@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import Container from '../components/common/Container'
+import { BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
 import Button from '../components/common/Button'
 import WatchImage from '../components/common/WatchImage'
 import { Link } from '../router'
@@ -243,6 +244,7 @@ export default function HomePage() {
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs font-mono uppercase tracking-[0.14em] text-ink-muted">
                   <span>BULLETIN NO. {String(bulletin.bulletin_number).padStart(3, '0')}</span>
                   <time dateTime={bulletin.published_at || undefined}>{formatBulletinDate(bulletin.published_at || '')}</time>
+                  <BulletinCategoryLabels categories={bulletin.categories} />
                 </div>
                 <p className="mt-1 line-clamp-1 max-w-3xl text-sm leading-relaxed text-ink-secondary">{getBulletinSummary(bulletin.body)}</p>
               </article>

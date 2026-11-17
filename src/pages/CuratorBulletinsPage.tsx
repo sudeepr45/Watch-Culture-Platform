@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import Container from '../components/common/Container'
+import { BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
 import {
   deleteBulletin,
   getCuratorBulletins,
@@ -60,7 +61,7 @@ function BulletinRow({
           {publicationDate && <time dateTime={bulletin.published_at ?? undefined}>{publicationDate}</time>}
         </div>
         <p className="mb-3 text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
-          {bulletin.era} · {bulletin.category}
+          {bulletin.era} · <BulletinCategoryLabels categories={bulletin.categories} />
         </p>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

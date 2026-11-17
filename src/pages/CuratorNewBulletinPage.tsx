@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import Container from '../components/common/Container'
+import { BulletinCategorySelector } from '../components/bulletin/BulletinCategorySelector'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import {
@@ -10,14 +11,6 @@ import {
   type BulletinCategory,
   type BulletinEra,
 } from '../services/curatorBulletinService'
-
-const BULLETIN_CATEGORIES: BulletinCategory[] = [
-  'Market',
-  'Auction',
-  'Release',
-  'History',
-  'Note',
-]
 
 type BulletinField = 'title' | 'category' | 'slug' | 'body'
 type FieldErrors = Partial<Record<BulletinField, string>>
@@ -52,7 +45,7 @@ export default function CuratorNewBulletinPage() {
 
   const [title, setTitle] = useState('')
   const [era, setEra] = useState<BulletinEra>('Modern')
-  const [category, setCategory] = useState<BulletinCategory | ''>('')
+  const [categories, setCategories] = useState<BulletinCategory[]>([])
   const [slug, setSlug] = useState('')
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
   const [body, setBody] = useState('')
@@ -134,9 +127,7 @@ export default function CuratorNewBulletinPage() {
     const normalizedSlug = normalizeSlug(slug)
     const nextErrors: FieldErrors = {}
     if (!title.trim()) nextErrors.title = 'Enter a title.'
-    if (!BULLETIN_CATEGORIES.includes(category as BulletinCategory)) {
-      nextErrors.category = 'Select a category.'
-    }
+    if (categories.length === 0) nextErrors.category = 'Select at least one category.'
     if (!normalizedSlug) nextErrors.slug = 'Enter a valid slug.'
     if (!body.trim()) nextErrors.body = 'Enter the Bulletin body.'
 
@@ -148,7 +139,7 @@ export default function CuratorNewBulletinPage() {
     const result = await createBulletin({
       title: title.trim(),
       era,
-      category: category as BulletinCategory,
+      categories,
       slug: normalizedSlug,
       body: body.trim(),
       published_at: publish ? new Date().toISOString() : null,
@@ -256,26 +247,14 @@ export default function CuratorNewBulletinPage() {
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label htmlFor="bulletin-category" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
-                CATEGORY
-              </label>
-              <select
-                id="bulletin-category"
-                value={category}
-                onChange={(event) => {
-                  setCategory(event.target.value as BulletinCategory | '')
+              <BulletinCategorySelector
+                selected={categories}
+                onChange={(value) => {
+                  setCategories(value)
                   clearFieldError('category')
                 }}
-                aria-invalid={Boolean(fieldErrors.category)}
-                aria-describedby={fieldErrors.category ? 'bulletin-category-error' : undefined}
-                className="w-full appearance-none border border-hairline bg-warm-white px-3 py-3 font-mono text-sm text-ink focus:border-ink focus:outline-none"
-              >
-                <option value="">Select category</option>
-                {BULLETIN_CATEGORIES.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-              <FieldError id="bulletin-category-error">{fieldErrors.category}</FieldError>
+                error={fieldErrors.category}
+              />
             </div>
 
             <div>

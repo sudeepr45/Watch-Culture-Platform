@@ -1,21 +1,26 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import type {
   Bulletin,
+  BulletinCategory,
   BulletinEra,
   BulletinRelatedWatch,
   BulletinWithRelatedWatch,
 } from './bulletinService'
-import { BULLETIN_IMAGES_BUCKET } from './bulletinService'
+import {
+  BULLETIN_CATEGORIES,
+  BULLETIN_IMAGES_BUCKET,
+  normalizeCategories,
+} from './bulletinService'
 
 export type { BulletinEra } from './bulletinService'
 
-export type BulletinCategory = 'Market' | 'Auction' | 'Release' | 'History' | 'Note'
+export type { BulletinCategory } from './bulletinService'
 
 export interface CreateBulletinInput {
   title: string
   body: string
   era: BulletinEra
-  category: BulletinCategory
+  categories: BulletinCategory[]
   slug: string
   cover_image?: string | null
   related_watch_id?: string | null
@@ -26,6 +31,8 @@ export interface UpdateBulletinInput {
   title?: string
   body?: string
   era?: BulletinEra
+  categories?: BulletinCategory[]
+  /** Compatibility for older callers that still submit one category. */
   category?: BulletinCategory
   slug?: string
   cover_image?: string | null
@@ -46,6 +53,7 @@ export interface CuratorBulletinListItem {
   title: string
   era: BulletinEra
   category: BulletinCategory
+  categories: BulletinCategory[]
   cover_image: string | null
   published_at: string | null
   created_at: string
@@ -122,6 +130,7 @@ const BULLETIN_LIST_FIELDS = `
   title,
   era,
   category,
+  categories,
   cover_image,
   published_at,
   created_at,
@@ -136,6 +145,7 @@ const BULLETIN_DETAIL_FIELDS = `
   body,
   era,
   category,
+  categories,
   cover_image,
   author_id,
   related_watch_id,
@@ -160,6 +170,7 @@ const BULLETIN_MUTATION_FIELDS = `
   body,
   era,
   category,
+  categories,
   cover_image,
   author_id,
   related_watch_id,
@@ -177,6 +188,8 @@ function normalizeRelatedWatch(
 
   return {
     ...row,
+    categories: normalizeCategories(row.categories, row.category),
+    category: normalizeCategories(row.categories, row.category)[0],
     related_watch: relatedWatch,
   }
 }
@@ -427,6 +440,15 @@ export async function createBulletin(
     return { data: null, error: configurationError(), isConfigured: false }
   }
 
+  const categories = [...new Set(input.categories)]
+  if (categories.length === 0 || categories.some((item) => !BULLETIN_CATEGORIES.includes(item))) {
+    return {
+      data: null,
+      error: new Error('Select one or more valid Bulletin categories.'),
+      isConfigured: true,
+    }
+  }
+
   try {
     const { data: userData, error: userError } = await supabase.auth.getUser()
     if (userError) {
@@ -446,7 +468,8 @@ export async function createBulletin(
         title: input.title,
         body: input.body,
         era: input.era,
-        category: input.category,
+        category: categories[0],
+        categories,
         slug: input.slug,
         cover_image: input.cover_image,
         related_watch_id: input.related_watch_id,
@@ -485,7 +508,17 @@ export async function updateBulletin(
   if (input.title !== undefined) updates.title = input.title
   if (input.body !== undefined) updates.body = input.body
   if (input.era !== undefined) updates.era = input.era
-  if (input.category !== undefined) updates.category = input.category
+  if (input.categories !== undefined) {
+    const categories = [...new Set(input.categories)]
+    if (categories.length === 0 || categories.some((item) => !BULLETIN_CATEGORIES.includes(item))) {
+      return { data: null, error: new Error('Select one or more valid Bulletin categories.'), isConfigured: true }
+    }
+    updates.categories = categories
+    updates.category = categories[0]
+  } else if (input.category !== undefined) {
+    updates.category = input.category
+    updates.categories = [input.category]
+  }
   if (input.slug !== undefined) updates.slug = input.slug
   if (input.cover_image !== undefined) updates.cover_image = input.cover_image
   if (input.related_watch_id !== undefined) updates.related_watch_id = input.related_watch_id

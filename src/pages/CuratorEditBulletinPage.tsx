@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Container from '../components/common/Container'
+import { BulletinCategorySelector } from '../components/bulletin/BulletinCategorySelector'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import {
@@ -11,8 +12,6 @@ import {
 import type { BulletinWithRelatedWatch } from '../services/bulletinService'
 import { fetchPublishedWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
-
-const BULLETIN_CATEGORIES: BulletinCategory[] = ['Market', 'Auction', 'Release', 'History', 'Note']
 
 function normalizeSlug(value: string): string {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
@@ -34,7 +33,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [era, setEra] = useState<BulletinEra>('Modern')
-  const [category, setCategory] = useState<BulletinCategory>('Note')
+  const [categories, setCategories] = useState<BulletinCategory[]>(['Note'])
   const [slug, setSlug] = useState('')
   const [coverImage, setCoverImage] = useState('')
   const [relatedWatchId, setRelatedWatchId] = useState('')
@@ -61,7 +60,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
         setTitle(record.title)
         setBody(record.body)
         setEra(record.era)
-        setCategory(record.category)
+        setCategories(record.categories?.length ? [...record.categories] : [record.category])
         setSlug(record.slug)
         setCoverImage(record.cover_image ?? '')
         setRelatedWatchId(record.related_watch_id ?? '')
@@ -82,7 +81,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
     if (saving || !bulletin) return
     const normalizedSlug = normalizeSlug(slug)
     if (!title.trim()) return setFieldError('Enter a title.')
-    if (!BULLETIN_CATEGORIES.includes(category)) return setFieldError('Select a valid category.')
+    if (categories.length === 0) return setFieldError('Select at least one category.')
     if (!normalizedSlug) return setFieldError('Enter a valid slug.')
     if (!body.trim()) return setFieldError('Enter the Bulletin body.')
 
@@ -93,7 +92,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
       title: title.trim(),
       body: body.trim(),
       era,
-      category,
+      categories,
       slug: normalizedSlug,
       cover_image: coverImage.trim() || null,
       related_watch_id: relatedWatchId || null,
@@ -134,8 +133,11 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
               </div>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="bulletin-category" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">CATEGORY</label>
-                  <select id="bulletin-category" value={category} onChange={(event) => setCategory(event.target.value as BulletinCategory)} className="w-full appearance-none border border-hairline bg-warm-white px-3 py-3 font-mono text-sm text-ink focus:border-ink focus:outline-none">{BULLETIN_CATEGORIES.map((option) => <option key={option}>{option}</option>)}</select>
+                  <BulletinCategorySelector
+                    selected={categories}
+                    onChange={setCategories}
+                    error={fieldError === 'Select at least one category.' ? fieldError : undefined}
+                  />
                 </div>
                 <div>
                   <label htmlFor="bulletin-era" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">ERA</label>
@@ -161,7 +163,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
               <div>
                 <label htmlFor="bulletin-body" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">BODY</label>
                 <textarea id="bulletin-body" value={body} onChange={(event) => setBody(event.target.value)} rows={14} className="w-full resize-y border border-hairline bg-warm-white px-3 py-3 font-sans text-base leading-relaxed text-ink-secondary focus:border-ink focus:outline-none" />
-                <FieldError>{fieldError}</FieldError>
+                <FieldError>{fieldError === 'Select at least one category.' ? undefined : fieldError}</FieldError>
               </div>
               {saveError && <p className="border-y border-hairline py-3 text-sm text-steel-dark" role="alert">{saveError}</p>}
               <div className="flex flex-col items-start gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center">

@@ -1,6 +1,24 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 export type BulletinEra = 'Modern' | 'Vintage'
+export type BulletinCategory =
+  | 'Note'
+  | 'Something Else'
+  | 'Dispatches'
+  | 'Market'
+  | 'Auction'
+  | 'Release'
+  | 'History'
+
+export const BULLETIN_CATEGORIES: BulletinCategory[] = [
+  'Note',
+  'Something Else',
+  'Dispatches',
+  'Market',
+  'Auction',
+  'Release',
+  'History',
+]
 export const BULLETIN_IMAGES_BUCKET = 'bulletin-images'
 
 export interface BulletinRelatedWatch {
@@ -19,7 +37,9 @@ export interface Bulletin {
   title: string
   body: string
   era: BulletinEra
-  category: 'Market' | 'Auction' | 'Release' | 'History' | 'Note'
+  /** First category, kept for compatibility with older clients. */
+  category: BulletinCategory
+  categories: BulletinCategory[]
   cover_image: string | null
   author_id: string
   related_watch_id: string | null
@@ -69,6 +89,7 @@ const BULLETIN_SELECT_FIELDS = `
   body,
   era,
   category,
+  categories,
   cover_image,
   author_id,
   related_watch_id,
@@ -98,8 +119,21 @@ function normalizeBulletinWithRelatedWatch(
 
   return {
     ...row,
+    categories: normalizeCategories(row.categories, row.category),
+    category: normalizeCategories(row.categories, row.category)[0],
     related_watch: watch,
   }
+}
+
+export function normalizeCategories(
+  categories: unknown,
+  legacyCategory: BulletinCategory,
+): BulletinCategory[] {
+  if (!Array.isArray(categories)) return [legacyCategory]
+  const valid = categories.filter((value): value is BulletinCategory =>
+    typeof value === 'string' && BULLETIN_CATEGORIES.includes(value as BulletinCategory),
+  )
+  return [...new Set(valid.length > 0 ? valid : [legacyCategory])]
 }
 
 /** Fetch all published Bulletins in reverse publication order. */
@@ -123,7 +157,14 @@ export async function getPublishedBulletins(): Promise<GetBulletinsResult> {
       return { data: null, error: new Error(error.message), isConfigured: true }
     }
 
-    return { data: (data ?? []) as Bulletin[], error: null, isConfigured: true }
+    return {
+      data: ((data ?? []) as Bulletin[]).map((row) => ({
+        ...row,
+        categories: normalizeCategories(row.categories, row.category),
+      })),
+      error: null,
+      isConfigured: true,
+    }
   } catch (err) {
     return {
       data: null,
@@ -249,7 +290,14 @@ export async function getLatestBulletins(limit: number): Promise<GetBulletinsRes
       return { data: null, error: new Error(error.message), isConfigured: true }
     }
 
-    return { data: (data ?? []) as Bulletin[], error: null, isConfigured: true }
+    return {
+      data: ((data ?? []) as Bulletin[]).map((row) => ({
+        ...row,
+        categories: normalizeCategories(row.categories, row.category),
+      })),
+      error: null,
+      isConfigured: true,
+    }
   } catch (err) {
     return {
       data: null,
