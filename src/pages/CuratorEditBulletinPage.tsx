@@ -9,7 +9,7 @@ import {
   type BulletinCategory,
   type BulletinEra,
 } from '../services/curatorBulletinService'
-import type { BulletinWithRelatedWatch } from '../services/bulletinService'
+import type { BulletinWithRelatedWatchAndImages } from '../services/bulletinService'
 import { fetchPublishedWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
 
@@ -29,7 +29,7 @@ function watchLabel(watch: Pick<Watch, 'brand' | 'model' | 'reference_number'>) 
 export default function CuratorEditBulletinPage({ id }: { id: string }) {
   const { isAuthenticated, isCurator, loading: authLoading } = useAuth()
   const { navigate } = useRouter()
-  const [bulletin, setBulletin] = useState<BulletinWithRelatedWatch | null>(null)
+  const [bulletin, setBulletin] = useState<BulletinWithRelatedWatchAndImages | null>(null)
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [era, setEra] = useState<BulletinEra>('Modern')
@@ -44,6 +44,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
   const [fieldError, setFieldError] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [confirmingPublish, setConfirmingPublish] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -108,6 +109,40 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
         ? 'That slug is already in use. Change the slug and try again.'
         : `Unable to save the Bulletin: ${result.error.message}`)
       setSaving(false)
+      return
+    }
+    navigate('/curator/bulletins')
+  }
+
+  const handlePublish = async () => {
+    if (saving || !bulletin || bulletin.published_at) return
+    const normalizedSlug = normalizeSlug(slug)
+    if (!title.trim()) return setFieldError('Enter a title.')
+    if (categories.length === 0) return setFieldError('Select at least one category.')
+    if (categories.includes('Something Else') && !somethingElseDescription.trim()) {
+      return setFieldError('Describe what this Bulletin is about.')
+    }
+    if (!normalizedSlug) return setFieldError('Enter a valid slug.')
+    if (!body.trim()) return setFieldError('Enter the Bulletin body.')
+
+    setFieldError(null)
+    setSaving(true)
+    setSaveError(null)
+    const result = await updateBulletin(id, {
+      title: title.trim(),
+      body: body.trim(),
+      era,
+      categories,
+      something_else_description: categories.includes('Something Else') ? somethingElseDescription.trim() : null,
+      slug: normalizedSlug,
+      cover_image: coverImage.trim() || null,
+      related_watch_id: relatedWatchId || null,
+      published_at: new Date().toISOString(),
+    })
+    if (result.error) {
+      setSaveError(`Unable to publish the Bulletin: ${result.error.message}`)
+      setSaving(false)
+      setConfirmingPublish(false)
       return
     }
     navigate('/curator/bulletins')
@@ -192,6 +227,24 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
                   <input id="bulletin-cover-image" type="url" value={coverImage} onChange={(event) => setCoverImage(event.target.value)} className="w-full border border-hairline bg-warm-white px-3 py-3 font-mono text-sm text-ink focus:border-ink focus:outline-none" />
                 </div>
               </div>
+              <section className="border border-hairline bg-warm-surface/20 p-5 sm:p-6" aria-labelledby="bulletin-existing-photos-heading">
+                <div className="mb-4 border-b border-hairline pb-3">
+                  <h2 id="bulletin-existing-photos-heading" className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">ATTACHED PHOTOGRAPHS</h2>
+                  <p className="mt-1 text-xs text-ink-secondary">Existing photographs remain attached when this Bulletin is published.</p>
+                </div>
+                {bulletin.images.length > 0 ? (
+                  <ol className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {bulletin.images.map((image, index) => (
+                      <li key={image.id}>
+                        <img src={image.signed_url} alt={`Bulletin photograph ${index + 1}`} className="h-48 w-full border border-hairline object-contain object-left" />
+                        <p className="mt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-ink-muted">PHOTOGRAPH {String(index + 1).padStart(2, '0')}</p>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="text-sm text-ink-muted">No attached photographs.</p>
+                )}
+              </section>
               <div>
                 <label htmlFor="bulletin-body" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">BODY</label>
                 <textarea id="bulletin-body" value={body} onChange={(event) => setBody(event.target.value)} rows={14} className="w-full resize-y border border-hairline bg-warm-white px-3 py-3 font-sans text-base leading-relaxed text-ink-secondary focus:border-ink focus:outline-none" />
@@ -201,7 +254,19 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
               <div className="flex flex-col items-start gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center">
                 <button type="button" onClick={handleSave} disabled={saving} className="border border-ink px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink transition-colors hover:bg-ink hover:text-warm-white disabled:opacity-40">{saving ? 'SAVING…' : 'SAVE CHANGES'}</button>
                 <p className="text-[10px] font-mono text-ink-muted">Publication status and existing photographs are preserved.</p>
+                {!bulletin.published_at && (
+                  <button type="button" onClick={() => { setConfirmingPublish(true); setSaveError(null) }} disabled={saving} className="border border-hairline px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink-secondary transition-colors hover:border-ink hover:text-ink disabled:opacity-40">PUBLISH</button>
+                )}
               </div>
+              {confirmingPublish && !bulletin.published_at && (
+                <div className="border-y border-hairline py-4" role="group" aria-label="Confirm Bulletin publishing">
+                  <p className="text-sm text-ink-secondary">Publish this Bulletin now? Its existing text and photographs will remain attached.</p>
+                  <div className="mt-3 flex items-center gap-3">
+                    <button type="button" onClick={handlePublish} disabled={saving} className="border border-ink bg-ink px-4 py-2.5 text-[10px] font-mono uppercase tracking-[0.14em] text-warm-white transition-colors hover:bg-neutral-800 disabled:opacity-50">{saving ? 'PUBLISHING…' : 'Confirm publish'}</button>
+                    <button type="button" onClick={() => setConfirmingPublish(false)} disabled={saving} className="px-2 py-2.5 text-[10px] font-mono uppercase tracking-[0.14em] text-ink-muted hover:text-ink disabled:opacity-50">Cancel</button>
+                  </div>
+                </div>
+              )}
             </form>}
       </Container>
     </div>

@@ -3,8 +3,10 @@ import type {
   Bulletin,
   BulletinCategory,
   BulletinEra,
+  BulletinImage,
   BulletinRelatedWatch,
   BulletinWithRelatedWatch,
+  BulletinWithRelatedWatchAndImages,
 } from './bulletinService'
 import {
   BULLETIN_CATEGORIES,
@@ -63,7 +65,7 @@ export interface CuratorBulletinListItem {
 }
 
 export interface CuratorBulletinResult {
-  data: BulletinWithRelatedWatch | null
+  data: BulletinWithRelatedWatchAndImages | null
   error: Error | null
   isConfigured: boolean
 }
@@ -425,13 +427,41 @@ export async function getCuratorBulletinById(id: string): Promise<CuratorBulleti
       .maybeSingle()
 
     if (error) return { data: null, error: new Error(error.message), isConfigured: true }
-    return {
-      data: data
-        ? normalizeRelatedWatch(data as unknown as RawBulletinWithRelatedWatch)
-        : null,
-      error: null,
-      isConfigured: true,
+    if (!data) return { data: null, error: null, isConfigured: true }
+
+    const bulletin = normalizeRelatedWatch(data as unknown as RawBulletinWithRelatedWatch)
+    const { data: imageRows, error: imageError } = await supabase
+      .from('bulletin_images')
+      .select('id, bulletin_id, image_path, sort_order, created_at')
+      .eq('bulletin_id', bulletinId)
+      .eq('upload_status', 'ready')
+      .order('sort_order', { ascending: true })
+
+    if (imageError) return { data: null, error: new Error(imageError.message), isConfigured: true }
+
+    const rows = imageRows ?? []
+    let images: BulletinImage[] = []
+    if (rows.length > 0) {
+      const { data: signedUrls, error: signedUrlError } = await supabase.storage
+        .from(BULLETIN_IMAGES_BUCKET)
+        .createSignedUrls(rows.map((image) => image.image_path), 60 * 60)
+
+      if (signedUrlError) return { data: null, error: new Error(signedUrlError.message), isConfigured: true }
+      const failedUrl = signedUrls.find((item) => item.error || !item.signedUrl)
+      if (failedUrl) {
+        return {
+          data: null,
+          error: new Error(failedUrl.error || 'Unable to create a signed Bulletin photo URL.'),
+          isConfigured: true,
+        }
+      }
+      images = rows.map((image, index) => ({
+        ...image,
+        signed_url: signedUrls[index].signedUrl as string,
+      }))
     }
+
+    return { data: { ...bulletin, images }, error: null, isConfigured: true }
   } catch (err) {
     return { data: null, error: unexpectedError(err), isConfigured: true }
   }

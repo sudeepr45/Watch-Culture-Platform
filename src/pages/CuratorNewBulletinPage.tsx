@@ -5,6 +5,7 @@ import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import {
   createBulletin,
+  updateBulletin,
   uploadBulletinImages,
   validateBulletinPhoto,
   type BulletinPhotoUpload,
@@ -57,6 +58,7 @@ export default function CuratorNewBulletinPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [saving, setSaving] = useState<'draft' | 'publish' | null>(null)
+  const [confirmingPublish, setConfirmingPublish] = useState(false)
   const photoInputRef = useRef<HTMLInputElement>(null)
   const selectedPhotosRef = useRef(selectedPhotos)
 
@@ -105,21 +107,26 @@ export default function CuratorNewBulletinPage() {
     if (saving) return
 
     if (savedBulletinId) {
-      if (selectedPhotos.length === 0) {
-        navigate('/curator/bulletins')
-        return
-      }
-
       setSaving(savedBulletinAction)
       setSubmitError(null)
-      const uploadResult = await uploadBulletinImages(
-        savedBulletinId,
-        selectedPhotos.map(({ file, uploadId }) => ({ file, uploadId } satisfies BulletinPhotoUpload))
-      )
-      if (uploadResult.error) {
-        setSubmitError(`Bulletin saved, but photo upload failed: ${uploadResult.error.message}`)
-        setSaving(null)
-        return
+      if (selectedPhotos.length > 0) {
+        const uploadResult = await uploadBulletinImages(
+          savedBulletinId,
+          selectedPhotos.map(({ file, uploadId }) => ({ file, uploadId } satisfies BulletinPhotoUpload))
+        )
+        if (uploadResult.error) {
+          setSubmitError(`Bulletin saved, but photo upload failed: ${uploadResult.error.message}`)
+          setSaving(null)
+          return
+        }
+      }
+      if (savedBulletinAction === 'publish') {
+        const publishResult = await updateBulletin(savedBulletinId, { published_at: new Date().toISOString() })
+        if (publishResult.error) {
+          setSubmitError(`Bulletin and photos saved, but publishing failed: ${publishResult.error.message}`)
+          setSaving(null)
+          return
+        }
       }
       navigate('/curator/bulletins')
       return
@@ -147,7 +154,8 @@ export default function CuratorNewBulletinPage() {
       something_else_description: categories.includes('Something Else') ? somethingElseDescription.trim() : null,
       slug: normalizedSlug,
       body: body.trim(),
-      published_at: publish ? new Date().toISOString() : null,
+      // Keep the record private until every selected image has been finalized.
+      published_at: null,
     })
 
     if (result.error) {
@@ -177,6 +185,15 @@ export default function CuratorNewBulletinPage() {
       )
       if (uploadResult.error) {
         setSubmitError(`Bulletin saved, but photo upload failed: ${uploadResult.error.message}`)
+        setSaving(null)
+        return
+      }
+    }
+
+    if (publish) {
+      const publishResult = await updateBulletin(result.data.id, { published_at: new Date().toISOString() })
+      if (publishResult.error) {
+        setSubmitError(`Bulletin and photos saved, but publishing failed: ${publishResult.error.message}`)
         setSaving(null)
         return
       }
@@ -419,13 +436,24 @@ export default function CuratorNewBulletinPage() {
               </button>
             )}
             {savedBulletinId && selectedPhotos.length === 0 && (
-              <button
-                type="button"
-                onClick={() => navigate('/curator/bulletins')}
-                className="border border-ink px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink transition-colors hover:bg-ink hover:text-warm-white"
-              >
-                RETURN TO BULLETINS
-              </button>
+              savedBulletinAction === 'publish' ? (
+                <button
+                  type="button"
+                  onClick={() => handleCreate(true)}
+                  disabled={saving !== null}
+                  className="border border-ink px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink transition-colors hover:bg-ink hover:text-warm-white disabled:opacity-40"
+                >
+                  {saving === 'publish' ? 'PUBLISHING…' : 'RETRY PUBLISH'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => navigate('/curator/bulletins')}
+                  className="border border-ink px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink transition-colors hover:bg-ink hover:text-warm-white"
+                >
+                  RETURN TO BULLETINS
+                </button>
+              )
             )}
             {!savedBulletinId && <>
             <button
@@ -438,7 +466,7 @@ export default function CuratorNewBulletinPage() {
             </button>
             <button
               type="button"
-              onClick={() => handleCreate(true)}
+              onClick={() => { setConfirmingPublish(true); setSubmitError(null) }}
               disabled={saving !== null}
               className="border border-hairline px-6 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-ink-secondary transition-colors hover:border-ink hover:text-ink disabled:opacity-40"
             >
@@ -451,6 +479,15 @@ export default function CuratorNewBulletinPage() {
                 : 'Bulletin number is assigned when this record is created.'}
             </p>
           </div>
+          {confirmingPublish && !savedBulletinId && (
+            <div className="border-y border-hairline py-4" role="group" aria-label="Confirm Bulletin publishing">
+              <p className="text-sm text-ink-secondary">Publish this Bulletin now? Photographs will finish uploading before it becomes public.</p>
+              <div className="mt-3 flex items-center gap-3">
+                <button type="button" onClick={() => { setConfirmingPublish(false); void handleCreate(true) }} disabled={saving !== null} className="border border-ink bg-ink px-4 py-2.5 text-[10px] font-mono uppercase tracking-[0.14em] text-warm-white transition-colors hover:bg-neutral-800 disabled:opacity-50">{saving === 'publish' ? 'PUBLISHING…' : 'Confirm publish'}</button>
+                <button type="button" onClick={() => setConfirmingPublish(false)} disabled={saving !== null} className="px-2 py-2.5 text-[10px] font-mono uppercase tracking-[0.14em] text-ink-muted hover:text-ink disabled:opacity-50">Cancel</button>
+              </div>
+            </div>
+          )}
         </form>
       </Container>
     </div>
