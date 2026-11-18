@@ -6,7 +6,6 @@ import type {
   BulletinImage,
   BulletinRelatedWatch,
   BulletinWithRelatedWatch,
-  BulletinWithRelatedWatchAndImages,
 } from './bulletinService'
 import {
   BULLETIN_CATEGORIES,
@@ -65,9 +64,18 @@ export interface CuratorBulletinListItem {
 }
 
 export interface CuratorBulletinResult {
-  data: BulletinWithRelatedWatchAndImages | null
+  data: CuratorBulletinWithImages | null
   error: Error | null
   isConfigured: boolean
+}
+
+export interface CuratorBulletinImage extends BulletinImage {
+  deletion_pending: boolean
+  storage_object_exists: boolean | null
+}
+
+export interface CuratorBulletinWithImages extends BulletinWithRelatedWatch {
+  images: CuratorBulletinImage[]
 }
 
 export interface CuratorBulletinMutationResult {
@@ -85,6 +93,12 @@ export interface DeleteCuratorBulletinResult {
 export interface UploadBulletinImagesResult {
   success: boolean
   error: Error | null
+}
+
+export interface BulletinImageRemovalResult {
+  success: boolean
+  error: Error | null
+  deletionPending: boolean
 }
 
 export interface BulletinPhotoUpload {
@@ -270,7 +284,8 @@ async function reconcileBulletinImagePath(
 /** Upload images only after a real Bulletin exists, then associate them in selected order. */
 async function uploadBulletinImagesWithLock(
   bulletinId: string,
-  photos: BulletinPhotoUpload[]
+  photos: BulletinPhotoUpload[],
+  firstSortOrder: number
 ): Promise<UploadBulletinImagesResult> {
   const cleanBulletinId = typeof bulletinId === 'string' ? bulletinId.trim() : ''
   if (!cleanBulletinId) {
@@ -291,7 +306,8 @@ async function uploadBulletinImagesWithLock(
     }
   }
 
-  for (const [sortOrder, { file, uploadId }] of photos.entries()) {
+  for (const [photoIndex, { file, uploadId }] of photos.entries()) {
+    const sortOrder = firstSortOrder + photoIndex
     const imagePath = getBulletinImagePath(cleanBulletinId, file, uploadId)
     const { data: reservationStatus, error: reservationError } = await supabase.rpc(
       'reserve_bulletin_image',
@@ -310,7 +326,8 @@ async function uploadBulletinImagesWithLock(
     }
   }
 
-  for (const [sortOrder, { file, uploadId }] of photos.entries()) {
+  for (const [photoIndex, { file, uploadId }] of photos.entries()) {
+    const sortOrder = firstSortOrder + photoIndex
     const imagePath = getBulletinImagePath(cleanBulletinId, file, uploadId)
     const reconciliation = await reconcileBulletinImagePath(cleanBulletinId, imagePath, uploadId, sortOrder)
     if (reconciliation.error) {
@@ -361,11 +378,15 @@ async function uploadBulletinImagesWithLock(
 /** Serialize upload and stale-object reconciliation across tabs in this browser origin. */
 export async function uploadBulletinImages(
   bulletinId: string,
-  photos: BulletinPhotoUpload[]
+  photos: BulletinPhotoUpload[],
+  firstSortOrder = 0
 ): Promise<UploadBulletinImagesResult> {
   const cleanBulletinId = typeof bulletinId === 'string' ? bulletinId.trim() : ''
   if (!cleanBulletinId) {
     return { success: false, error: new Error('A saved Bulletin ID is required for photo upload.') }
+  }
+  if (!Number.isInteger(firstSortOrder) || firstSortOrder < 0) {
+    return { success: false, error: new Error('A valid first photo order is required.') }
   }
   if (typeof navigator === 'undefined' || !navigator.locks) {
     return {
@@ -378,10 +399,74 @@ export async function uploadBulletinImages(
     return await navigator.locks.request(
       `mojean:bulletin-images:${cleanBulletinId}`,
       { mode: 'exclusive' },
-      () => uploadBulletinImagesWithLock(cleanBulletinId, photos)
+      () => uploadBulletinImagesWithLock(cleanBulletinId, photos, firstSortOrder)
     )
   } catch (err) {
     return { success: false, error: unexpectedError(err) }
+  }
+}
+
+/** Remove one attached photograph through its reservation-protected lifecycle. */
+export async function removeBulletinImage(
+  bulletinId: string,
+  imageId: string
+): Promise<BulletinImageRemovalResult> {
+  const cleanBulletinId = typeof bulletinId === 'string' ? bulletinId.trim() : ''
+  const cleanImageId = typeof imageId === 'string' ? imageId.trim() : ''
+  if (!cleanBulletinId || !cleanImageId) {
+    return { success: false, error: new Error('A Bulletin ID and photograph ID are required.'), deletionPending: false }
+  }
+  if (!isSupabaseConfigured) return { success: false, error: configurationError(), deletionPending: false }
+
+  let deletionReserved = false
+  try {
+    const { data: reservation, error: reserveError } = await supabase.rpc(
+      'begin_bulletin_image_deletion',
+      { p_bulletin_id: cleanBulletinId, p_image_id: cleanImageId }
+    )
+    if (reserveError) return { success: false, error: new Error(reserveError.message), deletionPending: false }
+    if (!reservation || typeof reservation.image_path !== 'string') {
+      return { success: false, error: new Error('The photograph deletion reservation was not returned.'), deletionPending: false }
+    }
+    deletionReserved = true
+
+    const imagePath = reservation.image_path as string
+    const [folder, ...fileParts] = imagePath.split('/')
+    if (folder !== cleanBulletinId || fileParts.length !== 1 || !fileParts[0]) {
+      return { success: false, error: new Error('The photograph path does not belong to this Bulletin.'), deletionPending: true }
+    }
+
+    if (reservation.object_exists === true) {
+      const { error: storageError } = await supabase.storage
+        .from(BULLETIN_IMAGES_BUCKET)
+        .remove([imagePath])
+
+      if (storageError) {
+        // A Storage error can mean the object disappeared concurrently. Re-read
+        // the reservation state; finish still verifies absence under a DB lock.
+        const { data: retryState, error: retryStateError } = await supabase.rpc(
+          'begin_bulletin_image_deletion',
+          { p_bulletin_id: cleanBulletinId, p_image_id: cleanImageId }
+        )
+        if (retryStateError || retryState?.object_exists !== false) {
+          return {
+            success: false,
+            error: new Error(`Unable to remove the photograph from Storage: ${storageError.message}`),
+            deletionPending: true,
+          }
+        }
+      }
+    }
+
+    const { data: finished, error: finishError } = await supabase.rpc(
+      'finish_bulletin_image_deletion',
+      { p_bulletin_id: cleanBulletinId, p_image_id: cleanImageId, p_image_path: imagePath }
+    )
+    if (finishError) return { success: false, error: new Error(finishError.message), deletionPending: true }
+    if (finished !== true) return { success: false, error: new Error('The photograph attachment could not be removed.'), deletionPending: true }
+    return { success: true, error: null, deletionPending: false }
+  } catch (err) {
+    return { success: false, error: unexpectedError(err), deletionPending: deletionReserved }
   }
 }
 
@@ -432,7 +517,7 @@ export async function getCuratorBulletinById(id: string): Promise<CuratorBulleti
     const bulletin = normalizeRelatedWatch(data as unknown as RawBulletinWithRelatedWatch)
     const { data: imageRows, error: imageError } = await supabase
       .from('bulletin_images')
-      .select('id, bulletin_id, image_path, sort_order, created_at')
+      .select('id, bulletin_id, image_path, sort_order, created_at, deletion_pending')
       .eq('bulletin_id', bulletinId)
       .eq('upload_status', 'ready')
       .order('sort_order', { ascending: true })
@@ -440,25 +525,44 @@ export async function getCuratorBulletinById(id: string): Promise<CuratorBulleti
     if (imageError) return { data: null, error: new Error(imageError.message), isConfigured: true }
 
     const rows = imageRows ?? []
-    let images: BulletinImage[] = []
-    if (rows.length > 0) {
-      const { data: signedUrls, error: signedUrlError } = await supabase.storage
-        .from(BULLETIN_IMAGES_BUCKET)
-        .createSignedUrls(rows.map((image) => image.image_path), 60 * 60)
-
-      if (signedUrlError) return { data: null, error: new Error(signedUrlError.message), isConfigured: true }
-      const failedUrl = signedUrls.find((item) => item.error || !item.signedUrl)
-      if (failedUrl) {
-        return {
-          data: null,
-          error: new Error(failedUrl.error || 'Unable to create a signed Bulletin photo URL.'),
-          isConfigured: true,
+    const images: CuratorBulletinImage[] = []
+    for (const image of rows) {
+      let storageObjectExists: boolean | null = image.deletion_pending ? null : true
+      if (image.deletion_pending) {
+        try {
+          const { data: deletionState, error: deletionStateError } = await supabase.rpc(
+            'begin_bulletin_image_deletion',
+            { p_bulletin_id: bulletinId, p_image_id: image.id }
+          )
+          if (!deletionStateError && typeof deletionState?.object_exists === 'boolean') {
+            storageObjectExists = deletionState.object_exists
+          }
+        } catch {
+          // Keep the pending row visible even when Storage reconciliation is temporarily unavailable.
         }
       }
-      images = rows.map((image, index) => ({
+
+      let signedUrl: string | null = null
+      if (!image.deletion_pending || storageObjectExists === true) {
+        try {
+          const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+            .from(BULLETIN_IMAGES_BUCKET)
+            .createSignedUrl(image.image_path, 60 * 60)
+          if (!signedUrlError) signedUrl = signedUrlData.signedUrl
+          else if (!image.deletion_pending) {
+            return { data: null, error: new Error(signedUrlError.message), isConfigured: true }
+          }
+        } catch (err) {
+          if (!image.deletion_pending) return { data: null, error: unexpectedError(err), isConfigured: true }
+        }
+      }
+
+      images.push({
         ...image,
-        signed_url: signedUrls[index].signedUrl as string,
-      }))
+        deletion_pending: image.deletion_pending,
+        storage_object_exists: storageObjectExists,
+        signed_url: signedUrl ?? '',
+      })
     }
 
     return { data: { ...bulletin, images }, error: null, isConfigured: true }
