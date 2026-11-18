@@ -1,4 +1,10 @@
-import { type ReactNode, useEffect, useState } from 'react'
+import { type MouseEvent, type ReactNode, useEffect, useState } from 'react'
+import { Link } from '../../router'
+
+export interface AmpersandOrigin {
+  x: number
+  y: number
+}
 
 interface BrandLogoProps {
   variant?: 'horizontal' | 'stacked' | 'compact'
@@ -8,6 +14,7 @@ interface BrandLogoProps {
   className?: string
   animateAssembly?: boolean
   interactiveWind?: boolean
+  onAmpersandActivate?: (origin: AmpersandOrigin) => void
 }
 
 export default function BrandLogo({
@@ -18,6 +25,7 @@ export default function BrandLogo({
   className = '',
   animateAssembly = false,
   interactiveWind = false,
+  onAmpersandActivate,
 }: BrandLogoProps) {
   const [shouldAnimate, setShouldAnimate] = useState(false)
 
@@ -125,41 +133,64 @@ export default function BrandLogo({
   }
 
   const currentSize = sizeClasses[size]
+  const nameClass = `font-semibold ${currentSize.name} ${shouldAnimate ? 'animate-assembly-left' : ''}`
+  const rightNameClass = `font-semibold ${currentSize.name} ${shouldAnimate ? 'animate-assembly-right' : ''}`
+  const ampersandClass = `font-light text-[#8A102A] select-none inline-block origin-center ${currentSize.amp} ${onAmpersandActivate ? 'cursor-pointer' : ''} ${interactiveWind ? 'rotate-0 animate-wordmark-ampersand' : ''} ${shouldAnimate ? 'animate-assembly-center' : ''}`
+  const homeLinkClass = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
+
+  const activateAmpersand = (event: MouseEvent<HTMLButtonElement>) => {
+    if (!onAmpersandActivate) return
+    event.preventDefault()
+    event.stopPropagation()
+    const rect = event.currentTarget.getBoundingClientRect()
+    onAmpersandActivate({
+      x: (rect.left + rect.width / 2) / window.innerWidth,
+      y: (rect.top + rect.height / 2) / window.innerHeight,
+    })
+  }
 
   return (
     <div className={`flex flex-col ${className}`} aria-label="MOERI & JEANNERET">
       <div className="inline-flex items-baseline leading-none uppercase font-sans text-ink">
-        <span
-          className={`font-semibold ${currentSize.name} ${shouldAnimate ? 'animate-assembly-left' : ''}`}
-        >
-          MOERI
-        </span>
-        <span
-          className={`font-light text-[#8A102A] select-none inline-block origin-center ${currentSize.amp} ${
-            interactiveWind
-              ? 'rotate-0 animate-wordmark-ampersand'
-              : ''
-          } ${
-            shouldAnimate ? 'animate-assembly-center' : ''
-          }`}
-          aria-hidden="true"
-        >
-          &amp;
-        </span>
-        <span
-          className={`font-semibold ${currentSize.name} ${shouldAnimate ? 'animate-assembly-right' : ''}`}
-        >
-          JEANNERET
-        </span>
+        {onAmpersandActivate ? (
+          <Link to="/" className={homeLinkClass} aria-label="MOERI home">
+            <span className={nameClass}>MOERI</span>
+          </Link>
+        ) : (
+          <span className={nameClass}>MOERI</span>
+        )}
+        {onAmpersandActivate ? (
+          <button
+            type="button"
+            className={`mojean-amp-trigger ${ampersandClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-ink`}
+            aria-label="Open hidden page"
+            onClick={activateAmpersand}
+          >
+            &amp;
+          </button>
+        ) : (
+          <span className={ampersandClass} aria-hidden="true">&amp;</span>
+        )}
+        {onAmpersandActivate ? (
+          <Link to="/" className={homeLinkClass} aria-label="JEANNERET home">
+            <span className={rightNameClass}>JEANNERET</span>
+          </Link>
+        ) : (
+          <span className={rightNameClass}>JEANNERET</span>
+        )}
       </div>
       {withSubtitle && (
-        <span
-          className={`mt-1 font-mono text-ink-muted uppercase ${currentSize.subtitle} ${
-            shouldAnimate ? 'animate-assembly-fade' : ''
-          }`}
-        >
-          {subtitle}
-        </span>
+        onAmpersandActivate ? (
+          <Link to="/" className={`mt-1 w-fit ${homeLinkClass}`} aria-label="MOERI and JEANNERET culture, stories and archive">
+            <span className={`font-mono text-ink-muted uppercase ${currentSize.subtitle} ${shouldAnimate ? 'animate-assembly-fade' : ''}`}>
+              {subtitle}
+            </span>
+          </Link>
+        ) : (
+          <span className={`mt-1 font-mono text-ink-muted uppercase ${currentSize.subtitle} ${shouldAnimate ? 'animate-assembly-fade' : ''}`}>
+            {subtitle}
+          </span>
+        )
       )}
     </div>
   )

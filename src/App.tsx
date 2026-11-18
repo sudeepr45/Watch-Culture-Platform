@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { RouterProvider } from './router'
 import { useRouter } from './router/useRouter'
 import { AuthProvider } from './context/AuthContext'
@@ -36,6 +36,9 @@ import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import PlatePage from './pages/PlatePage'
 import PlateIndexPage from './pages/PlateIndexPage'
+import HiddenAmpersandExperience from './components/common/HiddenAmpersandExperience'
+import type { AmpersandPhase } from './components/common/hiddenAmpersandTiming'
+import type { AmpersandOrigin } from './components/common/BrandLogo'
 
 function AppContent() {
   const { pathname } = useRouter()
@@ -46,6 +49,144 @@ function AppContent() {
       return false
     }
   })
+  const [ampersandPhase, setAmpersandPhase] = useState<AmpersandPhase>('idle')
+  const [ampersandOrigin, setAmpersandOrigin] = useState<AmpersandOrigin>({ x: 0.5, y: 0.1 })
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const phaseRef = useRef<AmpersandPhase>('idle')
+  const savedScrollRef = useRef(0)
+  const savedBodyStyleRef = useRef<{ position: string; top: string; width: string; overflow: string; htmlOverflow: string } | null>(null)
+  const historyEntryActiveRef = useRef(false)
+  const historyTraversalPendingRef = useRef(false)
+  const historyMarker = '__mojeanAmpersandExperience'
+  const historyMarkerValue = 'mojean-hidden-ampersand-v1'
+
+  const setPhase = useCallback((phase: AmpersandPhase) => {
+    phaseRef.current = phase
+    setAmpersandPhase(phase)
+  }, [])
+
+  const restoreDocument = useCallback(() => {
+    const saved = savedBodyStyleRef.current
+    if (saved) {
+      document.body.style.position = saved.position
+      document.body.style.top = saved.top
+      document.body.style.width = saved.width
+      document.body.style.overflow = saved.overflow
+      document.documentElement.style.overflow = saved.htmlOverflow
+      savedBodyStyleRef.current = null
+      window.scrollTo({ top: savedScrollRef.current, behavior: 'instant' })
+    }
+  }, [])
+
+  const beginAmpersandExperience = useCallback((origin: AmpersandOrigin) => {
+    if (pathname !== '/' || phaseRef.current !== 'idle') return
+    setAmpersandOrigin(origin)
+    savedScrollRef.current = window.scrollY
+    savedBodyStyleRef.current = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overflow: document.body.style.overflow,
+      htmlOverflow: document.documentElement.style.overflow,
+    }
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${savedScrollRef.current}px`
+    document.body.style.width = '100%'
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    try {
+      const state = window.history.state && typeof window.history.state === 'object' ? window.history.state : {}
+      window.history.pushState({ ...state, [historyMarker]: historyMarkerValue }, '', window.location.href)
+      historyEntryActiveRef.current = true
+      historyTraversalPendingRef.current = false
+    } catch {
+      // The visual experience remains available if history state is restricted.
+      historyEntryActiveRef.current = false
+    }
+    setPhase('consuming')
+  }, [historyMarker, historyMarkerValue, pathname, setPhase])
+
+  const requestAmpersandExit = useCallback(() => {
+    if (phaseRef.current === 'idle' || phaseRef.current === 'reversing') return
+    setPhase('reversing')
+    if (
+      historyEntryActiveRef.current
+      && !historyTraversalPendingRef.current
+      && window.history.state?.[historyMarker] === historyMarkerValue
+    ) {
+      historyTraversalPendingRef.current = true
+      window.history.back()
+    }
+  }, [historyMarker, historyMarkerValue, setPhase])
+
+  const finishAmpersandExit = useCallback(() => {
+    restoreDocument()
+    historyEntryActiveRef.current = false
+    historyTraversalPendingRef.current = false
+    setPhase('idle')
+  }, [restoreDocument, setPhase])
+
+  const finishAmpersandInversion = useCallback(() => setPhase('inverted'), [setPhase])
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReducedMotion(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && phaseRef.current !== 'idle') {
+        event.preventDefault()
+        requestAmpersandExit()
+      }
+    }
+    const handlePopState = () => {
+      const state = window.history.state
+      const marker = state?.[historyMarker]
+      const hasExperienceMarker = marker === historyMarkerValue
+      const hasLegacyExperienceMarker = marker === true
+      const hasTransientMarker = hasExperienceMarker || hasLegacyExperienceMarker
+
+      if (hasTransientMarker && phaseRef.current === 'idle') {
+        const cleanState = { ...state }
+        delete cleanState[historyMarker]
+        window.history.replaceState(cleanState, '', window.location.href)
+        historyEntryActiveRef.current = false
+        historyTraversalPendingRef.current = false
+        return
+      }
+
+      if (phaseRef.current === 'idle') return
+      if (window.location.pathname !== '/') {
+        historyEntryActiveRef.current = false
+        historyTraversalPendingRef.current = false
+        finishAmpersandExit()
+      } else if (hasTransientMarker && phaseRef.current === 'reversing') {
+        // Forward restored the transient entry during reversal; consume it again.
+        historyTraversalPendingRef.current = true
+        window.history.back()
+      } else if (!hasExperienceMarker) {
+        historyTraversalPendingRef.current = false
+        historyEntryActiveRef.current = false
+        if (phaseRef.current !== 'reversing') requestAmpersandExit()
+      }
+    }
+    const currentState = window.history.state
+    if (currentState?.[historyMarker] === historyMarkerValue || currentState?.[historyMarker] === true) {
+      const cleanState = { ...currentState }
+      delete cleanState[historyMarker]
+      window.history.replaceState(cleanState, '', window.location.href)
+    }
+    window.addEventListener('keydown', handleKey)
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('keydown', handleKey)
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [finishAmpersandExit, historyMarker, historyMarkerValue, requestAmpersandExit])
 
   const { playbackIssue, retryWindSound } = useScrollWindOnce(soundEnabled, pathname)
 
@@ -160,9 +301,14 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-warm-white text-ink selection:bg-steel/20 selection:text-ink">
+    <>
+    <div
+      className="min-h-screen flex flex-col bg-warm-white text-ink selection:bg-steel/20 selection:text-ink"
+      aria-hidden={ampersandPhase !== 'idle'}
+      inert={ampersandPhase !== 'idle'}
+    >
       {/* Sticky Editorial Navigation */}
-      <Navbar />
+      <Navbar onAmpersandActivate={beginAmpersandExperience} />
 
       {/* Dynamic Page Content */}
       <main className="flex-grow">{renderPage()}</main>
@@ -172,6 +318,15 @@ function AppContent() {
 
       <SoundNote soundEnabled={soundEnabled} onSoundChange={setSoundEnabled} playbackIssue={pathname === '/' ? playbackIssue : null} onRetry={retryWindSound} />
     </div>
+    <HiddenAmpersandExperience
+      phase={ampersandPhase}
+      origin={ampersandOrigin}
+      reducedMotion={reducedMotion}
+      onInverted={finishAmpersandInversion}
+      onReversed={finishAmpersandExit}
+      onExit={requestAmpersandExit}
+    />
+    </>
   )
 }
 

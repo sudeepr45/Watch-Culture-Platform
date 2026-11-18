@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import Container from '../common/Container'
-import BrandLogo from '../common/BrandLogo'
+import BrandLogo, { type AmpersandOrigin } from '../common/BrandLogo'
 import { Link } from '../../router'
 import { useRouter } from '../../router/useRouter'
 import { useAuth } from '../../context/useAuth'
@@ -15,7 +15,7 @@ const EXPERIENCE_ITEMS = [
   { label: 'WATCH 101', to: '/watch-101' },
 ]
 
-export default function Navbar() {
+export default function Navbar({ onAmpersandActivate }: { onAmpersandActivate?: (origin: AmpersandOrigin) => void }) {
   const { pathname, navigate } = useRouter()
   const { isAuthenticated, profile } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -28,6 +28,18 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const brandLogo = (
+    <BrandLogo
+      variant="horizontal"
+      size="sm"
+      withSubtitle
+      subtitle="CULTURE &bull; STORIES &bull; ARCHIVE"
+      animateAssembly={pathname === '/'}
+      interactiveWind={true}
+      onAmpersandActivate={pathname === '/' ? onAmpersandActivate : undefined}
+    />
+  )
 
   // Close mobile menu on Escape
   useEffect(() => {
@@ -50,20 +62,15 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Left: Brand Masthead */}
           <div className="flex items-center">
-            <Link
-              to="/"
-              className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
-              aria-label="MOERI & JEANNERET Home"
-            >
-              <BrandLogo
-                variant="horizontal"
-                size="sm"
-                withSubtitle
-                subtitle="CULTURE &bull; STORIES &bull; ARCHIVE"
-                animateAssembly={pathname === '/'}
-                interactiveWind={true}
-              />
-            </Link>
+            {pathname === '/' && onAmpersandActivate ? brandLogo : (
+              <Link
+                to="/"
+                className="group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+                aria-label="MOERI & JEANNERET Home"
+              >
+                {brandLogo}
+              </Link>
+            )}
           </div>
 
           {/* Center: Desktop Navigation Hierarchy */}

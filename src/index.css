@@ -128,3 +128,245 @@
     animation: wordmark-ampersand-cycle 10s ease-in-out infinite;
   }
 }
+
+.mojean-amp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: transparent;
+  isolation: isolate;
+  color: #080103;
+}
+
+.mojean-amp-ink {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mojean-amp-webgl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mojean-amp-composition {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(180deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.mojean-amp-copy {
+  position: absolute;
+  left: 6vw;
+  top: 50%;
+  width: min(88vw, 1500px);
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: clamp(2rem, 7vw, 9rem);
+  color: #080103;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.8rem, 6.6vw, 6.8rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  user-select: text;
+  -webkit-user-select: text;
+  pointer-events: auto;
+}
+
+.mojean-amp-quote {
+  min-width: 0;
+}
+
+.mojean-amp-quote .mojean-amp-line {
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: normal;
+}
+
+.mojean-amp-line {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.mojean-amp-signature-line {
+  justify-self: end;
+  margin-top: 0.25rem;
+}
+
+.mojean-amp-signature-column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mojean-amp-ink-stains {
+  position: absolute;
+  top: -2.5rem;
+  left: 47%;
+  width: 4rem;
+  height: auto;
+  transform: translateX(-50%) rotate(-13deg);
+  pointer-events: none;
+}
+
+.mojean-amp-signature {
+  text-align: center;
+  letter-spacing: normal;
+}
+
+.mojean-amp-signature-mark,
+.mojean-amp-founder {
+  display: block;
+}
+
+.mojean-amp-signature-mark {
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", Georgia, serif;
+  color: #E6DCCB;
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.mojean-amp-founder {
+  margin-top: 0;
+  font-family: var(--font-sans);
+  color: #080103;
+  font-size: clamp(0.55rem, 0.9vw, 0.8rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.24em;
+}
+
+.mojean-amp-katana {
+  display: block;
+  width: clamp(8rem, 12vw, 10rem);
+  max-width: 100%;
+  height: auto;
+  margin: 0.85rem auto 0;
+  color: #080103;
+}
+
+.mojean-amp-trace,
+.mojean-amp-fill {
+  display: block;
+  clip-path: inset(0 calc(100% - var(--line-reveal, 0%)) 0 0);
+}
+
+.mojean-amp-trace {
+  position: absolute;
+  inset: 0 auto auto 0;
+  color: transparent;
+  clip-path: inset(0 calc(100% - var(--line-trace, 0%)) 0 0);
+  -webkit-text-stroke: 1px rgba(8, 1, 3, 0.78);
+}
+
+.mojean-amp-fill {
+  position: relative;
+  color: #080103;
+}
+
+.mojean-amp-exit {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+  border: 0;
+  padding: 0.15em 0.2em;
+  background: transparent;
+  color: #080103;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: none;
+  clip-path: inset(0 calc(100% - var(--amp-reveal, 0%)) 0 0);
+}
+
+.mojean-amp-trigger {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font-family: inherit;
+  line-height: inherit;
+}
+
+.mojean-amp-exit.is-ready {
+  pointer-events: auto;
+}
+
+.mojean-amp-exit:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 0.2em;
+}
+
+@media (max-width: 640px) {
+  .mojean-amp-copy {
+    left: 5vw;
+    width: 90vw;
+    column-gap: clamp(0.75rem, 4vw, 1.5rem);
+    font-size: clamp(1.55rem, 7vw, 2.55rem);
+    line-height: 1.08;
+  }
+
+  .mojean-amp-line {
+    white-space: normal;
+  }
+
+  .mojean-amp-signature-mark {
+    font-size: clamp(1.8rem, 7vw, 2.8rem);
+  }
+
+  .mojean-amp-founder {
+    font-size: clamp(0.48rem, 2vw, 0.65rem);
+    letter-spacing: 0.15em;
+  }
+
+  .mojean-amp-katana {
+    width: clamp(6rem, 30vw, 7.5rem);
+    margin-top: 0.7rem;
+  }
+
+  .mojean-amp-ink-stains {
+    top: -2rem;
+    width: 3.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .mojean-amp-copy {
+    column-gap: 0.65rem;
+    font-size: 1.45rem;
+  }
+
+  .mojean-amp-signature-mark {
+    font-size: 1.65rem;
+  }
+
+  .mojean-amp-katana {
+    width: min(6.5rem, 38vw);
+  }
+}
