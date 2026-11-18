@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import Container from '../components/common/Container'
+import { bulletinBodyPlainText } from '../services/bulletinRichText'
 import { BulletinCategoryDescription, BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
 import Button from '../components/common/Button'
 import WatchImage from '../components/common/WatchImage'
@@ -326,7 +327,7 @@ export default function HomePage() {
                     {formatStoryDate(story.published_at) && <time>{formatStoryDate(story.published_at)}</time>}
                   </div>
                   <h3 className="mt-3 font-display text-lg font-medium leading-snug tracking-tight text-ink group-hover:underline">{story.title}</h3>
-                  <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-secondary">{story.story_text}</p>
+                  <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-secondary">{bulletinBodyPlainText(story.story_text)}</p>
                   <span className="mt-4 border-t border-hairline pt-3 text-xs font-mono uppercase tracking-wider text-ink">READ STORY &rarr;</span>
                 </div>
               </Link>

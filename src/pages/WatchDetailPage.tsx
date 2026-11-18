@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import Container from '../components/common/Container'
+import { bulletinBodyPlainText } from '../services/bulletinRichText'
 import Button from '../components/common/Button'
 import WatchImage from '../components/common/WatchImage'
 import { Link } from '../router'
@@ -806,7 +807,7 @@ export default function WatchDetailPage({ slug }: WatchDetailPageProps) {
                         </h3>
 
                         <p className="mt-2.5 text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
-                          {story.story_text}
+                          {bulletinBodyPlainText(story.story_text)}
                         </p>
 
                         <div className="mt-4 pt-3 border-t border-hairline/60 flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-ink-muted">

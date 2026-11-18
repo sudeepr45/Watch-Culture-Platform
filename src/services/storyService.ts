@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import { bulletinBodyHasText, prepareBulletinBodyForSave } from './bulletinRichText'
 import type { Profile } from '../types/auth'
 import type {
   Story,
@@ -480,8 +481,8 @@ export async function createStory(input: CreateStoryInput): Promise<CreateStoryR
 
   // 5. Validate story_text
   const rawStoryText = input.story_text
-  const cleanStoryText = typeof rawStoryText === 'string' ? rawStoryText.trim() : ''
-  if (!cleanStoryText) {
+  const cleanStoryText = typeof rawStoryText === 'string' ? prepareBulletinBodyForSave(rawStoryText).trim() : ''
+  if (!bulletinBodyHasText(cleanStoryText)) {
     return {
       data: null,
       error: new Error('Story text is required.'),
@@ -713,8 +714,8 @@ export async function updateStory(
     }
 
     if (input.story_text !== undefined) {
-      const cleanStoryText = input.story_text.trim()
-      if (!cleanStoryText) {
+      const cleanStoryText = prepareBulletinBodyForSave(input.story_text).trim()
+      if (!bulletinBodyHasText(cleanStoryText)) {
         return {
           data: null,
           error: new Error('Story text cannot be empty.'),

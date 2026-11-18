@@ -31,7 +31,13 @@ function renderPlainBody(body: string): ReactNode[] {
     ))
 }
 
-export default function BulletinBodyContent({ body }: { body: string }) {
+export default function BulletinBodyContent({ body, eachPlainLineIsParagraph = false }: { body: string; eachPlainLineIsParagraph?: boolean }) {
   const richHtml = decodeRichBulletinBody(body)
-  return <>{richHtml === null ? renderPlainBody(body) : renderRichHtml(richHtml)}</>
+  if (richHtml !== null) return <>{renderRichHtml(richHtml)}</>
+  if (eachPlainLineIsParagraph) {
+    return <>{body.split(/\r?\n+/).filter((paragraph) => paragraph.trim()).map((paragraph, index) => (
+      <p key={`plain-${index}`} className="whitespace-pre-line">{paragraph}</p>
+    ))}</>
+  }
+  return <>{renderPlainBody(body)}</>
 }

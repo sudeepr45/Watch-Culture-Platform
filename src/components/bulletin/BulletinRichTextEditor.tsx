@@ -12,9 +12,21 @@ interface BulletinRichTextEditorProps {
   onBlur?: () => void
   invalid?: boolean
   describedBy?: string
+  id?: string
+  label?: string
+  eachPlainLineIsParagraph?: boolean
 }
 
-export default function BulletinRichTextEditor({ value, onChange, onBlur, invalid, describedBy }: BulletinRichTextEditorProps) {
+export default function BulletinRichTextEditor({
+  value,
+  onChange,
+  onBlur,
+  invalid,
+  describedBy,
+  id = 'bulletin-body',
+  label = 'Bulletin article body',
+  eachPlainLineIsParagraph = false,
+}: BulletinRichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const savedRangeRef = useRef<Range | null>(null)
   const lastEmittedValueRef = useRef<string | null>(null)
@@ -24,9 +36,9 @@ export default function BulletinRichTextEditor({ value, onChange, onBlur, invali
 
   useEffect(() => {
     if (!editorRef.current || value === lastEmittedValueRef.current) return
-    editorRef.current.innerHTML = bulletinBodyEditorHtml(value)
+    editorRef.current.innerHTML = bulletinBodyEditorHtml(value, eachPlainLineIsParagraph)
     lastEmittedValueRef.current = value
-  }, [value])
+  }, [value, eachPlainLineIsParagraph])
 
   const captureSelection = () => {
     const editor = editorRef.current
@@ -79,9 +91,9 @@ export default function BulletinRichTextEditor({ value, onChange, onBlur, invali
   return (
     <div className="border border-hairline bg-warm-white focus-within:border-ink">
       <div className="flex flex-wrap items-center gap-1.5 border-b border-hairline bg-warm-surface/30 p-2" role="toolbar" aria-label="Bulletin text formatting">
-        <label className="sr-only" htmlFor="bulletin-font-family">Font family</label>
+        <label className="sr-only" htmlFor={`${id}-font-family`}>Font family</label>
         <select
-          id="bulletin-font-family"
+          id={`${id}-font-family`}
           value={fontActive}
           onMouseDown={captureSelection}
           onFocus={captureSelection}
@@ -113,11 +125,11 @@ export default function BulletinRichTextEditor({ value, onChange, onBlur, invali
       </div>
       <div
         ref={editorRef}
-        id="bulletin-body"
+        id={id}
         contentEditable
         suppressContentEditableWarning
         role="textbox"
-        aria-label="Bulletin article body"
+        aria-label={label}
         aria-multiline="true"
         aria-invalid={invalid}
         aria-describedby={describedBy}

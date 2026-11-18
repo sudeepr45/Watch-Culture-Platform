@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Container from '../components/common/Container'
+import { bulletinBodyPlainText } from '../services/bulletinRichText'
 import Button from '../components/common/Button'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
@@ -322,7 +323,7 @@ export default function StoriesPage() {
 
                       {/* Excerpt */}
                       <p className="mt-4 text-sm sm:text-base text-ink-secondary font-light leading-relaxed line-clamp-4">
-                        {leadStory.story_text}
+                        {bulletinBodyPlainText(leadStory.story_text)}
                       </p>
                     </div>
 
@@ -430,7 +431,7 @@ export default function StoriesPage() {
 
                             {/* Excerpt */}
                             <p className="mt-3 text-sm text-ink-secondary font-light leading-relaxed line-clamp-3">
-                              {story.story_text}
+                              {bulletinBodyPlainText(story.story_text)}
                             </p>
                           </div>
 

@@ -8,6 +8,9 @@ import { fetchWatches } from '../services/watchService'
 import type { Watch } from '../types/watch'
 import type { StoryWithAuthorAndWatch } from '../types/story'
 import WatchImage from '../components/common/WatchImage'
+import BulletinRichTextEditor from '../components/bulletin/BulletinRichTextEditor'
+import BulletinBodyContent from '../components/bulletin/BulletinBodyContent'
+import { bulletinBodyHasText, bulletinBodyPlainText, prepareBulletinBodyForSave } from '../services/bulletinRichText'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
@@ -428,7 +431,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
       return
     }
 
-    if (!storyText.trim()) {
+    if (!bulletinBodyHasText(storyText)) {
       setFormError('Story text is required to save a draft.')
       return
     }
@@ -462,7 +465,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
         personal_watch_model: watchModel.trim(),
         personal_watch_reference: watchReference.trim() || null,
         title: title.trim(),
-        story_text: storyText.trim(),
+        story_text: prepareBulletinBodyForSave(storyText),
         photo_url: effectivePhotoUrl,
         status: 'draft',
       })
@@ -485,7 +488,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
       personal_watch_model: watchModel.trim(),
       personal_watch_reference: watchReference.trim() || null,
       title: title.trim(),
-      story_text: storyText.trim(),
+      story_text: prepareBulletinBodyForSave(storyText),
       photo_url: effectivePhotoUrl,
       status: 'draft',
     })
@@ -522,7 +525,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
       return
     }
 
-    if (!storyText.trim()) {
+    if (!bulletinBodyHasText(storyText)) {
       setFormError('Please write your personal story before publishing.')
       return
     }
@@ -568,7 +571,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
         personal_watch_model: watchModel.trim(),
         personal_watch_reference: watchReference.trim() || null,
         title: title.trim(),
-        story_text: storyText.trim(),
+        story_text: prepareBulletinBodyForSave(storyText),
         photo_url: effectivePhotoUrl,
         status: 'published',
       })
@@ -591,7 +594,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
       personal_watch_model: watchModel.trim(),
       personal_watch_reference: watchReference.trim() || null,
       title: title.trim(),
-      story_text: storyText.trim(),
+      story_text: prepareBulletinBodyForSave(storyText),
       photo_url: effectivePhotoUrl,
       status: 'published',
     })
@@ -609,6 +612,7 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
   // Collector identity fallback
   const authorName = profile?.display_name || profile?.username || 'Authenticated Collector'
   const authorUsername = profile?.username ? `@${profile.username}` : ''
+  const plainStoryText = bulletinBodyPlainText(storyText)
 
   return (
     <div className="py-12 sm:py-16 lg:py-20">
@@ -1013,17 +1017,16 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
                 >
                   Personal Provenance &amp; Experience *
                 </label>
-                <textarea
+                <BulletinRichTextEditor
                   id="story-text"
-                  rows={9}
+                  label="Story body"
+                  eachPlainLineIsParagraph
                   value={storyText}
-                  onChange={(e) => setStoryText(e.target.value)}
-                  placeholder="Tell the story behind this watch. Why did you buy it? What do you remember about that moment? What does it mean to you now?"
-                  className="w-full bg-warm-white border border-hairline p-4 text-xs sm:text-sm font-sans leading-relaxed text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-ink transition-colors resize-y"
+                  onChange={setStoryText}
                 />
                 <div className="mt-1.5 flex justify-between text-[10px] font-mono text-ink-muted">
                   <span>SHARE MEMORIES, ACQUISITIONS, TRIPS, OR HOROLOGICAL MILESTONES</span>
-                  <span>{storyText.trim() ? storyText.trim().split(/\s+/).length : 0} WORDS</span>
+                  <span>{plainStoryText.trim() ? plainStoryText.trim().split(/\s+/).length : 0} WORDS</span>
                 </div>
               </div>
             </section>
@@ -1174,9 +1177,9 @@ export default function CreateStoryPage({ editSlug }: CreateStoryPageProps = {})
 
               {/* Story Narrative */}
               <div className="max-w-2xl mx-auto">
-                {storyText.trim() ? (
-                  <div className="prose prose-neutral text-ink text-sm sm:text-base font-sans font-light leading-relaxed whitespace-pre-line">
-                    {storyText}
+                {bulletinBodyHasText(storyText) ? (
+                  <div className="prose prose-neutral text-ink text-sm sm:text-base font-sans font-light leading-relaxed">
+                    <BulletinBodyContent body={storyText} eachPlainLineIsParagraph />
                   </div>
                 ) : (
                   <p className="text-sm font-sans font-light text-ink-muted text-center py-8">

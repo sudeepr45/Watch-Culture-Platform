@@ -59,16 +59,19 @@ export function decodeRichBulletinBody(body: string): string | null {
   return sanitizeBulletinRichHtml(body.slice(BULLETIN_RICH_TEXT_PREFIX.length))
 }
 
-function plainTextToHtml(body: string): string {
-  return body.split(/\r?\n(?:[\t ]*\r?\n)+/)
+function plainTextToHtml(body: string, eachLineIsParagraph = false): string {
+  const paragraphs = eachLineIsParagraph
+    ? body.split(/\r?\n+/)
+    : body.split(/\r?\n(?:[\t ]*\r?\n)+/)
+  return paragraphs
     .filter((paragraph) => paragraph.trim().length > 0)
     .map((paragraph) => `<p>${paragraph.split(/\r?\n/).map(escapeHtml).join('<br>')}</p>`)
     .join('')
 }
 
-export function bulletinBodyEditorHtml(body: string): string {
+export function bulletinBodyEditorHtml(body: string, eachPlainLineIsParagraph = false): string {
   const richHtml = decodeRichBulletinBody(body)
-  return richHtml ?? plainTextToHtml(body)
+  return richHtml ?? plainTextToHtml(body, eachPlainLineIsParagraph)
 }
 
 /** Plain legacy records remain unchanged; rich documents are sanitized on every save. */
@@ -83,6 +86,21 @@ export function bulletinBodyHasText(body: string): boolean {
   const html = decodeRichBulletinBody(body) ?? ''
   if (typeof DOMParser === 'undefined') return false
   return new DOMParser().parseFromString(html, 'text/html').body.textContent?.trim().length !== 0
+}
+
+export function bulletinBodyPlainText(body: string): string {
+  const richHtml = decodeRichBulletinBody(body)
+  if (richHtml === null) return body
+  if (typeof DOMParser === 'undefined') return ''
+  const parsed = new DOMParser().parseFromString(richHtml, 'text/html')
+  const collectText = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? ''
+    if (!(node instanceof Element)) return ''
+    if (node.tagName.toLowerCase() === 'br') return '\n'
+    const content = Array.from(node.childNodes, collectText).join('')
+    return node.tagName.toLowerCase() === 'p' ? `${content}\n` : content
+  }
+  return Array.from(parsed.body.childNodes, collectText).join('').trim()
 }
 
 export function encodeBulletinRichHtml(html: string): string {

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, type FormEvent } from 'react'
 import Container from '../components/common/Container'
 import Button from '../components/common/Button'
+import BulletinBodyContent from '../components/bulletin/BulletinBodyContent'
 import { Link } from '../router'
 import { useRouter } from '../router/useRouter'
 import { useAuth } from '../context/useAuth'
@@ -464,9 +465,6 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
       })
     : 'COMMUNITY DISPATCH'
 
-  // Split story paragraphs
-  const paragraphs = story.story_text.split(/\n+/).filter((p) => p.trim().length > 0)
-
   return (
     <div className="py-12 sm:py-16 lg:py-20">
       <Container>
@@ -596,11 +594,7 @@ export default function StoryDetailPage({ slug }: StoryDetailPageProps) {
           </div>
 
           <div className="space-y-6 text-base sm:text-lg text-ink font-light leading-relaxed">
-            {paragraphs.map((paragraph, index) => (
-              <p key={index} className="text-balance">
-                {paragraph}
-              </p>
-            ))}
+            <BulletinBodyContent body={story.story_text} eachPlainLineIsParagraph />
           </div>
         </div>
 
