@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import Container from '../components/common/Container'
 import { BulletinCategorySelector } from '../components/bulletin/BulletinCategorySelector'
+import BulletinRichTextEditor from '../components/bulletin/BulletinRichTextEditor'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import {
@@ -12,6 +13,7 @@ import {
   type BulletinCategory,
   type BulletinEra,
 } from '../services/curatorBulletinService'
+import { bulletinBodyHasText, prepareBulletinBodyForSave } from '../services/bulletinRichText'
 
 type BulletinField = 'title' | 'category' | 'somethingElseDescription' | 'slug' | 'body'
 type FieldErrors = Partial<Record<BulletinField, string>>
@@ -140,7 +142,7 @@ export default function CuratorNewBulletinPage() {
       nextErrors.somethingElseDescription = 'Describe what this Bulletin is about.'
     }
     if (!normalizedSlug) nextErrors.slug = 'Enter a valid slug.'
-    if (!body.trim()) nextErrors.body = 'Enter the Bulletin body.'
+    if (!bulletinBodyHasText(body)) nextErrors.body = 'Enter the Bulletin body.'
 
     setFieldErrors(nextErrors)
     setSubmitError(null)
@@ -153,7 +155,7 @@ export default function CuratorNewBulletinPage() {
       categories,
       something_else_description: categories.includes('Something Else') ? somethingElseDescription.trim() : null,
       slug: normalizedSlug,
-      body: body.trim(),
+      body: prepareBulletinBodyForSave(body),
       // Keep the record private until every selected image has been finalized.
       published_at: null,
     })
@@ -343,17 +345,14 @@ export default function CuratorNewBulletinPage() {
             <label htmlFor="bulletin-body" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">
               BODY
             </label>
-            <textarea
-              id="bulletin-body"
+            <BulletinRichTextEditor
               value={body}
-              onChange={(event) => {
-                setBody(event.target.value)
+              onChange={(value) => {
+                setBody(value)
                 clearFieldError('body')
               }}
-              rows={14}
-              aria-invalid={Boolean(fieldErrors.body)}
-              aria-describedby={fieldErrors.body ? 'bulletin-body-error' : undefined}
-              className="w-full resize-y border border-hairline bg-warm-white px-3 py-3 font-sans text-base leading-relaxed text-ink-secondary placeholder:text-ink-muted/50 focus:border-ink focus:outline-none"
+              invalid={Boolean(fieldErrors.body)}
+              describedBy={fieldErrors.body ? 'bulletin-body-error' : undefined}
             />
             <FieldError id="bulletin-body-error">{fieldErrors.body}</FieldError>
           </div>

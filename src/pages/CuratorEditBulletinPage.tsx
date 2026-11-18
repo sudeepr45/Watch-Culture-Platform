@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import Container from '../components/common/Container'
 import { BulletinCategorySelector } from '../components/bulletin/BulletinCategorySelector'
+import BulletinRichTextEditor from '../components/bulletin/BulletinRichTextEditor'
 import { useAuth } from '../context/useAuth'
 import { useRouter } from '../router/useRouter'
 import {
@@ -15,6 +16,7 @@ import {
   type BulletinEra,
 } from '../services/curatorBulletinService'
 import { fetchPublishedWatches } from '../services/watchService'
+import { bulletinBodyHasText, prepareBulletinBodyForSave } from '../services/bulletinRichText'
 import type { Watch } from '../types/watch'
 
 function normalizeSlug(value: string): string {
@@ -114,14 +116,14 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
       return setFieldError('Describe what this Bulletin is about.')
     }
     if (!normalizedSlug) return setFieldError('Enter a valid slug.')
-    if (!body.trim()) return setFieldError('Enter the Bulletin body.')
+    if (!bulletinBodyHasText(body)) return setFieldError('Enter the Bulletin body.')
 
     setFieldError(null)
     setSaveError(null)
     setSaving(true)
     const result = await updateBulletin(id, {
       title: title.trim(),
-      body: body.trim(),
+      body: prepareBulletinBodyForSave(body),
       era,
       categories,
       something_else_description: categories.includes('Something Else') ? somethingElseDescription.trim() : null,
@@ -148,14 +150,14 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
       return setFieldError('Describe what this Bulletin is about.')
     }
     if (!normalizedSlug) return setFieldError('Enter a valid slug.')
-    if (!body.trim()) return setFieldError('Enter the Bulletin body.')
+    if (!bulletinBodyHasText(body)) return setFieldError('Enter the Bulletin body.')
 
     setFieldError(null)
     setSaving(true)
     setSaveError(null)
     const result = await updateBulletin(id, {
       title: title.trim(),
-      body: body.trim(),
+      body: prepareBulletinBodyForSave(body),
       era,
       categories,
       something_else_description: categories.includes('Something Else') ? somethingElseDescription.trim() : null,
@@ -408,7 +410,7 @@ export default function CuratorEditBulletinPage({ id }: { id: string }) {
               </section>
               <div>
                 <label htmlFor="bulletin-body" className="mb-1.5 block text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted">BODY</label>
-                <textarea id="bulletin-body" value={body} onChange={(event) => setBody(event.target.value)} rows={14} className="w-full resize-y border border-hairline bg-warm-white px-3 py-3 font-sans text-base leading-relaxed text-ink-secondary focus:border-ink focus:outline-none" />
+                <BulletinRichTextEditor value={body} onChange={setBody} />
                 <FieldError>{fieldError === 'Select at least one category.' || fieldError === 'Describe what this Bulletin is about.' ? undefined : fieldError}</FieldError>
               </div>
               {saveError && <p className="border-y border-hairline py-3 text-sm text-steel-dark" role="alert">{saveError}</p>}

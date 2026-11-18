@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Container from '../components/common/Container'
 import { BulletinCategoryDescription, BulletinCategoryLabels } from '../components/bulletin/BulletinCategorySelector'
+import BulletinBodyContent from '../components/bulletin/BulletinBodyContent'
 import { Link } from '../router'
 import { getBulletinBySlug } from '../services/bulletinService'
 import type { BulletinWithRelatedWatchAndImages } from '../services/bulletinService'
@@ -22,10 +23,6 @@ function formatEditorialDate(value: string | null): string {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(date).toUpperCase()
-}
-
-function splitParagraphs(body: string): string[] {
-  return body.split(/\r?\n(?:[\t ]*\r?\n)+/).filter((paragraph) => paragraph.trim().length > 0)
 }
 
 interface BulletinDetailPageProps {
@@ -149,11 +146,7 @@ export default function BulletinDetailPage({ slug }: BulletinDetailPageProps) {
             </header>
 
             <div className="mt-8 space-y-5 text-base leading-8 text-ink-secondary sm:mt-10">
-              {splitParagraphs(bulletin.body).map((paragraph, index) => (
-                <p key={`${index}-${paragraph.slice(0, 24)}`} className="whitespace-pre-line">
-                  {paragraph}
-                </p>
-              ))}
+              <BulletinBodyContent body={bulletin.body} />
             </div>
 
             {bulletin.images.length > 0 && (
