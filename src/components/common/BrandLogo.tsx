@@ -143,9 +143,10 @@ export default function BrandLogo({
     event.preventDefault()
     event.stopPropagation()
     const rect = event.currentTarget.getBoundingClientRect()
+    const isPointerActivation = event.detail > 0
     onAmpersandActivate({
-      x: (rect.left + rect.width / 2) / window.innerWidth,
-      y: (rect.top + rect.height / 2) / window.innerHeight,
+      x: (isPointerActivation ? event.clientX : rect.left + rect.width / 2) / window.innerWidth,
+      y: (isPointerActivation ? event.clientY : rect.top + rect.height / 2) / window.innerHeight,
     })
   }
 

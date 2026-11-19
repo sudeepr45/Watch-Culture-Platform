@@ -1,19 +1,7 @@
-export interface LiquidDrop {
-  x: number
-  y: number
-  radius: number
-  angle: number
-  birth: number
-  merge: number
-  elongation: number
-  neck: number
-}
-
 export interface LiquidArrivalField {
   columns: number
   rows: number
   values: Float32Array
-  drops: LiquidDrop[]
 }
 
 class MinHeap {
@@ -71,6 +59,11 @@ function hashNoise(x: number, y: number, seed: number) {
   return ((value ^ (value >>> 16)) >>> 0) / 4294967295
 }
 
+function smoothStep(edge0: number, edge1: number, value: number) {
+  const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)))
+  return t * t * (3 - 2 * t)
+}
+
 function solveUpwindArrival(
   index: number,
   columns: number,
@@ -117,7 +110,15 @@ function generateSpeedMap(
   const speeds = new Float32Array(count)
   const dx = width / (columns - 1)
   const dy = height / (rows - 1)
-  const sources = [0.13, 0.51, 0.86]
+  const sources = [-0.36, 0, 0.36].map((offset) => Math.max(0, Math.min(1, ampX + offset)))
+  const impactPhase = hashNoise(seed + 73, 19, seed) * Math.PI * 2
+  const fingers = Array.from({ length: 7 }, (_, index) => ({
+    index,
+    phase: hashNoise(index + 101, 43, seed) * Math.PI * 2,
+    angle: impactPhase + index * Math.PI * 2 / 7 + (hashNoise(index + 17, 61, seed) - 0.5) * 0.52,
+    width: 9 + hashNoise(index + 29, 83, seed) * 6,
+    strength: 0.48 + hashNoise(index + 47, 97, seed) * 0.38,
+  }))
   const islands = [
     [0.27, 0.56, 0.074, 0.105],
     [0.71, 0.42, 0.068, 0.09],
@@ -131,14 +132,21 @@ function generateSpeedMap(
       const u = xIndex / (columns - 1)
       const index = yIndex * columns + xIndex
       const noise = (hashNoise(xIndex, yIndex, seed) - 0.5) * 0.17
-      const upwardBias = 0.84 + (1 - v) * 0.42
-      let velocity = upwardBias * (1 + noise)
+      const ampDx = (u - ampX) * width
+      const ampDy = (v - ampY) * height
+      const radialDistance = Math.sqrt(ampDx * ampDx + ampDy * ampDy) / Math.min(width, height)
+      const impactDistance = Math.sqrt(ampDx * ampDx + ampDy * ampDy)
+      const impactAngle = Math.atan2(ampDy, ampDx)
+      const outwardBias = 0.82 + Math.min(0.32, radialDistance * 0.32)
+      let velocity = outwardBias * (1 + noise)
 
       for (let source = 0; source < sources.length; source += 1) {
         const sourceX = sources[source]
         const lobeCenterX = sourceX + Math.sin(v * (4.2 + source * 0.4) + source * 2.1) * 0.046
         const lobeX = (u - lobeCenterX) * width
-        const lobeY = (v - 0.69) * height
+        const lobeTargetY = ampY < 0.5 ? 0.72 : 0.28
+        const lobeCenterY = ampY + (lobeTargetY - ampY) * 0.58
+        const lobeY = (v - lobeCenterY) * height
         const lobe = Math.exp(-(lobeX * lobeX / (2 * 43 * 43) + lobeY * lobeY / (2 * 115 * 115)))
         velocity += lobe * (0.16 + source * 0.06)
 
@@ -161,6 +169,27 @@ function generateSpeedMap(
         velocity += Math.exp(-(distance2b * distance2b) / (2 * 12 * 12)) * 0.28
       }
 
+      // Irregular, click-centered fast lanes pull the single arrival front
+      // into narrow fingers. A few lanes fork farther out, but remain joined
+      // to the originating pool through the same eikonal field.
+      const fingerOnset = smoothStep(15, 52, impactDistance)
+      for (const finger of fingers) {
+        const wobble = Math.sin(impactDistance / (78 + finger.index * 7) + finger.phase) * 0.12
+          + Math.sin(impactDistance / 39 + finger.phase * 0.63) * 0.045
+        const rayAngle = finger.angle + wobble
+        const angularOffset = Math.atan2(Math.sin(impactAngle - rayAngle), Math.cos(impactAngle - rayAngle))
+        const lateralDistance = Math.abs(angularOffset) * Math.max(20, impactDistance)
+        velocity += Math.exp(-(lateralDistance * lateralDistance) / (2 * finger.width * finger.width)) * fingerOnset * finger.strength
+
+        if (finger.index % 2 === 0) {
+          const fork = smoothStep(115, 330, impactDistance)
+          const forkAngle = rayAngle + (finger.index % 4 === 0 ? 1 : -1) * (0.055 + fork * 0.06)
+          const forkOffset = Math.atan2(Math.sin(impactAngle - forkAngle), Math.cos(impactAngle - forkAngle))
+          const forkDistance = Math.abs(forkOffset) * Math.max(20, impactDistance)
+          velocity += Math.exp(-(forkDistance * forkDistance) / (2 * (finger.width * 0.72) ** 2)) * fork * finger.strength * 0.52
+        }
+      }
+
       for (let island = 0; island < islands.length; island += 1) {
         const spec = islands[island]
         const nx = (u - spec[0]) / spec[2]
@@ -169,8 +198,6 @@ function generateSpeedMap(
         if (radius < 1.35) velocity *= 0.18 + 0.16 * Math.min(1, radius)
       }
 
-      const ampDx = (u - ampX) * width
-      const ampDy = (v - ampY) * height
       const ampRadius = Math.exp(-((ampDx * ampDx + ampDy * ampDy) / (2 * 64 * 64)))
       velocity *= 1 - ampRadius * 0.7
       speeds[index] = Math.max(0.12, Math.min(2.35, velocity))
@@ -212,15 +239,48 @@ export function generateLiquidArrivalField(
   arrivals.fill(Number.POSITIVE_INFINITY)
   const accepted = new Uint8Array(count)
   const heap = new MinHeap()
-  const sourceCenter = Math.round(0.51 * (columns - 1))
-  const sourceY = rows - 1
+  const sourceCenterX = Math.round(Math.max(0, Math.min(1, ampX)) * (columns - 1))
+  const sourceCenterY = Math.round(Math.max(0, Math.min(1, ampY)) * (rows - 1))
 
-  // A short, connected seed pool grows into the page as one substance.
-  for (let offset = -1; offset <= 1; offset += 1) {
-    const x = Math.max(0, Math.min(columns - 1, sourceCenter + offset))
-    const index = sourceY * columns + x
-    arrivals[index] = 0
-    heap.push(index, 0)
+  // This compact, flattened, seed-shaped pool anchors the arrival field.
+  // Its ragged perimeter stays attached to the central impact core.
+  for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+    for (let offsetX = -2; offsetX <= 2; offsetX += 1) {
+      const x = sourceCenterX + offsetX
+      const y = sourceCenterY + offsetY
+      if (x < 0 || x >= columns || y < 0 || y >= rows) continue
+      const footprint = offsetX * offsetX / 4 + offsetY * offsetY
+      const perimeterRaggedness = (hashNoise(x, y, seed) - 0.5) * 0.35
+      if (footprint > 1 && (footprint > 1.55 || perimeterRaggedness < 0.04)) continue
+      const index = y * columns + x
+      arrivals[index] = 0
+      heap.push(index, 0)
+    }
+  }
+
+  // Three short-lived satellite drops are delayed seeds in this same field,
+  // not separate shader shapes. The faster central front catches and merges
+  // them; their positions and delays stay deterministic under ampSeed.
+  const satellitePhase = hashNoise(seed + 211, 31, seed) * Math.PI * 2
+  for (let satellite = 0; satellite < 3; satellite += 1) {
+    const angle = satellitePhase + satellite * Math.PI * 2 / 3
+      + (hashNoise(satellite + 239, 47, seed) - 0.5) * 0.62
+    const distance = 52 + hashNoise(satellite + 251, 59, seed) * 20
+    const x = Math.max(1, Math.min(columns - 2, sourceCenterX + Math.round(Math.cos(angle) * distance / dx)))
+    const y = Math.max(1, Math.min(rows - 2, sourceCenterY + Math.round(Math.sin(angle) * distance / dy)))
+    const actualDx = (x - sourceCenterX) * dx
+    const actualDy = (y - sourceCenterY) * dy
+    if (Math.sqrt(actualDx * actualDx + actualDy * actualDy) < 30) continue
+    const delay = distance * (0.58 + hashNoise(satellite + 271, 71, seed) * 0.12)
+    for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+      for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+        if (offsetX * offsetX + offsetY * offsetY > 1) continue
+        const index = (y + offsetY) * columns + x + offsetX
+        if (delay >= arrivals[index]) continue
+        arrivals[index] = delay
+        heap.push(index, delay)
+      }
+    }
   }
 
   const visitNeighbor = (neighbor: number) => {
@@ -254,6 +314,5 @@ export function generateLiquidArrivalField(
     columns,
     rows,
     values,
-    drops: [],
   }
 }

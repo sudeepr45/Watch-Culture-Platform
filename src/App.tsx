@@ -51,6 +51,7 @@ function AppContent() {
   })
   const [ampersandPhase, setAmpersandPhase] = useState<AmpersandPhase>('idle')
   const [ampersandOrigin, setAmpersandOrigin] = useState<AmpersandOrigin>({ x: 0.5, y: 0.1 })
+  const [exitImpactOrigin, setExitImpactOrigin] = useState<AmpersandOrigin | null>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
   const phaseRef = useRef<AmpersandPhase>('idle')
   const savedScrollRef = useRef(0)
@@ -81,6 +82,7 @@ function AppContent() {
   const beginAmpersandExperience = useCallback((origin: AmpersandOrigin) => {
     if (pathname !== '/' || phaseRef.current !== 'idle') return
     setAmpersandOrigin(origin)
+    setExitImpactOrigin(null)
     savedScrollRef.current = window.scrollY
     savedBodyStyleRef.current = {
       position: document.body.style.position,
@@ -106,8 +108,9 @@ function AppContent() {
     setPhase('consuming')
   }, [historyMarker, historyMarkerValue, pathname, setPhase])
 
-  const requestAmpersandExit = useCallback(() => {
+  const requestAmpersandExit = useCallback((origin?: AmpersandOrigin) => {
     if (phaseRef.current === 'idle' || phaseRef.current === 'reversing') return
+    setExitImpactOrigin(origin ?? null)
     setPhase('reversing')
     if (
       historyEntryActiveRef.current
@@ -121,6 +124,7 @@ function AppContent() {
 
   const finishAmpersandExit = useCallback(() => {
     restoreDocument()
+    setExitImpactOrigin(null)
     historyEntryActiveRef.current = false
     historyTraversalPendingRef.current = false
     setPhase('idle')
@@ -321,6 +325,7 @@ function AppContent() {
     <HiddenAmpersandExperience
       phase={ampersandPhase}
       origin={ampersandOrigin}
+      exitOrigin={exitImpactOrigin}
       reducedMotion={reducedMotion}
       onInverted={finishAmpersandInversion}
       onReversed={finishAmpersandExit}

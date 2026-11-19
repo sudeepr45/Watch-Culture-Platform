@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react'
 import type { AmpersandOrigin } from './BrandLogo'
 import LiquidInkRenderer, { type LiquidInkRendererHandle } from './LiquidInkRenderer'
 import { coverageAt, coverageVelocityAt, HIDDEN_AMPERSAND_TIMING, type AmpersandPhase } from './hiddenAmpersandTiming'
@@ -6,14 +6,24 @@ import { coverageAt, coverageVelocityAt, HIDDEN_AMPERSAND_TIMING, type Ampersand
 interface Props {
   phase: AmpersandPhase
   origin: AmpersandOrigin
+  exitOrigin: AmpersandOrigin | null
   reducedMotion: boolean
   onInverted: () => void
   onReversed: () => void
-  onExit: () => void
+  onExit: (origin: AmpersandOrigin) => void
 }
 
 const burgundy = '#39070D'
 const statement = ['The movement will', 'outlive the person', 'who winds it.']
+
+function eventOrigin(event: MouseEvent<HTMLButtonElement>): AmpersandOrigin {
+  const rect = event.currentTarget.getBoundingClientRect()
+  const pointerActivation = event.detail > 0
+  return {
+    x: (pointerActivation ? event.clientX : rect.left + rect.width / 2) / window.innerWidth,
+    y: (pointerActivation ? event.clientY : rect.top + rect.height / 2) / window.innerHeight,
+  }
+}
 
 function ease(value: number) {
   const p = Math.max(0, Math.min(1, value))
@@ -54,7 +64,7 @@ function inkEdgePath(progress: number, width: number, height: number, time: numb
 }
 
 export default function HiddenAmpersandExperience({
-  phase, origin, reducedMotion, onInverted, onReversed, onExit,
+  phase, origin, exitOrigin, reducedMotion, onInverted, onReversed, onExit,
 }: Props) {
   const inkRef = useRef<SVGPathElement>(null)
   const wetEdgeRef = useRef<SVGPathElement>(null)
@@ -72,6 +82,7 @@ export default function HiddenAmpersandExperience({
   const lineRefs = useRef<Array<HTMLSpanElement | null>>([])
   const traceRefs = useRef<Array<HTMLSpanElement | null>>([])
   const ampRef = useRef<HTMLButtonElement>(null)
+  const katanaRef = useRef<SVGSVGElement>(null)
 
   const handleRendererAvailability = useCallback((available: boolean) => {
     webglAvailableRef.current = available
@@ -93,6 +104,7 @@ export default function HiddenAmpersandExperience({
       edgeTime = time,
       velocity = 0,
       frameTime = performance.now(),
+      exitProgress: number | null = null,
     ) => {
       progressRef.current = Math.max(0, Math.min(1, progress))
       edgeTimeRef.current = edgeTime
@@ -117,7 +129,7 @@ export default function HiddenAmpersandExperience({
           island.setAttribute('opacity', String(Math.max(0, Math.min(0.86, (progressRef.current - 0.04) * 1.8))))
         }
       }
-      rendererRef.current?.draw(progressRef.current, velocity, frameTime)
+      rendererRef.current?.draw(progressRef.current, velocity, frameTime, exitProgress)
       if (revealTime !== null) {
         const signatureLineTime = revealTime - textStartTime - 3 * HIDDEN_AMPERSAND_TIMING.lineSeconds
         for (let index = 0; index < lineRefs.current.length; index += 1) {
@@ -151,6 +163,7 @@ export default function HiddenAmpersandExperience({
           revealsRef.current.traces[index] = fullTraceAmount
           line.style.setProperty('--line-reveal', `${fillAmount * 100}%`)
           traceRefs.current[index]?.style.setProperty('--line-trace', `${traceAmount * 100}%`)
+          if (index === 4 && fillAmount >= 1) katanaRef.current?.classList.add('is-drawn')
         }
         const ampAmount = ease((revealTime - ampersandStartTime) / HIDDEN_AMPERSAND_TIMING.ampersandDevelopmentSeconds)
         revealsRef.current.ampersand = ampAmount
@@ -166,6 +179,16 @@ export default function HiddenAmpersandExperience({
     }
 
     let startedAt = performance.now()
+    let cancelled = false
+    let useIvoryExit = phase === 'reversing' && exitOrigin !== null && webglAvailableRef.current && !reducedMotion
+    let contextLossFallback = false
+    let contextLossStartedAt = 0
+    let contextLossCoverage = 1
+    let contextLossSnapshot = {
+      fills: [...revealsRef.current.fills],
+      traces: [...revealsRef.current.traces],
+      ampersand: revealsRef.current.ampersand,
+    }
     const initialProgress = progressRef.current
     const total = ampersandStartTime + HIDDEN_AMPERSAND_TIMING.ampersandDevelopmentSeconds
     const initialEdgeTime = edgeTimeRef.current
@@ -185,12 +208,34 @@ export default function HiddenAmpersandExperience({
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
+    const beginContextLossFallback = (time: number) => {
+      contextLossFallback = true
+      contextLossStartedAt = time
+      contextLossCoverage = progressRef.current
+      contextLossSnapshot = {
+        fills: [...revealsRef.current.fills],
+        traces: [...revealsRef.current.traces],
+        ampersand: revealsRef.current.ampersand,
+      }
+      useIvoryExit = false
+    }
+
     const frame = (now: number) => {
       const elapsed = ((hiddenAt ?? now) - startedAt) / 1000
+      if (phaseRef.current === 'reversing' && exitOrigin && useIvoryExit && !webglAvailableRef.current) {
+        beginContextLossFallback(now)
+      }
       if (phaseRef.current === 'consuming') {
         const spreadElapsed = elapsed - HIDDEN_AMPERSAND_TIMING.impactPauseSeconds
-        const progress = spreadElapsed <= 0 ? 0 : coverageAt(spreadElapsed, spreadDuration)
-        const velocity = spreadElapsed <= 0 ? 0 : coverageVelocityAt(spreadElapsed, spreadDuration)
+        const impactCoverage = HIDDEN_AMPERSAND_TIMING.initialImpactCoverage
+        const impactPosition = Math.max(0, Math.min(1, elapsed / HIDDEN_AMPERSAND_TIMING.impactContactSeconds))
+        const impactProgress = impactCoverage * ease(impactPosition)
+        const progress = spreadElapsed < 0
+          ? impactProgress
+          : impactCoverage + (1 - impactCoverage) * coverageAt(spreadElapsed, spreadDuration)
+        const velocity = spreadElapsed < 0
+          ? impactCoverage * 6 * impactPosition * (1 - impactPosition) / HIDDEN_AMPERSAND_TIMING.impactContactSeconds
+          : (1 - impactCoverage) * coverageVelocityAt(spreadElapsed, spreadDuration)
         const edgeTime = Math.max(0, Math.min(spreadElapsed, spreadDuration))
         updateInk(progress, elapsed, elapsed, edgeTime, velocity, now)
         if (elapsed >= total) {
@@ -204,12 +249,43 @@ export default function HiddenAmpersandExperience({
           return
         }
       } else if (phaseRef.current === 'reversing') {
+        if (contextLossFallback) {
+          const fallbackDuration = 1.5
+          const fallbackProgress = ease((now - contextLossStartedAt) / (fallbackDuration * 1000))
+          for (let index = 0; index < lineRefs.current.length; index += 1) {
+            const fill = contextLossSnapshot.fills[index] * (1 - fallbackProgress)
+            const trace = contextLossSnapshot.traces[index] * (1 - fallbackProgress)
+            lineRefs.current[index]?.style.setProperty('--line-reveal', `${fill * 100}%`)
+            traceRefs.current[index]?.style.setProperty('--line-trace', `${trace * 100}%`)
+            revealsRef.current.fills[index] = fill
+            revealsRef.current.traces[index] = trace
+          }
+          const ampReveal = contextLossSnapshot.ampersand * (1 - fallbackProgress)
+          revealsRef.current.ampersand = ampReveal
+          ampRef.current?.style.setProperty('--amp-reveal', `${ampReveal * 100}%`)
+          updateInk(contextLossCoverage * (1 - fallbackProgress), elapsed, null, initialEdgeTime + fallbackProgress * fallbackDuration, 0, now)
+          if (fallbackProgress >= 1) {
+            updateInk(0, elapsed, 0, 0, 0, now)
+            onReversed()
+            return
+          }
+          rafRef.current = requestAnimationFrame(frame)
+          return
+        }
         const hasDevelopedText = revealSnapshot.fills.some((value) => value > 0)
           || revealSnapshot.traces.some((value) => value > 0)
           || revealSnapshot.ampersand > 0
-        const textDuration = hasDevelopedText ? HIDDEN_AMPERSAND_TIMING.reverseTextSeconds : 0
-        const holdDuration = initialProgress > 0 ? HIDDEN_AMPERSAND_TIMING.reverseHoldSeconds : 0
-        const drainDuration = initialProgress > 0 ? HIDDEN_AMPERSAND_TIMING.reverseInkSeconds : 0
+        const textDuration = hasDevelopedText
+          ? (useIvoryExit ? 0.9 : HIDDEN_AMPERSAND_TIMING.reverseTextSeconds)
+          : 0
+        const holdDuration = initialProgress > 0 && !useIvoryExit ? HIDDEN_AMPERSAND_TIMING.reverseHoldSeconds : 0
+        const drainDuration = initialProgress > 0
+          ? (useIvoryExit
+            ? (window.innerWidth < 700
+              ? HIDDEN_AMPERSAND_TIMING.mobileIvoryImpactSeconds
+              : HIDDEN_AMPERSAND_TIMING.ivoryImpactSeconds)
+            : HIDDEN_AMPERSAND_TIMING.reverseInkSeconds)
+          : 0
         const current = initialProgress
         if (drainDuration === 0 && textDuration === 0 && holdDuration === 0) {
           updateInk(0, 0)
@@ -229,6 +305,23 @@ export default function HiddenAmpersandExperience({
         const ampReveal = revealSnapshot.ampersand * (1 - reverseProgress)
         revealsRef.current.ampersand = ampReveal
         ampRef.current?.style.setProperty('--amp-reveal', `${ampReveal * 100}%`)
+        if (useIvoryExit) {
+          const start = HIDDEN_AMPERSAND_TIMING.initialImpactCoverage
+          const contact = HIDDEN_AMPERSAND_TIMING.ivoryImpactCoverage
+          const end = 1 + HIDDEN_AMPERSAND_TIMING.ivoryFrontBand
+          const contactElapsed = HIDDEN_AMPERSAND_TIMING.ivoryContactSeconds
+          const exitProgress = elapsed < contactElapsed
+            ? start + (contact - start) * ease(elapsed / contactElapsed)
+            : contact + (end - contact) * ease((elapsed - contactElapsed) / Math.max(0.001, drainDuration - contactElapsed))
+          updateInk(1, elapsed, null, 0, 0, now, exitProgress)
+          if (elapsed >= Math.max(textDuration, drainDuration)) {
+            updateInk(0, elapsed, 0, 0, 0, now, end)
+            onReversed()
+            return
+          }
+          rafRef.current = requestAnimationFrame(frame)
+          return
+        }
         const drainElapsed = Math.max(0, elapsed - textDuration - holdDuration)
         const progress = drainElapsed <= 0 ? current : current * (1 - ease(drainElapsed / drainDuration))
         const edgeTime = initialEdgeTime + drainElapsed
@@ -245,12 +338,35 @@ export default function HiddenAmpersandExperience({
       rafRef.current = requestAnimationFrame(frame)
     }
 
-    rafRef.current = requestAnimationFrame(frame)
+    const startAnimation = () => {
+      if (cancelled) return
+      startedAt = performance.now()
+      hiddenAt = document.hidden ? startedAt : null
+      rafRef.current = requestAnimationFrame(frame)
+    }
+    if (useIvoryExit && exitOrigin) {
+      const renderer = rendererRef.current
+      if (renderer) {
+        renderer.prepareExitField(exitOrigin, (ready) => {
+          if (!ready) {
+            if (!webglAvailableRef.current) beginContextLossFallback(performance.now())
+            else useIvoryExit = false
+          }
+          startAnimation()
+        })
+      } else {
+        useIvoryExit = false
+        startAnimation()
+      }
+    } else {
+      startAnimation()
+    }
     return () => {
+      cancelled = true
       cancelAnimationFrame(rafRef.current)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [phase, reducedMotion, onInverted, onReversed])
+  }, [phase, reducedMotion, onInverted, onReversed, exitOrigin])
 
   useEffect(() => {
     if (phase !== 'inverted') return
@@ -297,6 +413,7 @@ export default function HiddenAmpersandExperience({
         ref={rendererRef}
         originX={origin.x}
         originY={origin.y}
+        available={webglAvailable}
         ambientEnabled={phase === 'inverted' && !reducedMotion && webglAvailable}
         onAvailabilityChange={handleRendererAvailability}
         coverageRef={progressRef}
@@ -360,13 +477,21 @@ export default function HiddenAmpersandExperience({
               </span>
               <span className="mojean-amp-fill mojean-amp-signature" ref={(node) => { lineRefs.current[4] = node }}>
               <span className="mojean-amp-signature-mark">スディープ</span>
-              <svg className="mojean-amp-katana" viewBox="0 0 520 90" aria-hidden="true" focusable="false">
+              <svg ref={katanaRef} className="mojean-amp-katana" viewBox="0 0 520 90" aria-hidden="true" focusable="false">
+                <defs>
+                  <clipPath id="mojean-amp-katana-blade-clip" clipPathUnits="userSpaceOnUse">
+                    <rect className="mojean-amp-katana-blade-mask" x="207" y="0" width="0" height="90" />
+                  </clipPath>
+                </defs>
                 <g strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M207 38C300 38 390 33 466 20Q493 15 512 16L494 30C418 43 316 54 207 56Z" fill="currentColor" stroke="currentColor" strokeWidth="1.2" />
-                  <path d="M211 52C300 51 388 43 464 29Q481 26 494 24" fill="none" stroke="currentColor" strokeWidth="1.35" opacity="0.82" />
-                  <path d="M211 40C302 40 389 34 466 21Q486 17 502 16.5" fill="none" stroke="currentColor" strokeWidth="1.1" opacity="0.72" />
-                  <path d="M228 44C299 44 374 38 442 27" fill="none" stroke="currentColor" strokeWidth="0.75" opacity="0.56" />
-                  <path d="M472 20Q478 25 478 32" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.72" />
+                  <g clipPath="url(#mojean-amp-katana-blade-clip)">
+                    <path d="M207 38C300 38 390 33 466 20Q493 15 512 16L494 30C418 43 316 54 207 56Z" fill="currentColor" stroke="currentColor" strokeWidth="1.2" />
+                    <path d="M211 52C300 51 388 43 464 29Q481 26 494 24" fill="none" stroke="currentColor" strokeWidth="1.35" opacity="0.82" />
+                    <path d="M211 40C302 40 389 34 466 21Q486 17 502 16.5" fill="none" stroke="currentColor" strokeWidth="1.1" opacity="0.72" />
+                    <path d="M228 44C299 44 374 38 442 27" fill="none" stroke="currentColor" strokeWidth="0.75" opacity="0.56" />
+                    <path d="M472 20Q478 25 478 32" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.72" />
+                    <path className="mojean-amp-katana-reflection" d="M211 45C294 45 380 38 482 23" fill="none" stroke="#71695E" strokeWidth="1.35" strokeDasharray="34 320" strokeDashoffset="0" />
+                  </g>
                   <path d="M201 35 210 37 209 56 200 59Q196 48 201 35Z" fill="currentColor" stroke="currentColor" strokeWidth="1.2" />
                   <path d="M188 27C182 31 181 39 184 46 180 54 183 63 190 67L199 62C196 53 196 41 200 32Z" fill="currentColor" stroke="currentColor" strokeWidth="1.6" />
                   <path d="M187 31Q192 34 196 32M185 60Q191 57 197 61" fill="none" stroke="currentColor" strokeWidth="0.9" opacity="0.6" />
@@ -391,7 +516,7 @@ export default function HiddenAmpersandExperience({
           style={placement}
           aria-label="Return to MOJEAN homepage"
           tabIndex={inverted ? 0 : -1}
-          onClick={onExit}
+          onClick={(event) => onExit(eventOrigin(event))}
         >
           &amp;
         </button>

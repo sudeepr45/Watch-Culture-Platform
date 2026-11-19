@@ -28,7 +28,6 @@ workerScope.onmessage = (event) => {
       columns: field.columns,
       rows: field.rows,
       values: field.values,
-      drops: field.drops,
     }, [field.values.buffer])
   } catch (error) {
     workerScope.postMessage({ error: error instanceof Error ? error.message : 'Unable to calculate arrival field' })

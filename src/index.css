@@ -269,6 +269,39 @@
   color: #080103;
 }
 
+.mojean-amp-katana-blade-mask {
+  width: 0;
+  transition: width 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mojean-amp-katana.is-drawn .mojean-amp-katana-blade-mask {
+  width: 313px;
+}
+
+.mojean-amp-katana-reflection {
+  opacity: 0;
+}
+
+.mojean-amp-katana.is-drawn .mojean-amp-katana-reflection {
+  animation: mojean-katana-reflection-travel 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes mojean-katana-reflection-travel {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0.42;
+  }
+
+  72% {
+    opacity: 0.24;
+  }
+
+  100% {
+    stroke-dashoffset: -300px;
+    opacity: 0;
+  }
+}
+
 .mojean-amp-trace,
 .mojean-amp-fill {
   display: block;
@@ -368,5 +401,20 @@
 
   .mojean-amp-katana {
     width: min(6.5rem, 38vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mojean-amp-katana-blade-mask {
+    transition: none;
+  }
+
+  .mojean-amp-katana.is-drawn .mojean-amp-katana-blade-mask {
+    width: 313px;
+  }
+
+  .mojean-amp-katana.is-drawn .mojean-amp-katana-reflection {
+    animation: none;
+    opacity: 0;
   }
 }
